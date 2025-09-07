@@ -1,0 +1,7 @@
+# React project ignores
+node_modules/
+build/
+.DS_Store
+.env
+.next/
+.cache/
