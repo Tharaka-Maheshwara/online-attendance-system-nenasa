@@ -14,7 +14,13 @@
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
-  "keywords": ["attendance", "nest.js", "react", "azure", "postgresql"],
+  "keywords": [
+    "attendance",
+    "nest.js",
+    "react",
+    "azure",
+    "postgresql"
+  ],
   "author": "Your Name",
   "license": "MIT"
 }
