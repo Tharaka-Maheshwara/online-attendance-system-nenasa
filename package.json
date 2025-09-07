@@ -1,0 +1,20 @@
+{
+  "name": "online-attendance-system",
+  "version": "1.0.0",
+  "description": "Online Attendance System with Nest.js Backend and React Frontend",
+  "scripts": {
+    "start": "npm run start:all",
+    "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd Backend && npm run start:dev",
+    "start:frontend": "cd Frontend/frontend-app/temp-app && npm start",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd Backend && npm install",
+    "install:frontend": "cd Frontend/frontend-app && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["attendance", "nest.js", "react", "azure", "postgresql"],
+  "author": "Your Name",
+  "license": "MIT"
+}
