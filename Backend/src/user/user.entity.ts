@@ -13,7 +13,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ type: 'enum', enum: ['admin', 'student', 'teacher'] })
@@ -27,4 +27,23 @@ export class User {
 
   @Column({ nullable: true })
   classId: number;
+
+  // Azure AD Integration fields
+  @Column({ nullable: true, unique: true })
+  azureId: string;
+
+  @Column({ nullable: true })
+  userPrincipalName: string;
+
+  @Column({ nullable: true })
+  firstName: string;
+
+  @Column({ nullable: true })
+  lastName: string;
+
+  @Column({ nullable: true, type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  lastAzureSync: Date;
+
+  @Column({ nullable: true, default: false })
+  isAzureUser: boolean;
 }
