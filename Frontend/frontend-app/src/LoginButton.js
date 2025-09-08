@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMsal } from "@azure/msal-react";
 import { clearMsalCache } from "./authConfig";
+import { tenantInfo, userManagementInstructions } from "./tenantInfo";
 
 function LoginButton() {
   const { instance, accounts, inProgress } = useMsal();
@@ -47,7 +48,33 @@ function LoginButton() {
   const isDisabled = inProgress !== "none" || isLoggingIn;
 
   return (
-    <div>
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <div style={{ marginBottom: "20px", padding: "15px", backgroundColor: "#f8f9fa", borderRadius: "5px" }}>
+        <h3>Tenant Information</h3>
+        <p><strong>Tenant ID:</strong> {tenantInfo.tenantId}</p>
+        <p><strong>Client ID:</strong> {tenantInfo.clientId}</p>
+        <p><strong>Azure Portal:</strong> <a href={tenantInfo.getAzurePortalUrl()} target="_blank" rel="noopener noreferrer">Open Azure Portal</a></p>
+        
+        <details style={{ marginTop: "10px" }}>
+          <summary style={{ cursor: "pointer", fontWeight: "bold" }}>📋 How to Add Users to Tenant</summary>
+          <div style={{ marginTop: "10px" }}>
+            <h4>Add Internal User:</h4>
+            <ol>
+              {userManagementInstructions.addInternalUser.map((step, index) => (
+                <li key={index} style={{ margin: "5px 0" }}>{step}</li>
+              ))}
+            </ol>
+            
+            <h4>Add External User (Guest):</h4>
+            <ol>
+              {userManagementInstructions.addExternalUser.map((step, index) => (
+                <li key={index} style={{ margin: "5px 0" }}>{step}</li>
+              ))}
+            </ol>
+          </div>
+        </details>
+      </div>
+
       {!isAuthenticated ? (
         <div>
           <button
