@@ -2,9 +2,11 @@
 export const tenantInfo = {
   tenantId: "a7a43c95-55b0-4d14-98c5-a7478dfb87d3",
   clientId: "9a2a5624-5ed7-4449-b2b0-e1862e68fdcc",
+  organizationName: "Nenasala Higher Education",
   
   // Common domains for this tenant
   expectedDomains: [
+    "@nenasa.edu.lk", // Custom domain for NENASA
     "@yourdomain.onmicrosoft.com", // Replace with your actual domain
     "@yourdomain.com" // If you have a custom domain
   ],
