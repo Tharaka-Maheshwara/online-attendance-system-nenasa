@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, IsNull } from 'typeorm';
 import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
 
 export interface AzureUserDto {
   email: string;
@@ -23,6 +24,22 @@ export class UserService {
 		private readonly userRepository: Repository<User>,
 	) {}
 
+	async createUser(createUserDto: any): Promise<User> {
+		// Duplicate username/email check
+		const existingUser = await this.userRepository.findOne({ where: [{ username: createUserDto.username }, { email: createUserDto.email }] });
+		if (existingUser) {
+			throw new Error('Username or email already exists');
+		}
+		// Password hashing
+		const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+		const user = {
+			...createUserDto,
+			password: hashedPassword,
+			role: createUserDto.role || 'student',
+		};
+		return this.userRepository.save(user);
+	}
+
 	async create(user: Partial<User>): Promise<User> {
 		return this.userRepository.save(user);
 	}
@@ -31,14 +48,14 @@ export class UserService {
 		return this.userRepository.find();
 	}
 
-		async findOne(id: number): Promise<User | null> {
-			return this.userRepository.findOne({ where: { id } });
-		}
+	async findOne(id: number): Promise<User | null> {
+		return this.userRepository.findOne({ where: { id } });
+	}
 
-		async update(id: number, user: Partial<User>): Promise<User | null> {
-			await this.userRepository.update(id, user);
-			return this.findOne(id);
-		}
+	async update(id: number, user: Partial<User>): Promise<User | null> {
+		await this.userRepository.update(id, user);
+		return this.findOne(id);
+	}
 
 	async remove(id: number): Promise<void> {
 		await this.userRepository.delete(id);
@@ -66,20 +83,18 @@ export class UserService {
 				existingUser = await this.findByEmail(azureUserDto.email);
 			}
 
-			const userData = {
+			const userData: Partial<User> = {
 				email: azureUserDto.email,
 				name: azureUserDto.displayName,
 				azureId: azureUserDto.azureId,
 				firstName: azureUserDto.firstName,
 				lastName: azureUserDto.lastName,
 				userPrincipalName: azureUserDto.userPrincipalName,
-		// Set default role if creating new user
-		role: existingUser?.role || 'student',
-		// Update sync timestamp
-		lastAzureSync: new Date(),
+				// Set default role if creating new user
+				role: existingUser?.role || 'student',
+				// Update sync timestamp
+				lastAzureSync: new Date(),
 			};
-
-	// code continues...
 
 			if (existingUser) {
 				// Update existing user
