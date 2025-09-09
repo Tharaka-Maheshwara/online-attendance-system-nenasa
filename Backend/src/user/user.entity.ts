@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 
 export type UserRole = 'admin' | 'student' | 'teacher';
 
-@Entity('user')
+@Entity('nenasala_users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

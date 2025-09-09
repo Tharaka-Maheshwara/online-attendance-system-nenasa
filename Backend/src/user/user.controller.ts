@@ -48,8 +48,36 @@ export class UserController {
 			);
 		}
 	}
-
-	@Put(':id')
+  // Azure AD login: auto-create user with role 'student' if not exists
+  @Post('azure-login')
+  async azureLogin(@Body() body: { email: string; displayName?: string; azureId?: string }): Promise<User> {
+    console.log('Azure login data received:', body); // Debug log
+    
+    // Try to find user by email
+    let user = await this.userService.findByEmail(body.email);
+    if (!user) {
+      // Create new user with role 'student' and Azure info
+      user = await this.userService.create({
+        email: body.email,
+        display_name: body.displayName || undefined,
+        azureId: body.azureId || undefined,
+        role: 'student',
+        contactNumber: undefined,
+      });
+      console.log('New user created:', user);
+    } else {
+      // Update existing user with Azure info if missing
+      if (!user.azureId && body.azureId) {
+        user.azureId = body.azureId;
+      }
+      if (!user.display_name && body.displayName) {
+        user.display_name = body.displayName;
+      }
+      user = await this.userService.update(user.id, user);
+      console.log('User updated:', user);
+    }
+    return user!; // Non-null assertion since user is guaranteed to exist here
+  }	@Put(':id')
 	async update(@Param('id') id: number, @Body() user: Partial<User>): Promise<User | null> {
 		return this.userService.update(Number(id), user);
 	}

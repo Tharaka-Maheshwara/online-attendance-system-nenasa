@@ -12,6 +12,37 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const syncAzureUser = async () => {
+      if (accounts.length > 0) {
+        const user = accounts[0];
+        console.log('Azure AD User Data:', user); // Debug log
+        
+        try {
+          // POST user info to backend for auto-create/update
+          const response = await fetch('http://localhost:8000/users/azure-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: user.username,
+              displayName: user.name || user.displayName,
+              azureId: user.localAccountId || user.homeAccountId || user.accountIdentifier
+            })
+          });
+          
+          if (response.ok) {
+            console.log('User synced successfully');
+          } else {
+            console.error('Failed to sync user:', response.status);
+          }
+        } catch (error) {
+          console.error('Error syncing Azure user:', error);
+        }
+      }
+    };
+    syncAzureUser();
+  }, [accounts]);
+
+  useEffect(() => {
     const fetchUserRole = async () => {
       try {
         if (accounts.length > 0) {
@@ -41,7 +72,6 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
     fetchUserRole();
   }, [accounts]);
 
