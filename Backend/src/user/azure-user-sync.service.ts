@@ -68,11 +68,6 @@ export class AzureUserSyncService {
             email: user.mail || user.userPrincipalName,
             displayName: user.displayName,
             azureId: user.id,
-            firstName: user.givenName,
-            lastName: user.surname,
-            jobTitle: user.jobTitle,
-            department: user.department,
-            userPrincipalName: user.userPrincipalName,
           });
 
           syncedCount++;

@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpSta
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { AzureUserSyncService } from './azure-user-sync.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -11,8 +12,8 @@ export class UserController {
 	) {}
 
 	@Post()
-	async create(@Body() user: Partial<User>): Promise<User> {
-		return this.userService.create(user);
+	async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+		return this.userService.createUser(createUserDto);
 	}
 
 	@Get()
@@ -25,40 +26,17 @@ export class UserController {
 		return this.userService.findOne(Number(id));
 	}
 
-	// Get user profile by email/username (for login authentication)
+	// Get user profile by email (for login authentication)
 	@Get('profile/:email')
 	async getUserProfile(@Param('email') email: string): Promise<User | null> {
 		try {
-			// First try to find by email
-			let user = await this.userService.findByEmail(email);
-			
-			// If not found by email, try by username
-			if (!user) {
-				user = await this.userService.findByUsername(email);
-			}
-			
-			// If still not found, create a default student user for Azure AD users
-			if (!user) {
-				// Check if this is an Azure AD user
-				if (email.includes('@')) {
-					const newUser = {
-						email: email,
-						username: email,
-						name: email.split('@')[0], // Use part before @ as name
-						role: 'student' as const, // Default role for new users
-						isAzureUser: true,
-					};
-					user = await this.userService.create(newUser);
-				}
-			}
+			const user = await this.userService.findByEmail(email);
 			
 			if (!user) {
 				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 			}
 			
-			// Remove sensitive information
-			const { password, ...userProfile } = user;
-			return userProfile as User;
+			return user;
 		} catch (error) {
 			throw new HttpException(
 				{

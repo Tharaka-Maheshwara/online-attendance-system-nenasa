@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
 import { User } from '../user/user.entity';
 
 // Define a type for the decoded Azure token payload for clarity
@@ -10,8 +9,6 @@ interface AzureTokenPayload {
   email?: string;
   preferred_username?: string;
   name: string;
-  given_name?: string;
-  family_name?: string;
   upn?: string; // User Principal Name
 }
 
@@ -25,16 +22,12 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.userService.findByUsername(username);
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { password: pwd, ...result } = user;
-      return result;
-    }
+    // This method is no longer valid as password authentication has been removed.
     return null;
   }
 
   async login(user: any) {
-    const payload = { sub: user.id, username: user.email || user.username };
+    const payload = { sub: user.id, username: user.email };
     return {
       access_token: this.jwtService.sign(payload),
     };
@@ -65,9 +58,6 @@ export class AuthService {
         azureId: decodedToken.oid,
         email: email,
         displayName: decodedToken.name,
-        firstName: decodedToken.given_name,
-        lastName: decodedToken.family_name,
-        userPrincipalName: decodedToken.upn || email,
       };
 
       const user = await this.userService.createOrUpdateFromAzure(userDto);

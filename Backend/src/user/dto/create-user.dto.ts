@@ -1,7 +1,7 @@
 export class CreateUserDto {
-  username: string;
+  display_name: string;
   email: string;
-  name: string;
-  password: string;
-  role?: string;
+  role: string;
+  contactNumber?: string;
+  azureId?: string;
 }

@@ -1,18 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, IsNull } from 'typeorm';
-import { User } from './user.entity';
-import * as bcrypt from 'bcrypt';
+import { User, UserRole } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 export interface AzureUserDto {
   email: string;
   displayName: string;
   azureId: string;
-  firstName?: string;
-  lastName?: string;
-  jobTitle?: string;
-  department?: string;
-  userPrincipalName: string;
 }
 
 @Injectable()
@@ -24,19 +19,16 @@ export class UserService {
 		private readonly userRepository: Repository<User>,
 	) {}
 
-	async createUser(createUserDto: any): Promise<User> {
-		// Duplicate username/email check
-		const existingUser = await this.userRepository.findOne({ where: [{ username: createUserDto.username }, { email: createUserDto.email }] });
+	async createUser(createUserDto: CreateUserDto): Promise<User> {
+		// Duplicate email check
+		const existingUser = await this.userRepository.findOne({ where: { email: createUserDto.email } });
 		if (existingUser) {
-			throw new Error('Username or email already exists');
+			throw new Error('Email already exists');
 		}
-		// Password hashing
-		const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-		const user = {
+		const user = this.userRepository.create({
 			...createUserDto,
-			password: hashedPassword,
-			role: createUserDto.role || 'student',
-		};
+			role: (createUserDto.role as UserRole) || 'student',
+		});
 		return this.userRepository.save(user);
 	}
 
@@ -69,11 +61,6 @@ export class UserService {
 		return this.userRepository.findOne({ where: { azureId } });
 	}
 
-
-	async findByUsername(username: string): Promise<User | null> {
-		return this.userRepository.findOne({ where: { username } });
-	}
-
 	async createOrUpdateFromAzure(azureUserDto: AzureUserDto): Promise<User> {
 		try {
 			// Check if user exists by Azure ID or email
@@ -85,15 +72,10 @@ export class UserService {
 
 			const userData: Partial<User> = {
 				email: azureUserDto.email,
-				name: azureUserDto.displayName,
+				display_name: azureUserDto.displayName,
 				azureId: azureUserDto.azureId,
-				firstName: azureUserDto.firstName,
-				lastName: azureUserDto.lastName,
-				userPrincipalName: azureUserDto.userPrincipalName,
 				// Set default role if creating new user
 				role: existingUser?.role || 'student',
-				// Update sync timestamp
-				lastAzureSync: new Date(),
 			};
 
 			if (existingUser) {
@@ -118,7 +100,7 @@ export class UserService {
 	async getAllAzureSyncedUsers(): Promise<User[]> {
 		return this.userRepository.find({ 
 			where: { azureId: Not(IsNull()) },
-			order: { lastAzureSync: 'DESC' }
+			order: { updatedAt: 'DESC' }
 		});
 	}
 
