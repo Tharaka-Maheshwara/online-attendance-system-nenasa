@@ -3,7 +3,7 @@ import { MsalProvider, useMsal } from "@azure/msal-react";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig } from "./authConfig";
 import LoginButton from "./LoginButton";
-import AttendanceMarking from "./AttendanceMarking";
+import Dashboard from "./components/Dashboard/Dashboard";
 import "./App.css";
 
 const msalInstance = new PublicClientApplication(msalConfig);
@@ -14,13 +14,14 @@ function AppContent() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Online Attendance System</h1>
-        <LoginButton />
-      </header>
-      {isAuthenticated && (
-        <main style={{ padding: '20px', backgroundColor: 'white', color: 'black' }}>
-          <AttendanceMarking />
+      {!isAuthenticated ? (
+        <header className="App-header">
+          <h1>Online Attendance System</h1>
+          <LoginButton />
+        </header>
+      ) : (
+        <main style={{ padding: '0', backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
+          <Dashboard />
         </main>
       )}
     </div>

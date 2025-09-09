@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { User } from './user.entity';
 import { AzureUserSyncService } from './azure-user-sync.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
 	constructor(
 		private readonly userService: UserService,
@@ -23,6 +23,52 @@ export class UserController {
 	@Get(':id')
 	async findOne(@Param('id') id: number): Promise<User | null> {
 		return this.userService.findOne(Number(id));
+	}
+
+	// Get user profile by email/username (for login authentication)
+	@Get('profile/:email')
+	async getUserProfile(@Param('email') email: string): Promise<User | null> {
+		try {
+			// First try to find by email
+			let user = await this.userService.findByEmail(email);
+			
+			// If not found by email, try by username
+			if (!user) {
+				user = await this.userService.findByUsername(email);
+			}
+			
+			// If still not found, create a default student user for Azure AD users
+			if (!user) {
+				// Check if this is an Azure AD user
+				if (email.includes('@')) {
+					const newUser = {
+						email: email,
+						username: email,
+						name: email.split('@')[0], // Use part before @ as name
+						role: 'student' as const, // Default role for new users
+						isAzureUser: true,
+					};
+					user = await this.userService.create(newUser);
+				}
+			}
+			
+			if (!user) {
+				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			}
+			
+			// Remove sensitive information
+			const { password, ...userProfile } = user;
+			return userProfile as User;
+		} catch (error) {
+			throw new HttpException(
+				{
+					success: false,
+					message: 'Failed to fetch user profile',
+					error: error.message
+				},
+				HttpStatus.INTERNAL_SERVER_ERROR
+			);
+		}
 	}
 
 	@Put(':id')
