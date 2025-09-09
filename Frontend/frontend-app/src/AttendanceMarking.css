@@ -1,0 +1,388 @@
+/* AttendanceMarking.css */
+.attendance-marking {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f2f5;
+}
+
+.attendance-header h2 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.mode-selector button {
+  padding: 10px 20px;
+  border: 2px solid #e9ecef;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-selector button:hover {
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.mode-selector button.active {
+  background: #3498db;
+  border-color: #3498db;
+  color: white;
+}
+
+/* Teacher Interface */
+.teacher-interface {
+  margin-top: 20px;
+}
+
+.class-selector {
+  margin-bottom: 25px;
+}
+
+.class-selector label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.class-selector select {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+}
+
+.class-selector select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* QR Generation */
+.qr-generation {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.qr-generation h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.generate-qr-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generate-qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.qr-display {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.qr-display p {
+  margin-top: 15px;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* Manual Attendance */
+.manual-attendance {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+}
+
+.manual-attendance h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.student-email {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.attendance-options {
+  display: flex;
+  gap: 20px;
+}
+
+.attendance-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.attendance-options input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.save-attendance-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.save-attendance-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Student Interface */
+.student-interface {
+  margin-top: 20px;
+}
+
+.qr-scanning {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.qr-scanning h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.scan-qr-btn {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scan-qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.scanner-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-video {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.stop-scan-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.stop-scan-btn:hover {
+  background: #c0392b;
+}
+
+.scan-result {
+  margin-top: 15px;
+  padding: 15px;
+  background: #d5f4e6;
+  border: 1px solid #27ae60;
+  border-radius: 8px;
+  color: #1e8449;
+}
+
+.student-manual {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.student-manual h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.student-manual p {
+  color: #7f8c8d;
+  margin-bottom: 25px;
+}
+
+.checkin-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 15px;
+}
+
+.checkin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .attendance-marking {
+    padding: 15px;
+    margin: 10px;
+  }
+  
+  .attendance-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .mode-selector {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .mode-selector button {
+    flex: 1;
+    max-width: 150px;
+  }
+  
+  .student-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .attendance-options {
+    width: 100%;
+    justify-content: space-around;
+  }
+  
+  .class-selector select {
+    max-width: 100%;
+  }
+  
+  .qr-video {
+    max-width: 100%;
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendance-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .attendance-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .student-row {
+    padding: 12px 15px;
+  }
+  
+  .qr-generation,
+  .manual-attendance,
+  .qr-scanning,
+  .student-manual {
+    padding: 20px;
+  }
+}

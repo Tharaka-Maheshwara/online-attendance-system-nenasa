@@ -30,4 +30,25 @@ export class AttendanceService {
 	async remove(id: number): Promise<void> {
 		await this.attendanceRepository.delete(id);
 	}
+
+	async findByClass(classId: number): Promise<Attendance[]> {
+		return this.attendanceRepository.find({ 
+			where: { classId },
+			order: { date: 'DESC', createdAt: 'DESC' }
+		});
+	}
+
+	async findByStudent(studentId: number): Promise<Attendance[]> {
+		return this.attendanceRepository.find({ 
+			where: { studentId },
+			order: { date: 'DESC', createdAt: 'DESC' }
+		});
+	}
+
+	async findByClassAndDate(classId: number, date: string): Promise<Attendance[]> {
+		return this.attendanceRepository.find({ 
+			where: { classId, date },
+			order: { createdAt: 'DESC' }
+		});
+	}
 }

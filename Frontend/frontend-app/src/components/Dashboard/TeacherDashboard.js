@@ -20,7 +20,7 @@ const TeacherDashboard = () => {
                 <p>Absent: 2</p>
               </div>
               <div className="class-actions">
-                <button className="btn-primary">Mark Attendance</button>
+                <button className="btn-primary" onClick={() => window.location.href = '/attendance'}>Mark Attendance</button>
                 <button className="btn-secondary">View Details</button>
               </div>
             </div>
@@ -111,7 +111,7 @@ const TeacherDashboard = () => {
         <div className="teacher-actions">
           <h2>Quick Actions</h2>
           <div className="action-buttons">
-            <button className="action-btn primary">
+            <button className="action-btn primary" onClick={() => window.location.href = '/attendance'}>
               <span className="btn-icon">✓</span>
               Mark Attendance
             </button>
