@@ -52,6 +52,11 @@ export class UserService {
 		return this.userRepository.findOne({ where: { azureId } });
 	}
 
+
+	async findByUsername(username: string): Promise<User | null> {
+		return this.userRepository.findOne({ where: { username } });
+	}
+
 	async createOrUpdateFromAzure(azureUserDto: AzureUserDto): Promise<User> {
 		try {
 			// Check if user exists by Azure ID or email
@@ -68,11 +73,13 @@ export class UserService {
 				firstName: azureUserDto.firstName,
 				lastName: azureUserDto.lastName,
 				userPrincipalName: azureUserDto.userPrincipalName,
-				// Set default role if creating new user
-				role: existingUser?.role || 'student',
-				// Update sync timestamp
-				lastAzureSync: new Date(),
+		// Set default role if creating new user
+		role: existingUser?.role || 'student',
+		// Update sync timestamp
+		lastAzureSync: new Date(),
 			};
+
+	// code continues...
 
 			if (existingUser) {
 				// Update existing user
@@ -99,4 +106,5 @@ export class UserService {
 			order: { lastAzureSync: 'DESC' }
 		});
 	}
+
 }
