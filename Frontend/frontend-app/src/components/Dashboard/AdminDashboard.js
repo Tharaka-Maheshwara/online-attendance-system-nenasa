@@ -10,6 +10,7 @@ const AdminDashboard = () => {
   const [updating, setUpdating] = React.useState(false);
   const [notification, setNotification] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [activeTab, setActiveTab] = React.useState('student'); // New state for tab selection
 
   React.useEffect(() => {
     // Fetch all users from backend
@@ -42,10 +43,22 @@ const AdminDashboard = () => {
     setNewRole(e.target.value);
   };
 
-  const filteredUsers = users.filter(user => 
-    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users.filter(user => {
+    // Never show admin users
+    if (user.role === 'admin') return false;
+    
+    // Filter by active tab
+    if (activeTab === 'student' && user.role !== 'student') return false;
+    if (activeTab === 'teacher' && user.role !== 'teacher') return false;
+    
+    // Filter by search term
+    if (searchTerm && !(
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.role?.toLowerCase().includes(searchTerm.toLowerCase())
+    )) return false;
+    
+    return true;
+  });
 
   // Auto-hide notification after 3 seconds
   React.useEffect(() => {
@@ -100,11 +113,27 @@ const AdminDashboard = () => {
         <div className="user-management">
           <h2>User Management</h2>
           
+          {/* Tabs for Students/Teachers */}
+          <div className="user-tabs">
+            <button
+              className={`tab-button ${activeTab === 'student' ? 'active' : ''}`}
+              onClick={() => setActiveTab('student')}
+            >
+              Users
+            </button>
+            <button
+              className={`tab-button ${activeTab === 'teacher' ? 'active' : ''}`}
+              onClick={() => setActiveTab('teacher')}
+            >
+              Teachers
+            </button>
+          </div>
+          
           {/* Search Bar */}
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search users by email or role..."
+              placeholder={`Search ${activeTab === 'student' ? 'users' : 'teachers'} by email...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
@@ -157,7 +186,7 @@ const AdminDashboard = () => {
               >
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
-                <option value="admin">Admin</option>
+                {/* Admin option removed - admins should not be assignable from this interface */}
               </select>
               <div className="modal-actions">
                 <button 
