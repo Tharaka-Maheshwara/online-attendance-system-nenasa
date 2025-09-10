@@ -78,8 +78,8 @@ const Navbar = () => {
                 <Link to="/classes" className="nav-link">
                   📚 Classes
                 </Link>
-                <Link to="/students" className="nav-link">
-                  👥 Students
+                <Link to="/user" className="nav-link">
+                  👥 User
                 </Link>
                 <Link to="/reports" className="nav-link">
                   📊 Reports
