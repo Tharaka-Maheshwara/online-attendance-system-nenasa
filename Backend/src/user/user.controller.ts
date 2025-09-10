@@ -78,8 +78,15 @@ export class UserController {
     }
     return user!; // Non-null assertion since user is guaranteed to exist here
   }	@Put(':id')
-	async update(@Param('id') id: number, @Body() user: Partial<User>): Promise<User | null> {
-		return this.userService.update(Number(id), user);
+	async update(@Param('id') id: number, @Body() updateData: Partial<User>): Promise<User | null> {
+		// If updating role, add basic validation
+		if (updateData.role) {
+			const validRoles = ['student', 'teacher', 'admin'];
+			if (!validRoles.includes(updateData.role)) {
+				throw new HttpException('Invalid role specified', HttpStatus.BAD_REQUEST);
+			}
+		}
+		return this.userService.update(Number(id), updateData);
 	}
 
 	@Delete(':id')
