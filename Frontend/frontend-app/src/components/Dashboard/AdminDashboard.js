@@ -119,7 +119,7 @@ const AdminDashboard = () => {
               className={`tab-button ${activeTab === 'student' ? 'active' : ''}`}
               onClick={() => setActiveTab('student')}
             >
-              Users
+              Students
             </button>
             <button
               className={`tab-button ${activeTab === 'teacher' ? 'active' : ''}`}
