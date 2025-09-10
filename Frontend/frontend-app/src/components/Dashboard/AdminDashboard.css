@@ -580,6 +580,7 @@
   margin: 5px 0;
   color: #666;
   font-size: 14px;
+  word-break: break-word;
 }
 
 .class-actions {
