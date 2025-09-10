@@ -27,14 +27,25 @@ const AttendanceMarking = () => {
     try {
       if (accounts.length > 0) {
         const user = accounts[0];
-        const response = await fetch(`http://localhost:8000/users/profile/${user.username}`);
+        // Use the email from Azure AD account
+        const userEmail = user.username || user.name;
+        console.log('Fetching user role for:', userEmail);
+        
+        const response = await fetch(`http://localhost:8000/users/profile/${userEmail}`);
         if (response.ok) {
           const userData = await response.json();
           setUserRole(userData.role);
+          console.log('User role fetched:', userData.role);
+        } else {
+          console.error('Failed to fetch user role:', response.status);
+          // Default to student if user not found
+          setUserRole('student');
         }
       }
     } catch (error) {
       console.error('Error fetching user role:', error);
+      // Default to student on error
+      setUserRole('student');
     }
   };
 
@@ -58,9 +69,12 @@ const AttendanceMarking = () => {
 
   const fetchStudents = async (classId) => {
     try {
-      const response = await fetch(`http://localhost:8000/users?role=student&classId=${classId}`);
+      // Fetch all users with student role
+      const response = await fetch(`http://localhost:8000/users`);
       if (response.ok) {
-        const studentData = await response.json();
+        const allUsers = await response.json();
+        // Filter only students
+        const studentData = allUsers.filter(user => user.role === 'student');
         setStudents(studentData);
         
         // Initialize attendance state
@@ -94,13 +108,18 @@ const AttendanceMarking = () => {
     if (!selectedClass) return;
     
     const classData = classes.find(c => c.id === parseInt(selectedClass));
+    const teacherInfo = accounts[0];
+    
     const qrData = {
       classId: selectedClass,
       className: classData?.name,
       timestamp: Date.now(),
-      teacherId: accounts[0]?.localAccountId
+      teacherId: teacherInfo?.username || teacherInfo?.name,
+      action: 'mark_attendance',
+      validUntil: Date.now() + (30 * 60 * 1000) // Valid for 30 minutes
     };
     
+    console.log('Generated QR Code data:', qrData);
     setQrCode(JSON.stringify(qrData));
   };
 
@@ -109,10 +128,16 @@ const AttendanceMarking = () => {
       setScanning(true);
       setScanResult('');
       
+      // Check if camera is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera not supported on this device');
+      }
+      
       if (videoRef.current) {
         const qrScanner = new QrScanner(
           videoRef.current,
           (result) => {
+            console.log('QR Code detected:', result.data);
             setScanResult(result.data);
             markAttendanceFromQR(result.data);
             stopQRScanning();
@@ -120,14 +145,17 @@ const AttendanceMarking = () => {
           {
             highlightScanRegion: true,
             highlightCodeOutline: true,
+            returnDetailedScanResult: true,
           }
         );
         
         qrScannerRef.current = qrScanner;
         await qrScanner.start();
+        console.log('QR Scanner started successfully');
       }
     } catch (error) {
       console.error('Error starting QR scanner:', error);
+      alert('Camera access denied or not available. Please allow camera access and try again.');
       setScanning(false);
     }
   };
@@ -140,22 +168,60 @@ const AttendanceMarking = () => {
     setScanning(false);
   };
 
-  const markAttendanceFromQR = (qrData) => {
+  const markAttendanceFromQR = async (qrData) => {
     try {
       const data = JSON.parse(qrData);
+      console.log('QR Data received:', data);
+      
       if (data.classId && userRole === 'student') {
-        // Student scanning QR code - mark their attendance
-        const studentId = accounts[0]?.localAccountId || 'current_user';
-        setAttendance(prev => ({
-          ...prev,
-          [studentId]: 'present'
-        }));
+        // Get current user info
+        const currentUser = accounts[0];
+        const userEmail = currentUser.username || currentUser.name;
         
-        alert('Attendance marked successfully!');
+        // Find the current user in the backend to get their ID
+        const response = await fetch(`http://localhost:8000/users/profile/${userEmail}`);
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Current user data:', userData);
+          
+          // Mark attendance for this student
+          const attendanceData = {
+            classId: parseInt(data.classId),
+            date: new Date().toISOString().split('T')[0],
+            attendance: [{
+              studentId: userData.id,
+              status: 'present',
+              timestamp: new Date().toISOString()
+            }]
+          };
+          
+          console.log('Submitting attendance:', attendanceData);
+          
+          const attendanceResponse = await fetch('http://localhost:8000/attendance', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(attendanceData)
+          });
+          
+          if (attendanceResponse.ok) {
+            alert('Attendance marked successfully!');
+            console.log('Attendance saved successfully');
+          } else {
+            const errorData = await attendanceResponse.json();
+            console.error('Failed to save attendance:', errorData);
+            alert('Failed to save attendance: ' + (errorData.message || 'Unknown error'));
+          }
+        } else {
+          alert('User not found in system!');
+        }
+      } else {
+        alert('Invalid QR code or unauthorized access!');
       }
     } catch (error) {
-      console.error('Invalid QR code:', error);
-      alert('Invalid QR code!');
+      console.error('Error processing QR code:', error);
+      alert('Invalid QR code format!');
     }
   };
 
@@ -263,7 +329,7 @@ const AttendanceMarking = () => {
                 {students.map(student => (
                   <div key={student.id} className="student-row">
                     <div className="student-info">
-                      <span className="student-name">{student.name}</span>
+                      <span className="student-name">{student.display_name || student.email}</span>
                       <span className="student-email">{student.email}</span>
                     </div>
                     <div className="attendance-options">
