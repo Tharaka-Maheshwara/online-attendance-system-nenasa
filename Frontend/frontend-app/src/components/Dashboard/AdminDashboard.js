@@ -1,7 +1,9 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  const { pathname } = useLocation();
   const [users, setUsers] = React.useState([]);
   const [selectedUser, setSelectedUser] = React.useState(null);
   const [roleModalOpen, setRoleModalOpen] = React.useState(false);
@@ -234,69 +236,70 @@ const AdminDashboard = () => {
       <div className="dashboard-grid">
         {/* ...existing dashboard code... */}
 
-        {/* User Management Section */}
-        <div className="user-management">
-          <h2>User Management</h2>
-          
-          {/* Tabs for Students/Teachers */}
-          <div className="user-tabs">
-            <button
-              className={`tab-button ${activeTab === 'student' ? 'active' : ''}`}
-              onClick={() => setActiveTab('student')}
-            >
-              Students
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'teacher' ? 'active' : ''}`}
-              onClick={() => setActiveTab('teacher')}
-            >
-              Teachers
-            </button>
-          </div>
-          
-          {/* Search Bar */}
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder={`Search ${activeTab === 'student' ? 'users' : 'teachers'} by email...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
-          </div>
+        {(pathname === '/user' || pathname === '/dashboard' || pathname === '/') &&
+          <div className="user-management">
+            <h2>User Management</h2>
 
-          {loading ? (
-            <div className="loading">Loading users...</div>
-          ) : (
-            <table className="user-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.map(user => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.email}</td>
-                    <td>{user.role}</td>
-                    <td>
-                      <button 
-                        onClick={() => openRoleModal(user)}
-                        disabled={updating}
-                      >
-                        Edit Role
-                      </button>
-                    </td>
+            {/* Tabs for Students/Teachers */}
+            <div className="user-tabs">
+              <button
+                className={`tab-button ${activeTab === 'student' ? 'active' : ''}`}
+                onClick={() => setActiveTab('student')}
+              >
+                Students
+              </button>
+              <button
+                className={`tab-button ${activeTab === 'teacher' ? 'active' : ''}`}
+                onClick={() => setActiveTab('teacher')}
+              >
+                Teachers
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <div className="search-container">
+              <input
+                type="text"
+                placeholder={`Search ${activeTab === 'student' ? 'users' : 'teachers'} by email...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
+            {loading ? (
+              <div className="loading">Loading users...</div>
+            ) : (
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                </thead>
+                <tbody>
+                  {filteredUsers.map(user => (
+                    <tr key={user.id}>
+                      <td>{user.id}</td>
+                      <td>{user.email}</td>
+                      <td>{user.role}</td>
+                      <td>
+                        <button
+                          onClick={() => openRoleModal(user)}
+                          disabled={updating}
+                        >
+                          Edit Role
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        }
 
         {/* Role Edit Modal */}
         {roleModalOpen && (
@@ -304,8 +307,8 @@ const AdminDashboard = () => {
             <div className="modal">
               <h3>Edit User Role</h3>
               <p>Email: {selectedUser.email}</p>
-              <select 
-                value={newRole} 
+              <select
+                value={newRole}
                 onChange={handleRoleChange}
                 disabled={updating}
               >
@@ -314,13 +317,13 @@ const AdminDashboard = () => {
                 {/* Admin option removed - admins should not be assignable from this interface */}
               </select>
               <div className="modal-actions">
-                <button 
+                <button
                   onClick={saveRole}
                   disabled={updating}
                 >
                   {updating ? 'Saving...' : 'Save'}
                 </button>
-                <button 
+                <button
                   onClick={closeRoleModal}
                   disabled={updating}
                 >
@@ -330,55 +333,56 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-        
-        {/* Class Management Section */}
-        <div className="class-management">
-          <div className="section-header">
-            <h2>Class Management</h2>
-            <button 
-              className="add-button"
-              onClick={() => openClassModal()}
-            >
-              Add New Class
-            </button>
-          </div>
 
-          {classLoading ? (
-            <div className="loading">Loading classes...</div>
-          ) : (
-            <div className="class-grid">
-              {classes.map(cls => (
-                <div key={cls.id} className="class-card">
-                  <div className="class-info">
-                    <h3>{cls.name}</h3>
-                    <p><strong>Subject:</strong> {cls.subject || 'Not specified'}</p>
-                    <p><strong>Batch:</strong> {cls.batch || 'Not specified'}</p>
-                    <p><strong>Teacher:</strong> {getTeacherName(cls.teacherId)}</p>
-                  </div>
-                  <div className="class-actions">
-                    <button 
-                      className="edit-btn"
-                      onClick={() => openClassModal(cls)}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => deleteClass(cls.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-              {classes.length === 0 && (
-                <div className="no-classes">
-                  <p>No classes found. Click "Add New Class" to create one.</p>
-                </div>
-              )}
+        {(pathname === '/classes' || pathname === '/dashboard' || pathname === '/') &&
+          <div className="class-management">
+            <div className="section-header">
+              <h2>Class Management</h2>
+              <button
+                className="add-button"
+                onClick={() => openClassModal()}
+              >
+                Add New Class
+              </button>
             </div>
-          )}
-        </div>
+
+            {classLoading ? (
+              <div className="loading">Loading classes...</div>
+            ) : (
+              <div className="class-grid">
+                {classes.map(cls => (
+                  <div key={cls.id} className="class-card">
+                    <div className="class-info">
+                      <h3>{cls.name}</h3>
+                      <p><strong>Subject:</strong> {cls.subject || 'Not specified'}</p>
+                      <p><strong>Batch:</strong> {cls.batch || 'Not specified'}</p>
+                      <p><strong>Teacher:</strong> {getTeacherName(cls.teacherId)}</p>
+                    </div>
+                    <div className="class-actions">
+                      <button
+                        className="edit-btn"
+                        onClick={() => openClassModal(cls)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => deleteClass(cls.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {classes.length === 0 && (
+                  <div className="no-classes">
+                    <p>No classes found. Click "Add New Class" to create one.</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        }
 
         {/* Class Edit/Create Modal */}
         {classModalOpen && (
@@ -434,13 +438,13 @@ const AdminDashboard = () => {
                   </select>
                 </div>
                 <div className="modal-actions">
-                  <button 
+                  <button
                     type="submit"
                     disabled={updating}
                   >
                     {updating ? 'Saving...' : selectedClass ? 'Update Class' : 'Create Class'}
                   </button>
-                  <button 
+                  <button
                     type="button"
                     onClick={closeClassModal}
                     disabled={updating}
