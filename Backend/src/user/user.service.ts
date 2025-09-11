@@ -8,6 +8,7 @@ export interface AzureUserDto {
   email: string;
   displayName: string;
   azureId: string;
+  register_number?: string;
 }
 
 @Injectable()
@@ -74,6 +75,7 @@ export class UserService {
 				email: azureUserDto.email,
 				display_name: azureUserDto.displayName,
 				azureId: azureUserDto.azureId,
+				register_number: azureUserDto.register_number,
 				// Set default role if creating new user
 				role: existingUser?.role || 'student',
 			};

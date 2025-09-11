@@ -33,6 +33,10 @@ export class AuthService {
     };
   }
 
+  async createOrUpdateUserFromAzure(azureUserDto: any): Promise<User> {
+    return this.userService.createOrUpdateFromAzure(azureUserDto);
+  }
+
   async validateAndProvisionAzureUser(accessToken: string): Promise<User | null> {
     try {
       // Note: In a production environment, you MUST validate the token signature
@@ -54,10 +58,21 @@ export class AuthService {
         return null;
       }
 
+      // Extract register_number from user principal name (UPN)
+      const userPrincipalName = decodedToken.upn || decodedToken.preferred_username || email;
+      let registerNumber = '';
+      
+      if (userPrincipalName) {
+        // Extract everything before '@' as register_number
+        registerNumber = userPrincipalName.split('@')[0];
+        this.logger.log(`Extracted register_number: ${registerNumber} from UPN: ${userPrincipalName}`);
+      }
+
       const userDto = {
         azureId: decodedToken.oid,
         email: email,
         displayName: decodedToken.name,
+        register_number: registerNumber,
       };
 
       const user = await this.userService.createOrUpdateFromAzure(userDto);

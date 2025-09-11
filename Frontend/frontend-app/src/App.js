@@ -7,6 +7,9 @@ import LoginButton from "./LoginButton";
 import Dashboard from "./components/Dashboard/Dashboard";
 import AttendanceMarking from "./AttendanceMarking";
 import Navbar from "./components/Navbar/Navbar";
+import UserManagement from "./components/UserManagement/UserManagement";
+import NotificationTest from "./components/Notification/NotificationTest";
+import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
 const msalInstance = new PublicClientApplication(msalConfig);
@@ -14,6 +17,9 @@ const msalInstance = new PublicClientApplication(msalConfig);
 function AppContent() {
   const { accounts } = useMsal();
   const isAuthenticated = accounts.length > 0;
+
+  // Auto-provision user when they login
+  useAutoUserProvision();
 
   if (!isAuthenticated) {
     return (
@@ -35,7 +41,8 @@ function AppContent() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/attendance" element={<AttendanceMarking />} />
-            <Route path="/user" element={<Dashboard />} />
+            <Route path="/users" element={<UserManagement />} />
+            <Route path="/notifications" element={<NotificationTest />} />
             <Route path="/classes" element={<Dashboard />} />
             <Route path="/reports" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />

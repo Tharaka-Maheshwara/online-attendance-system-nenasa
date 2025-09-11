@@ -68,6 +68,7 @@ export class AzureUserSyncService {
             email: user.mail || user.userPrincipalName,
             displayName: user.displayName,
             azureId: user.id,
+            register_number: user.userPrincipalName, // Azure user principal name as register number
           });
 
           syncedCount++;

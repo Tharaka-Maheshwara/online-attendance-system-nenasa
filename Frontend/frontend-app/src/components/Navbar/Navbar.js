@@ -6,11 +6,24 @@ import './Navbar.css';
 const Navbar = () => {
   const { accounts, instance } = useMsal();
   const [userRole, setUserRole] = useState('student');
+  const [currentUser, setCurrentUser] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
     fetchUserRole();
+    loadCurrentUser();
   }, [accounts]);
+
+  const loadCurrentUser = () => {
+    try {
+      const storedUser = sessionStorage.getItem('currentUser');
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error('Error loading current user:', error);
+    }
+  };
 
   const fetchUserRole = async () => {
     try {
@@ -20,6 +33,14 @@ const Navbar = () => {
         if (response.ok) {
           const userData = await response.json();
           setUserRole(userData.role);
+          // Update current user with latest role
+          const storedUser = sessionStorage.getItem('currentUser');
+          if (storedUser) {
+            const userObj = JSON.parse(storedUser);
+            userObj.role = userData.role;
+            sessionStorage.setItem('currentUser', JSON.stringify(userObj));
+            setCurrentUser(userObj);
+          }
         }
       }
     } catch (error) {
@@ -75,13 +96,28 @@ const Navbar = () => {
 
             {userRole === 'admin' && (
               <>
-                <Link to="/classes" className="nav-link">
+                <Link 
+                  to="/classes" 
+                  className={`nav-link ${isActive('/classes') ? 'active' : ''}`}
+                >
                   📚 Classes
                 </Link>
-                <Link to="/user" className="nav-link">
-                  👥 User
+                <Link 
+                  to="/users" 
+                  className={`nav-link ${isActive('/users') ? 'active' : ''}`}
+                >
+                  👥 Users
                 </Link>
-                <Link to="/reports" className="nav-link">
+                <Link 
+                  to="/notifications" 
+                  className={`nav-link ${isActive('/notifications') ? 'active' : ''}`}
+                >
+                  🔔 Notifications
+                </Link>
+                <Link 
+                  to="/reports" 
+                  className={`nav-link ${isActive('/reports') ? 'active' : ''}`}
+                >
                   📊 Reports
                 </Link>
               </>
@@ -91,6 +127,9 @@ const Navbar = () => {
           <div className="navbar-user">
             <div className="user-info">
               <span className="user-name">{accounts[0]?.name}</span>
+              {currentUser?.registerNumber && (
+                <span className="user-register">#{currentUser.registerNumber}</span>
+              )}
               <span className="user-role">{userRole.toUpperCase()}</span>
             </div>
             <button onClick={handleLogout} className="logout-btn">

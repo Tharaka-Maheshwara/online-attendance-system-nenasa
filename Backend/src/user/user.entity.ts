@@ -27,4 +27,13 @@ export class User {
 
   @Column({ nullable: true })
   contactNumber: string;
+
+  @Column({ nullable: true, unique: true })
+  register_number: string;
+
+  @Column({ nullable: true })
+  parentEmail: string;
+
+  @Column({ nullable: true })
+  parentName: string;
 }
