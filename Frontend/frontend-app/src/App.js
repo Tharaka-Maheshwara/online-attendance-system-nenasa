@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar/Navbar";
 import UserManagement from "./components/UserManagement/UserManagement";
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
+import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -45,6 +46,7 @@ function AppContent() {
             <Route path="/users" element={<UserManagement />} />
             <Route path="/notifications" element={<NotificationTest />} />
             <Route path="/role-assignment" element={<RoleAssignment />} />
+            <Route path="/register-lookup" element={<RegisterNumberLookup />} />
             <Route path="/classes" element={<Dashboard />} />
             <Route path="/reports" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />

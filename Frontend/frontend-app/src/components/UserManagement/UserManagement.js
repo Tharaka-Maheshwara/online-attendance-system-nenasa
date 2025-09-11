@@ -14,10 +14,65 @@ const UserManagement = () => {
   });
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState('');
 
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Auto-fill functionality for register number lookup
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (newUser.register_number && newUser.register_number.length > 2) {
+        lookupUserByRegisterNumber(newUser.register_number);
+      } else {
+        setLookupMessage('');
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [newUser.register_number]);
+
+  const lookupUserByRegisterNumber = async (registerNumber) => {
+    if (!registerNumber.trim()) return;
+
+    setLookupLoading(true);
+    setLookupMessage('');
+
+    try {
+      const response = await fetch(`http://localhost:8000/users/by-register/${registerNumber}`);
+      
+      if (response.ok) {
+        const responseData = await response.json();
+        
+        // Handle the wrapped response format { success: true, user: {...} }
+        if (responseData.success && responseData.user) {
+          const userData = responseData.user;
+          
+          // Auto-fill name and email fields
+          setNewUser(prev => ({
+            ...prev,
+            display_name: userData.display_name || '',
+            email: userData.email || ''
+          }));
+          setLookupMessage(`✅ Found: ${userData.display_name} (${userData.email})`);
+        } else {
+          setLookupMessage('⚠️ Unexpected response format');
+        }
+      } else if (response.status === 404) {
+        setLookupMessage('ℹ️ Register number not found - creating new user');
+        // Don't clear existing data, user might be creating a new record
+      } else {
+        setLookupMessage('⚠️ Error looking up register number');
+      }
+    } catch (error) {
+      console.error('Error looking up user:', error);
+      setLookupMessage('⚠️ Error connecting to server');
+    } finally {
+      setLookupLoading(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -150,13 +205,21 @@ const UserManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Register Number:</label>
-                <input
-                  type="text"
-                  name="register_number"
-                  value={newUser.register_number}
-                  onChange={handleInputChange}
-                  placeholder="e.g., student001@school.edu"
-                />
+                <div className="register-input-container">
+                  <input
+                    type="text"
+                    name="register_number"
+                    value={newUser.register_number}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 131584"
+                  />
+                  {lookupLoading && <span className="lookup-loading">🔍 Looking up...</span>}
+                </div>
+                {lookupMessage && (
+                  <div className={`lookup-message ${lookupMessage.includes('✅') ? 'success' : lookupMessage.includes('ℹ️') ? 'info' : 'warning'}`}>
+                    {lookupMessage}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label>Role:</label>

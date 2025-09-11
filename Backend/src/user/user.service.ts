@@ -58,6 +58,10 @@ export class UserService {
 		return this.userRepository.findOne({ where: { email } });
 	}
 
+	async findByRegisterNumber(registerNumber: string): Promise<User | null> {
+		return this.userRepository.findOne({ where: { register_number: registerNumber } });
+	}
+
 	async findByAzureId(azureId: string): Promise<User | null> {
 		return this.userRepository.findOne({ where: { azureId } });
 	}

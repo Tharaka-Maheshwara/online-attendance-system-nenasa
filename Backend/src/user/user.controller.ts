@@ -50,6 +50,42 @@ export class UserController {
 			);
 		}
 	}
+
+	// Get user information by register_number for auto-fill functionality
+	@Get('by-register/:registerNumber')
+	async getUserByRegisterNumber(@Param('registerNumber') registerNumber: string) {
+		try {
+			const user = await this.userService.findByRegisterNumber(registerNumber);
+			
+			if (!user) {
+				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			}
+			
+			return {
+				success: true,
+				user: {
+					id: user.id,
+					email: user.email,
+					display_name: user.display_name,
+					register_number: user.register_number,
+					role: user.role,
+					contactNumber: user.contactNumber,
+					parentName: user.parentName,
+					parentEmail: user.parentEmail,
+				}
+			};
+		} catch (error) {
+			throw new HttpException(
+				{
+					success: false,
+					message: 'Failed to fetch user by register number',
+					error: error.message
+				},
+				HttpStatus.INTERNAL_SERVER_ERROR
+			);
+		}
+	}
+
   // Azure AD login: auto-create user with role 'student' if not exists
   @Post('azure-login')
   async azureLogin(@Body() body: { email: string; displayName?: string; azureId?: string }): Promise<User> {

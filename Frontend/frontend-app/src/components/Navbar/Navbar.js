@@ -121,6 +121,12 @@ const Navbar = () => {
                   👤 Role Assignment
                 </Link>
                 <Link 
+                  to="/register-lookup" 
+                  className={`nav-link ${isActive('/register-lookup') ? 'active' : ''}`}
+                >
+                  🔍 Register Lookup
+                </Link>
+                <Link 
                   to="/reports" 
                   className={`nav-link ${isActive('/reports') ? 'active' : ''}`}
                 >
