@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { AzureUserSyncService } from './azure-user-sync.service';
@@ -6,6 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 export class UserController {
+	private readonly logger = new Logger(UserController.name);
+
 	constructor(
 		private readonly userService: UserService,
 		private readonly azureUserSyncService: AzureUserSyncService,
@@ -139,6 +141,117 @@ export class UserController {
 					error: error.message
 				},
 				HttpStatus.NOT_FOUND
+			);
+		}
+	}
+
+	@Post(':id/assign-role')
+	async assignRole(@Param('id') id: number, @Body() body: { role: string }) {
+		try {
+			const user = await this.userService.findOne(Number(id));
+			
+			if (!user) {
+				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			}
+
+			// Update user role
+			user.role = body.role as any;
+			const updatedUser = await this.userService.update(Number(id), { role: body.role as any });
+
+			if (!updatedUser) {
+				throw new HttpException('Failed to update user', HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			// Create a request to add to role-specific table
+			const response = await fetch('http://localhost:8000/users/handle-role-assignment', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					userId: updatedUser.id,
+					role: body.role,
+				}),
+			});
+
+			if (!response.ok) {
+				this.logger.warn(`Failed to add user to role table: ${response.statusText}`);
+			}
+
+			return {
+				success: true,
+				message: `User role updated to ${body.role}`,
+				user: updatedUser,
+			};
+		} catch (error) {
+			throw new HttpException(
+				{
+					success: false,
+					message: 'Failed to assign role',
+					error: error.message
+				},
+				HttpStatus.INTERNAL_SERVER_ERROR
+			);
+		}
+	}
+
+	@Post('handle-role-assignment')
+	async handleRoleAssignment(@Body() body: { userId: number; role: string }) {
+		try {
+			const user = await this.userService.findOne(body.userId);
+			
+			if (!user) {
+				throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+			}
+
+			if (body.role === 'student') {
+				// Call student service to create student record
+				const response = await fetch('http://localhost:8000/students', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						student_id: user.register_number || `STU-${user.id}`,
+						user_id: user.id,
+						guardian_name: user.parentName,
+						guardian_email: user.parentEmail,
+						is_active: true,
+					}),
+				});
+
+				if (response.ok) {
+					return { success: true, message: 'Student record created' };
+				}
+			} else if (body.role === 'teacher') {
+				// Call teacher service to create teacher record
+				const response = await fetch('http://localhost:8000/teachers', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						teacher_id: user.register_number || `TEA-${user.id}`,
+						user_id: user.id,
+						phone_number: user.contactNumber,
+						is_active: true,
+					}),
+				});
+
+				if (response.ok) {
+					return { success: true, message: 'Teacher record created' };
+				}
+			}
+
+			return { success: false, message: 'Role assignment failed' };
+		} catch (error) {
+			throw new HttpException(
+				{
+					success: false,
+					message: 'Failed to handle role assignment',
+					error: error.message
+				},
+				HttpStatus.INTERNAL_SERVER_ERROR
 			);
 		}
 	}

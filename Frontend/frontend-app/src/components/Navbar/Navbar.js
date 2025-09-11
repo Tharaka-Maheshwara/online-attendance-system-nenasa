@@ -115,6 +115,12 @@ const Navbar = () => {
                   🔔 Notifications
                 </Link>
                 <Link 
+                  to="/role-assignment" 
+                  className={`nav-link ${isActive('/role-assignment') ? 'active' : ''}`}
+                >
+                  👤 Role Assignment
+                </Link>
+                <Link 
                   to="/reports" 
                   className={`nav-link ${isActive('/reports') ? 'active' : ''}`}
                 >

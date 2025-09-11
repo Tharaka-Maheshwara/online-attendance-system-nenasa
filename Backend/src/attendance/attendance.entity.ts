@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 export type AttendanceStatus = 'present' | 'absent' | 'late';
 
@@ -16,7 +22,11 @@ export class Attendance {
   @Column({ type: 'date' })
   date: string;
 
-  @Column({ type: 'enum', enum: ['present', 'absent', 'late'], default: 'absent' })
+  @Column({
+    type: 'enum',
+    enum: ['present', 'absent', 'late'],
+    default: 'absent',
+  })
   status: AttendanceStatus;
 
   @Column({ default: false })
