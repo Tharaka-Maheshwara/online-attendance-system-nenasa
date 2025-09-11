@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useMsal } from '@azure/msal-react';
-import './Navbar.css';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useMsal } from "@azure/msal-react";
+import "./Navbar.css";
 
 const Navbar = () => {
   const { accounts, instance } = useMsal();
-  const [userRole, setUserRole] = useState('student');
+  const [userRole, setUserRole] = useState("student");
   const [currentUser, setCurrentUser] = useState(null);
   const location = useLocation();
 
@@ -16,12 +16,12 @@ const Navbar = () => {
 
   const loadCurrentUser = () => {
     try {
-      const storedUser = sessionStorage.getItem('currentUser');
+      const storedUser = sessionStorage.getItem("currentUser");
       if (storedUser) {
         setCurrentUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error('Error loading current user:', error);
+      console.error("Error loading current user:", error);
     }
   };
 
@@ -29,22 +29,24 @@ const Navbar = () => {
     try {
       if (accounts.length > 0) {
         const user = accounts[0];
-        const response = await fetch(`http://localhost:8000/users/profile/${user.username}`);
+        const response = await fetch(
+          `http://localhost:8000/users/profile/${user.username}`
+        );
         if (response.ok) {
           const userData = await response.json();
           setUserRole(userData.role);
           // Update current user with latest role
-          const storedUser = sessionStorage.getItem('currentUser');
+          const storedUser = sessionStorage.getItem("currentUser");
           if (storedUser) {
             const userObj = JSON.parse(storedUser);
             userObj.role = userData.role;
-            sessionStorage.setItem('currentUser', JSON.stringify(userObj));
+            sessionStorage.setItem("currentUser", JSON.stringify(userObj));
             setCurrentUser(userObj);
           }
         }
       }
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error("Error fetching user role:", error);
     }
   };
 
@@ -52,7 +54,7 @@ const Navbar = () => {
     try {
       await instance.logoutPopup();
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -69,66 +71,62 @@ const Navbar = () => {
 
         <div className="navbar-menu">
           <div className="navbar-nav">
-            <Link 
-              to="/dashboard" 
-              className={`nav-link ${isActive('/') || isActive('/dashboard') ? 'active' : ''}`}
+            <Link
+              to="/dashboard"
+              className={`nav-link ${
+                isActive("/") || isActive("/dashboard") ? "active" : ""
+              }`}
             >
               🏠 Dashboard
             </Link>
-            
-            {(userRole === 'teacher' || userRole === 'admin') && (
-              <Link 
-                to="/attendance" 
-                className={`nav-link ${isActive('/attendance') ? 'active' : ''}`}
+
+            {(userRole === "teacher" || userRole === "admin") && (
+              <Link
+                to="/attendance"
+                className={`nav-link ${
+                  isActive("/attendance") ? "active" : ""
+                }`}
               >
                 ✓ Mark Attendance
               </Link>
             )}
 
-            {userRole === 'student' && (
-              <Link 
-                to="/attendance" 
-                className={`nav-link ${isActive('/attendance') ? 'active' : ''}`}
+            {userRole === "student" && (
+              <Link
+                to="/attendance"
+                className={`nav-link ${
+                  isActive("/attendance") ? "active" : ""
+                }`}
               >
                 📱 Scan QR
               </Link>
             )}
 
-            {userRole === 'admin' && (
+            {userRole === "admin" && (
               <>
-                <Link 
-                  to="/classes" 
-                  className={`nav-link ${isActive('/classes') ? 'active' : ''}`}
+                <Link
+                  to="/classes"
+                  className={`nav-link ${isActive("/classes") ? "active" : ""}`}
                 >
                   📚 Classes
                 </Link>
-                <Link 
-                  to="/users" 
-                  className={`nav-link ${isActive('/users') ? 'active' : ''}`}
+                <Link
+                  to="/users"
+                  className={`nav-link ${isActive("/users") ? "active" : ""}`}
                 >
                   👥 Users
                 </Link>
-                <Link 
-                  to="/notifications" 
-                  className={`nav-link ${isActive('/notifications') ? 'active' : ''}`}
+                <Link
+                  to="/notifications"
+                  className={`nav-link ${
+                    isActive("/notifications") ? "active" : ""
+                  }`}
                 >
                   🔔 Notifications
                 </Link>
-                <Link 
-                  to="/role-assignment" 
-                  className={`nav-link ${isActive('/role-assignment') ? 'active' : ''}`}
-                >
-                  👤 Role Assignment
-                </Link>
-                <Link 
-                  to="/register-lookup" 
-                  className={`nav-link ${isActive('/register-lookup') ? 'active' : ''}`}
-                >
-                  🔍 Register Lookup
-                </Link>
-                <Link 
-                  to="/reports" 
-                  className={`nav-link ${isActive('/reports') ? 'active' : ''}`}
+                <Link
+                  to="/reports"
+                  className={`nav-link ${isActive("/reports") ? "active" : ""}`}
                 >
                   📊 Reports
                 </Link>
@@ -140,7 +138,9 @@ const Navbar = () => {
             <div className="user-info">
               <span className="user-name">{accounts[0]?.name}</span>
               {currentUser?.registerNumber && (
-                <span className="user-register">#{currentUser.registerNumber}</span>
+                <span className="user-register">
+                  #{currentUser.registerNumber}
+                </span>
               )}
               <span className="user-role">{userRole.toUpperCase()}</span>
             </div>
