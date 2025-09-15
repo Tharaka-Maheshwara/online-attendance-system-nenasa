@@ -42,16 +42,15 @@ export class TeacherService {
       }
 
       const teacherData = {
-        teacher_id: user.register_number || `TEA-${user.id}`,
         user_id: user.id,
-        phone_number: user.contactNumber,
-        is_active: true,
+        subject_1: 'Unknown', // Default subject, should be set properly in real use
+        phone_number: user.contactNumber
       };
 
       const teacher = this.teacherRepository.create(teacherData);
       const savedTeacher = await this.teacherRepository.save(teacher);
       
-      this.logger.log(`Teacher created automatically for user: ${user.email} with teacher_id: ${teacherData.teacher_id}`);
+      this.logger.log(`Teacher created automatically for user: ${user.email}`);
       return savedTeacher;
     } catch (error) {
       this.logger.error(`Failed to create teacher from user: ${user.email}`, error);
@@ -61,8 +60,7 @@ export class TeacherService {
 
   async findAll(): Promise<Teacher[]> {
     return this.teacherRepository.find({
-      relations: ['user'],
-      order: { createdAt: 'DESC' }
+      relations: ['user']
     });
   }
 
@@ -87,10 +85,9 @@ export class TeacherService {
   }
 
   async findByTeacherId(teacherId: string): Promise<Teacher | null> {
-    return this.teacherRepository.findOne({
-      where: { teacher_id: teacherId },
-      relations: ['user']
-    });
+    // teacher_id field removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return null;
   }
 
   async update(id: number, updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
@@ -110,18 +107,14 @@ export class TeacherService {
   }
 
   async getTeachersByDepartment(department: string): Promise<Teacher[]> {
-    return this.teacherRepository.find({
-      where: { department },
-      relations: ['user'],
-      order: { teacher_id: 'ASC' }
-    });
+    // department and teacher_id fields removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return [];
   }
 
   async getActiveTeachers(): Promise<Teacher[]> {
-    return this.teacherRepository.find({
-      where: { is_active: true },
-      relations: ['user'],
-      order: { teacher_id: 'ASC' }
-    });
+    // is_active and teacher_id fields removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return [];
   }
 }

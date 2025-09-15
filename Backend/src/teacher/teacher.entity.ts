@@ -6,8 +6,6 @@ export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  teacher_id: string; // This will be the register_number from User
 
   @Column()
   user_id: number;
@@ -16,36 +14,27 @@ export class Teacher {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ nullable: true })
-  employee_id: string;
+
+
+  @Column()
+  subject_1: string;
 
   @Column({ nullable: true })
-  department: string;
+  subject_2: string;
 
   @Column({ nullable: true })
-  subject_specialization: string;
+  subject_3: string;
 
   @Column({ nullable: true })
-  qualification: string;
+  subject_4: string;
 
-  @Column({ nullable: true })
-  experience_years: number;
 
-  @Column({ nullable: true })
-  joining_date: Date;
+
 
   @Column({ nullable: true })
   phone_number: string;
 
-  @Column({ nullable: true })
-  emergency_contact: string;
 
-  @Column({ default: true })
-  is_active: boolean;
 
-  @CreateDateColumn()
-  createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

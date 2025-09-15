@@ -62,8 +62,7 @@ export class StudentService {
 
   async findAll(): Promise<Student[]> {
     return this.studentRepository.find({
-      relations: ['user'],
-      order: { createdAt: 'DESC' }
+      relations: ['user']
     });
   }
 
@@ -88,10 +87,9 @@ export class StudentService {
   }
 
   async findByStudentId(studentId: string): Promise<Student | null> {
-    return this.studentRepository.findOne({
-      where: { student_id: studentId },
-      relations: ['user']
-    });
+    // student_id field removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return null;
   }
 
   async update(id: number, updateStudentDto: UpdateStudentDto): Promise<Student> {
@@ -111,18 +109,14 @@ export class StudentService {
   }
 
   async getStudentsByGrade(grade: string): Promise<Student[]> {
-    return this.studentRepository.find({
-      where: { grade },
-      relations: ['user'],
-      order: { student_id: 'ASC' }
-    });
+    // grade and student_id fields removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return [];
   }
 
   async getActiveStudents(): Promise<Student[]> {
-    return this.studentRepository.find({
-      where: { is_active: true },
-      relations: ['user'],
-      order: { student_id: 'ASC' }
-    });
+    // is_active and student_id fields removed, so this method is now invalid
+    // Consider removing this method or updating logic if needed
+    return [];
   }
 }
