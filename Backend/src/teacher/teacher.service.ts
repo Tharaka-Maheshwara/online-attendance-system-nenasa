@@ -33,7 +33,7 @@ export class TeacherService {
     try {
       // Check if teacher already exists
       const existingTeacher = await this.teacherRepository.findOne({
-        where: { user_id: user.id }
+        where: { user_id: user.id },
       });
 
       if (existingTeacher) {
@@ -44,30 +44,33 @@ export class TeacherService {
       const teacherData = {
         user_id: user.id,
         subject_1: 'Unknown', // Default subject, should be set properly in real use
-        phone_number: user.contactNumber
+        phone_number: user.contactNumber,
       };
 
       const teacher = this.teacherRepository.create(teacherData);
       const savedTeacher = await this.teacherRepository.save(teacher);
-      
+
       this.logger.log(`Teacher created automatically for user: ${user.email}`);
       return savedTeacher;
     } catch (error) {
-      this.logger.error(`Failed to create teacher from user: ${user.email}`, error);
+      this.logger.error(
+        `Failed to create teacher from user: ${user.email}`,
+        error,
+      );
       throw error;
     }
   }
 
   async findAll(): Promise<Teacher[]> {
     return this.teacherRepository.find({
-      relations: ['user']
+      relations: ['user'],
     });
   }
 
   async findOne(id: number): Promise<Teacher> {
     const teacher = await this.teacherRepository.findOne({
       where: { id },
-      relations: ['user']
+      relations: ['user'],
     });
 
     if (!teacher) {
@@ -80,7 +83,7 @@ export class TeacherService {
   async findByUserId(userId: number): Promise<Teacher | null> {
     return this.teacherRepository.findOne({
       where: { user_id: userId },
-      relations: ['user']
+      relations: ['user'],
     });
   }
 
@@ -90,12 +93,15 @@ export class TeacherService {
     return null;
   }
 
-  async update(id: number, updateTeacherDto: UpdateTeacherDto): Promise<Teacher> {
+  async update(
+    id: number,
+    updateTeacherDto: UpdateTeacherDto,
+  ): Promise<Teacher> {
     const teacher = await this.findOne(id);
-    
+
     Object.assign(teacher, updateTeacherDto);
     const updatedTeacher = await this.teacherRepository.save(teacher);
-    
+
     this.logger.log(`Teacher updated with ID: ${id}`);
     return updatedTeacher;
   }

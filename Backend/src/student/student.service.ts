@@ -33,7 +33,7 @@ export class StudentService {
     try {
       // Check if student already exists
       const existingStudent = await this.studentRepository.findOne({
-        where: { user_id: user.id }
+        where: { user_id: user.id },
       });
 
       if (existingStudent) {
@@ -51,25 +51,30 @@ export class StudentService {
 
       const student = this.studentRepository.create(studentData);
       const savedStudent = await this.studentRepository.save(student);
-      
-      this.logger.log(`Student created automatically for user: ${user.email} with student_id: ${studentData.student_id}`);
+
+      this.logger.log(
+        `Student created automatically for user: ${user.email} with student_id: ${studentData.student_id}`,
+      );
       return savedStudent;
     } catch (error) {
-      this.logger.error(`Failed to create student from user: ${user.email}`, error);
+      this.logger.error(
+        `Failed to create student from user: ${user.email}`,
+        error,
+      );
       throw error;
     }
   }
 
   async findAll(): Promise<Student[]> {
     return this.studentRepository.find({
-      relations: ['user']
+      relations: ['user'],
     });
   }
 
   async findOne(id: number): Promise<Student> {
     const student = await this.studentRepository.findOne({
       where: { id },
-      relations: ['user', 'attendances']
+      relations: ['user', 'attendances'],
     });
 
     if (!student) {
@@ -82,7 +87,7 @@ export class StudentService {
   async findByUserId(userId: number): Promise<Student | null> {
     return this.studentRepository.findOne({
       where: { user_id: userId },
-      relations: ['user']
+      relations: ['user'],
     });
   }
 
@@ -92,12 +97,15 @@ export class StudentService {
     return null;
   }
 
-  async update(id: number, updateStudentDto: UpdateStudentDto): Promise<Student> {
+  async update(
+    id: number,
+    updateStudentDto: UpdateStudentDto,
+  ): Promise<Student> {
     const student = await this.findOne(id);
-    
+
     Object.assign(student, updateStudentDto);
     const updatedStudent = await this.studentRepository.save(student);
-    
+
     this.logger.log(`Student updated with ID: ${id}`);
     return updatedStudent;
   }
