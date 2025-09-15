@@ -229,9 +229,8 @@ const UserManagement = () => {
                   onChange={handleInputChange}
                   required
                 >
-                  <option value="student">Student</option>
-                  <option value="teacher">Teacher</option>
-                  <option value="admin">Admin</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
                 </select>
               </div>
               <div className="form-group">
