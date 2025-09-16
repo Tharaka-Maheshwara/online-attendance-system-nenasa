@@ -14,6 +14,29 @@ import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumb
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
+// Helper to get current user role from sessionStorage
+function getCurrentUserRole() {
+  try {
+    const user = sessionStorage.getItem("currentUser");
+    if (user) {
+      const parsed = JSON.parse(user);
+      return parsed.role;
+    }
+  } catch (e) {}
+  return null;
+}
+
+// PrivateRoute component for role-based access
+function PrivateRoute({ element, allowedRoles }) {
+  const role = getCurrentUserRole();
+  if (!role) return <Navigate to="/" replace />;
+  if (allowedRoles.includes(role)) {
+    return element;
+  }
+  // If not allowed, redirect to dashboard
+  return <Navigate to="/dashboard" replace />;
+}
+
 const msalInstance = new PublicClientApplication(msalConfig);
 
 function AppContent() {
@@ -40,15 +63,46 @@ function AppContent() {
         <Navbar />
         <main style={{ padding: '0', backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
           <Routes>
+            {/* All roles can access dashboard */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/attendance" element={<AttendanceMarking />} />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/notifications" element={<NotificationTest />} />
-            <Route path="/role-assignment" element={<RoleAssignment />} />
-            <Route path="/register-lookup" element={<RegisterNumberLookup />} />
-            <Route path="/classes" element={<Dashboard />} />
-            <Route path="/reports" element={<Dashboard />} />
+
+            {/* Attendance: teacher, admin, student (different UI) */}
+            <Route path="/attendance" element={
+              <PrivateRoute allowedRoles={["teacher", "admin", "student"]} element={<AttendanceMarking />} />
+            } />
+
+            {/* User management: admin only */}
+            <Route path="/users" element={
+              <PrivateRoute allowedRoles={["admin"]} element={<UserManagement />} />
+            } />
+
+            {/* Notifications: admin only */}
+            <Route path="/notifications" element={
+              <PrivateRoute allowedRoles={["admin"]} element={<NotificationTest />} />
+            } />
+
+            {/* Role assignment: admin only */}
+            <Route path="/role-assignment" element={
+              <PrivateRoute allowedRoles={["admin"]} element={<RoleAssignment />} />
+            } />
+
+            {/* Register number lookup: all roles */}
+            <Route path="/register-lookup" element={
+              <PrivateRoute allowedRoles={["admin", "teacher", "student"]} element={<RegisterNumberLookup />} />
+            } />
+
+            {/* Classes: admin only */}
+            <Route path="/classes" element={
+              <PrivateRoute allowedRoles={["admin"]} element={<Dashboard />} />
+            } />
+
+            {/* Reports: admin only */}
+            <Route path="/reports" element={
+              <PrivateRoute allowedRoles={["admin"]} element={<Dashboard />} />
+            } />
+
+            {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
