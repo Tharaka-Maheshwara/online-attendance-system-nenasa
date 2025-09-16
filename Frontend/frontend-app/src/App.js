@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { MsalProvider, useMsal } from "@azure/msal-react";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { msalConfig } from "./authConfig";
@@ -61,46 +66,94 @@ function AppContent() {
     <Router>
       <div className="App">
         <Navbar />
-        <main style={{ padding: '0', backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
+        <main
+          style={{
+            padding: "0",
+            backgroundColor: "#f5f7fa",
+            minHeight: "100vh",
+          }}
+        >
           <Routes>
             {/* All roles can access dashboard */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* Attendance: teacher, admin, student (different UI) */}
-            <Route path="/attendance" element={
-              <PrivateRoute allowedRoles={["teacher", "admin", "student"]} element={<AttendanceMarking />} />
-            } />
+            <Route
+              path="/attendance"
+              element={
+                <PrivateRoute
+                  allowedRoles={["teacher", "admin", "student"]}
+                  element={<AttendanceMarking />}
+                />
+              }
+            />
 
             {/* User management: admin only */}
-            <Route path="/users" element={
-              <PrivateRoute allowedRoles={["admin"]} element={<UserManagement />} />
-            } />
+            <Route
+              path="/users"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<UserManagement />}
+                />
+              }
+            />
 
             {/* Notifications: admin only */}
-            <Route path="/notifications" element={
-              <PrivateRoute allowedRoles={["admin"]} element={<NotificationTest />} />
-            } />
+            <Route
+              path="/notifications"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<NotificationTest />}
+                />
+              }
+            />
 
             {/* Role assignment: admin only */}
-            <Route path="/role-assignment" element={
-              <PrivateRoute allowedRoles={["admin"]} element={<RoleAssignment />} />
-            } />
+            <Route
+              path="/role-assignment"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<RoleAssignment />}
+                />
+              }
+            />
 
             {/* Register number lookup: all roles */}
-            <Route path="/register-lookup" element={
-              <PrivateRoute allowedRoles={["admin", "teacher", "student"]} element={<RegisterNumberLookup />} />
-            } />
+            <Route
+              path="/register-lookup"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin", "teacher", "student"]}
+                  element={<RegisterNumberLookup />}
+                />
+              }
+            />
 
             {/* Classes: admin only */}
-            <Route path="/classes" element={
-              <PrivateRoute allowedRoles={["admin"]} element={<Dashboard />} />
-            } />
+            <Route
+              path="/classes"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<Dashboard />}
+                />
+              }
+            />
 
             {/* Reports: admin only */}
-            <Route path="/reports" element={
-              <PrivateRoute allowedRoles={["admin"]} element={<Dashboard />} />
-            } />
+            <Route
+              path="/reports"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<Dashboard />}
+                />
+              }
+            />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
