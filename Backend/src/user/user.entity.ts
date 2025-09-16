@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export type UserRole = 'admin' | 'student' | 'teacher';
+export type UserRole = 'admin' | 'student' | 'teacher' | 'user';
 
 @Entity('nenasala_users')
 export class User {
@@ -16,7 +16,7 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({ type: 'enum', enum: ['admin', 'student', 'teacher'] })
+  @Column({ type: 'enum', enum: ['admin', 'student', 'teacher', 'user'] })
   role: UserRole;
 
   @CreateDateColumn()

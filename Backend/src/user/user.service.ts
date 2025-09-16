@@ -28,7 +28,7 @@ export class UserService {
 		}
 		const user = this.userRepository.create({
 			...createUserDto,
-			role: (createUserDto.role as UserRole) || 'student',
+			role: (createUserDto.role as UserRole) || 'user',
 		});
 		return this.userRepository.save(user);
 	}
@@ -75,16 +75,14 @@ export class UserService {
 				existingUser = await this.findByEmail(azureUserDto.email);
 			}
 
-			const userData: Partial<User> = {
-				email: azureUserDto.email,
-				display_name: azureUserDto.displayName,
-				azureId: azureUserDto.azureId,
-				register_number: azureUserDto.register_number,
-				// Set default role if creating new user
-				role: existingUser?.role || 'student',
-			};
-
-			if (existingUser) {
+		const userData: Partial<User> = {
+			email: azureUserDto.email,
+			display_name: azureUserDto.displayName,
+			azureId: azureUserDto.azureId,
+			register_number: azureUserDto.register_number,
+			// Set default role if creating new user
+			role: existingUser?.role || 'user',
+		};			if (existingUser) {
 				// Update existing user
 				await this.userRepository.update(existingUser.id, userData);
 				this.logger.log(`Updated existing user: ${azureUserDto.email}`);

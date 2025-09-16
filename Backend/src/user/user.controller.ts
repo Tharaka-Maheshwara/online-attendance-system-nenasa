@@ -86,7 +86,7 @@ export class UserController {
 		}
 	}
 
-  // Azure AD login: auto-create user with role 'student' if not exists
+  // Azure AD login: auto-create user with role 'user' if not exists
   @Post('azure-login')
   async azureLogin(@Body() body: { email: string; displayName?: string; azureId?: string }): Promise<User> {
     console.log('Azure login data received:', body); // Debug log
@@ -94,12 +94,12 @@ export class UserController {
     // Try to find user by email
     let user = await this.userService.findByEmail(body.email);
     if (!user) {
-      // Create new user with role 'student' and Azure info
+      // Create new user with role 'user' and Azure info
       user = await this.userService.create({
         email: body.email,
         display_name: body.displayName || undefined,
         azureId: body.azureId || undefined,
-        role: 'student',
+        role: 'user',
         contactNumber: undefined,
       });
       console.log('New user created:', user);
@@ -119,7 +119,7 @@ export class UserController {
 	async update(@Param('id') id: number, @Body() updateData: Partial<User>): Promise<User | null> {
 		// If updating role, add basic validation
 		if (updateData.role) {
-			const validRoles = ['student', 'teacher', 'admin'];
+			const validRoles = ['student', 'teacher', 'admin', 'user'];
 			if (!validRoles.includes(updateData.role)) {
 				throw new HttpException('Invalid role specified', HttpStatus.BAD_REQUEST);
 			}
