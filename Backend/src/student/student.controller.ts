@@ -7,41 +7,40 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
+import { StudentService } from './student.service';
 import { CreateStudentDto } from './dto/create-student.dto';
-// import { UpdateStudentDto } from './dto/update-student.dto'; // Uncomment if you have this DTO
+import { UpdateStudentDto } from './dto/update-student.dto';
 
 @Controller('student')
 export class StudentController {
+  constructor(private readonly studentService: StudentService) {}
+
   @Post()
-  createStudent(@Body() createStudentDto: CreateStudentDto) {
-    // Implement student creation logic
-    return 'Student created';
+  async createStudent(@Body() createStudentDto: CreateStudentDto) {
+    return await this.studentService.create(createStudentDto);
   }
 
   @Put(':studentId')
-  updateStudent(
+  async updateStudent(
     @Param('studentId') studentId: string,
-    @Body() updateStudentDto: any,
+    @Body() updateStudentDto: UpdateStudentDto,
   ) {
-    // Implement student update logic
-    return `Student ${studentId} updated`;
+    return await this.studentService.update(+studentId, updateStudentDto);
   }
 
   @Delete(':studentId')
-  deleteStudent(@Param('studentId') studentId: string) {
-    // Implement student deletion logic
-    return `Student ${studentId} deleted`;
+  async deleteStudent(@Param('studentId') studentId: string) {
+    await this.studentService.remove(+studentId);
+    return { message: `Student ${studentId} deleted successfully` };
   }
 
   @Get(':studentId')
-  getStudent(@Param('studentId') studentId: string) {
-    // Implement get single student logic
-    return `Student ${studentId} details`;
+  async getStudent(@Param('studentId') studentId: string) {
+    return await this.studentService.findOne(+studentId);
   }
 
-  @Get('s')
-  getAllStudents() {
-    // Implement get all students logic
-    return 'All students';
+  @Get()
+  async getAllStudents() {
+    return await this.studentService.findAll();
   }
 }
