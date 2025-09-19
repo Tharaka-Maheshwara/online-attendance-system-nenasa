@@ -1,4 +1,12 @@
-import { Controller, Post, Put, Delete, Get, Param, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Put,
+  Delete,
+  Get,
+  Param,
+  Body,
+} from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 // import { UpdateStudentDto } from './dto/update-student.dto'; // Uncomment if you have this DTO
 
@@ -11,7 +19,10 @@ export class StudentController {
   }
 
   @Put(':studentId')
-  updateStudent(@Param('studentId') studentId: string, @Body() updateStudentDto: any) {
+  updateStudent(
+    @Param('studentId') studentId: string,
+    @Body() updateStudentDto: any,
+  ) {
     // Implement student update logic
     return `Student ${studentId} updated`;
   }
