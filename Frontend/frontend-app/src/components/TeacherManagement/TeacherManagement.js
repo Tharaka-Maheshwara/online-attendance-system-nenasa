@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from "react";
 import "./TeacherManagement.css";
+import { getUserByRegisterNumber } from "../../services/userService";
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isLookingUpUser, setIsLookingUpUser] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     registrationNumber: "",
     contact: "",
-    address: "",
-    emergencyContact: "",
-    subject: "",
-    qualification: "",
-    experience: "",
-    classesAssigned: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadTeachers();
+    
+    // Cleanup function to clear timeout when component unmounts
+    return () => {
+      if (window.registerNumberTimeout) {
+        clearTimeout(window.registerNumberTimeout);
+      }
+    };
   }, []);
 
   const loadTeachers = async () => {
@@ -33,12 +35,58 @@ const TeacherManagement = () => {
     }
   };
 
+  // Function to lookup user by register number and auto-fill fields
+  const lookupUserByRegisterNumber = async (registerNumber) => {
+    if (!registerNumber || registerNumber.trim() === "") {
+      return;
+    }
+
+    setIsLookingUpUser(true);
+    try {
+      const user = await getUserByRegisterNumber(registerNumber);
+      
+      if (user) {
+        // Use the display_name directly as the single name field
+        const displayName = user.display_name || '';
+
+        // Auto-fill the form fields
+        setFormData(prev => ({
+          ...prev,
+          name: displayName,
+          email: user.email || '',
+        }));
+
+        console.log("User found and auto-filled:", user);
+      } else {
+        console.log("No user found with register number:", registerNumber);
+        // Don't show error for not found - this is normal when user doesn't exist
+      }
+    } catch (error) {
+      console.error("Error looking up user:", error);
+      // Show a subtle error message but don't block the user from continuing
+      if (error.message && !error.message.includes("not found")) {
+        console.warn("Could not connect to server for user lookup. You can still create the teacher manually.");
+      }
+    } finally {
+      setIsLookingUpUser(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // If register number is being changed, lookup user for auto-fill
+    if (name === 'registrationNumber') {
+      // Use setTimeout to debounce the API call
+      clearTimeout(window.registerNumberTimeout);
+      window.registerNumberTimeout = setTimeout(() => {
+        lookupUserByRegisterNumber(value);
+      }, 500); // Wait 500ms after user stops typing
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -51,17 +99,10 @@ const TeacherManagement = () => {
 
       // Reset form after successful submission
       setFormData({
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
         registrationNumber: "",
         contact: "",
-        address: "",
-        emergencyContact: "",
-        subject: "",
-        qualification: "",
-        experience: "",
-        classesAssigned: "",
       });
       setShowAddForm(false);
       loadTeachers();
@@ -76,20 +117,19 @@ const TeacherManagement = () => {
   };
 
   const handleCancel = () => {
+    // Clear any pending register number lookup
+    if (window.registerNumberTimeout) {
+      clearTimeout(window.registerNumberTimeout);
+    }
+    
     setFormData({
-      firstName: "",
-      lastName: "",
+      name: "",
       email: "",
       registrationNumber: "",
       contact: "",
-      address: "",
-      emergencyContact: "",
-      subject: "",
-      qualification: "",
-      experience: "",
-      classesAssigned: "",
     });
     setShowAddForm(false);
+    setIsLookingUpUser(false);
   };
 
   const handleEdit = (teacherId) => {
@@ -128,30 +168,16 @@ const TeacherManagement = () => {
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="firstName">First Name *</label>
+                <label htmlFor="name">Name *</label>
                 <input
                   type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   required
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="lastName">Last Name *</label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="email">Email *</label>
                 <input
@@ -163,8 +189,14 @@ const TeacherManagement = () => {
                   required
                 />
               </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group">
-                <label htmlFor="registrationNumber">Teacher ID *</label>
+                <label htmlFor="registrationNumber">
+                  Teacher ID * 
+                  {isLookingUpUser && <span className="lookup-indicator"> (Looking up user...)</span>}
+                </label>
                 <input
                   type="text"
                   id="registrationNumber"
@@ -175,9 +207,6 @@ const TeacherManagement = () => {
                   required
                 />
               </div>
-            </div>
-
-            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="contact">Contact Number *</label>
                 <input
@@ -187,80 +216,6 @@ const TeacherManagement = () => {
                   value={formData.contact}
                   onChange={handleInputChange}
                   required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="emergencyContact">Emergency Contact</label>
-                <input
-                  type="tel"
-                  id="emergencyContact"
-                  name="emergencyContact"
-                  value={formData.emergencyContact}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="subject">Subject/Department *</label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Mathematics, Science"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="qualification">Qualification</label>
-                <input
-                  type="text"
-                  id="qualification"
-                  name="qualification"
-                  value={formData.qualification}
-                  onChange={handleInputChange}
-                  placeholder="e.g., B.Sc., M.Ed."
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="experience">Years of Experience</label>
-                <input
-                  type="number"
-                  id="experience"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  min="0"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="classesAssigned">Classes Assigned</label>
-                <input
-                  type="text"
-                  id="classesAssigned"
-                  name="classesAssigned"
-                  value={formData.classesAssigned}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Grade 10A, Grade 11B"
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
                 />
               </div>
             </div>
@@ -299,9 +254,7 @@ const TeacherManagement = () => {
                   <th>Teacher ID</th>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Subject</th>
                   <th>Contact</th>
-                  <th>Classes</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -309,13 +262,9 @@ const TeacherManagement = () => {
                 {teachers.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>{teacher.registrationNumber}</td>
-                    <td>
-                      {teacher.firstName} {teacher.lastName}
-                    </td>
+                    <td>{teacher.name}</td>
                     <td>{teacher.email}</td>
-                    <td>{teacher.subject}</td>
                     <td>{teacher.contact}</td>
-                    <td>{teacher.classesAssigned || "-"}</td>
                     <td>
                       <div className="action-buttons">
                         <button

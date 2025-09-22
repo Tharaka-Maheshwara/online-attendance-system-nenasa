@@ -233,3 +233,23 @@
     flex-direction: column;
   }
 }
+
+/* Auto-fill user lookup indicator */
+.lookup-indicator {
+  color: #6c757d;
+  font-size: 12px;
+  font-style: italic;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
