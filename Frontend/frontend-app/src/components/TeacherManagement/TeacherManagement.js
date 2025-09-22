@@ -91,21 +91,21 @@ const TeacherManagement = () => {
 
   // Function to handle class selection (max 4 classes)
   const handleClassSelection = (classId) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const currentSelected = prev.selectedClasses;
       const isAlreadySelected = currentSelected.includes(classId);
-      
+
       if (isAlreadySelected) {
         // Remove class if already selected
         return {
           ...prev,
-          selectedClasses: currentSelected.filter(id => id !== classId)
+          selectedClasses: currentSelected.filter((id) => id !== classId),
         };
       } else if (currentSelected.length < 4) {
         // Add class if less than 4 selected
         return {
           ...prev,
-          selectedClasses: [...currentSelected, classId]
+          selectedClasses: [...currentSelected, classId],
         };
       } else {
         // Show message if trying to select more than 4
@@ -273,7 +273,7 @@ const TeacherManagement = () => {
             <div className="form-row">
               <div className="form-group full-width">
                 <label htmlFor="classes">
-                  Select Classes (Max 4) 
+                  Select Classes (Max 4)
                   <span className="selected-count">
                     ({formData.selectedClasses.length}/4 selected)
                   </span>
@@ -285,21 +285,25 @@ const TeacherManagement = () => {
                         <div
                           key={classItem.id}
                           className={`class-option ${
-                            formData.selectedClasses.includes(classItem.id) 
-                              ? 'selected' 
-                              : ''
+                            formData.selectedClasses.includes(classItem.id)
+                              ? "selected"
+                              : ""
                           }`}
                           onClick={() => handleClassSelection(classItem.id)}
                         >
                           <input
                             type="checkbox"
-                            checked={formData.selectedClasses.includes(classItem.id)}
+                            checked={formData.selectedClasses.includes(
+                              classItem.id
+                            )}
                             onChange={() => {}} // Handled by div onClick
                             readOnly
                           />
                           <span className="class-name">{classItem.name}</span>
                           {classItem.subject && (
-                            <span className="class-subject">({classItem.subject})</span>
+                            <span className="class-subject">
+                              ({classItem.subject})
+                            </span>
                           )}
                         </div>
                       ))}
