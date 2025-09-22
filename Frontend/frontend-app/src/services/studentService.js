@@ -4,7 +4,7 @@ const API_BASE_URL = "http://localhost:8000";
 // Create a new student
 export const createStudent = async (studentData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/students/register`, {
+    const response = await fetch(`${API_BASE_URL}/student`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export const createStudent = async (studentData) => {
 // Get all students
 export const getAllStudents = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/students`, {
+    const response = await fetch(`${API_BASE_URL}/student`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const getAllStudents = async () => {
 // Get student by ID
 export const getStudentById = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    const response = await fetch(`${API_BASE_URL}/student/${studentId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export const getStudentById = async (studentId) => {
 // Update student
 export const updateStudent = async (studentId, studentData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    const response = await fetch(`${API_BASE_URL}/student/${studentId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export const updateStudent = async (studentId, studentData) => {
 // Delete student
 export const deleteStudent = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/students/${studentId}`, {
+    const response = await fetch(`${API_BASE_URL}/student/${studentId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -111,10 +111,11 @@ export const deleteStudent = async (studentId) => {
 };
 
 // Lookup student by registration number
+// Note: This uses the user service endpoint since there's no dedicated endpoint in student controller
 export const lookupStudentByRegisterNumber = async (registerNumber) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/students/lookup/${registerNumber}`,
+      `${API_BASE_URL}/users/by-register/${registerNumber}`,
       {
         method: "GET",
         headers: {

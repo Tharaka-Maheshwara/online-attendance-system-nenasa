@@ -4,6 +4,7 @@ import {
   createStudent,
   getAllStudents,
   deleteStudent,
+  updateStudent,
   lookupStudentByRegisterNumber as lookupStudent,
 } from "../../services/studentService";
 
@@ -17,10 +18,13 @@ const StudentManagement = () => {
     parentName: "",
     parentEmail: "",
   });
+  const [editingStudent, setEditingStudent] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fetchingStudents, setFetchingStudents] = useState(false);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupMessage, setLookupMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchStudents();
@@ -84,11 +88,16 @@ const StudentManagement = () => {
   };
 
   const fetchStudents = async () => {
+    setFetchingStudents(true);
+    setError("");
     try {
       const students = await getAllStudents();
       setStudents(students);
     } catch (error) {
       console.error("Error fetching students:", error);
+      setError("Failed to fetch students. Please try again.");
+    } finally {
+      setFetchingStudents(false);
     }
   };
 
@@ -103,6 +112,7 @@ const StudentManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       // Create student record using studentService
@@ -119,10 +129,10 @@ const StudentManagement = () => {
         parentEmail: "",
       });
       setShowAddForm(false);
-      fetchStudents();
+      await fetchStudents();
     } catch (error) {
       console.error("Error creating student:", error);
-      alert("Error creating student: " + error.message);
+      setError("Error creating student: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -167,15 +177,51 @@ const StudentManagement = () => {
 
   const handleDelete = async (studentId) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
+      setError("");
       try {
         await deleteStudent(studentId);
         alert("Student deleted successfully!");
-        fetchStudents();
+        await fetchStudents();
       } catch (error) {
         console.error("Error deleting student:", error);
-        alert("Error deleting student: " + error.message);
+        setError("Error deleting student: " + error.message);
       }
     }
+  };
+
+  const handleEdit = (student) => {
+    setEditingStudent({ ...student });
+    setShowAddForm(false);
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingStudent((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await updateStudent(editingStudent.id, editingStudent);
+      alert("Student updated successfully!");
+      setEditingStudent(null);
+      await fetchStudents();
+    } catch (error) {
+      console.error("Error updating student:", error);
+      setError("Error updating student: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingStudent(null);
   };
 
   return (
@@ -184,11 +230,21 @@ const StudentManagement = () => {
         <h2>Student Management</h2>
         <button
           className="add-btn"
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            setShowAddForm(!showAddForm);
+            setEditingStudent(null);
+          }}
         >
           {showAddForm ? "Cancel" : "Add New Student"}
         </button>
       </div>
+
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError("")} className="error-close">×</button>
+        </div>
+      )}
 
       {showAddForm && (
         <div className="add-student-form">
@@ -290,53 +346,147 @@ const StudentManagement = () => {
         </div>
       )}
 
+      {editingStudent && (
+        <div className="add-student-form">
+          <h3>Edit Student</h3>
+          <form onSubmit={handleUpdateSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={editingStudent.name}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={editingStudent.email}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Register Number:</label>
+                <input
+                  type="text"
+                  name="registerNumber"
+                  value={editingStudent.registerNumber}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Contact Number:</label>
+                <input
+                  type="tel"
+                  name="contactNumber"
+                  value={editingStudent.contactNumber || ""}
+                  onChange={handleEditInputChange}
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Parent Name:</label>
+                <input
+                  type="text"
+                  name="parentName"
+                  value={editingStudent.parentName || ""}
+                  onChange={handleEditInputChange}
+                  placeholder="Parent/Guardian name"
+                />
+              </div>
+              <div className="form-group">
+                <label>Parent Email:</label>
+                <input
+                  type="email"
+                  name="parentEmail"
+                  value={editingStudent.parentEmail || ""}
+                  onChange={handleEditInputChange}
+                  placeholder="Parent email for notifications"
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" disabled={loading}>
+                {loading ? "Updating..." : "Update Student"}
+              </button>
+              <button type="button" onClick={cancelEdit} disabled={loading}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
       <div className="students-list">
         <h3>Students</h3>
-        <div className="students-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Register Number</th>
-                <th>Contact</th>
-                <th>Parent Name</th>
-                <th>Parent Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.name}</td>
-                  <td>{student.email}</td>
-                  <td>{student.registerNumber || "N/A"}</td>
-                  <td>{student.contactNumber || "N/A"}</td>
-                  <td>{student.parentName || "N/A"}</td>
-                  <td>{student.parentEmail || "N/A"}</td>
-                  <td>
-                    <div className="action-buttons">
-                      {student.parentEmail && (
-                        <button
-                          className="test-btn"
-                          onClick={() => sendTestNotification(student)}
-                        >
-                          Test Notification
-                        </button>
-                      )}
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(student.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+        {fetchingStudents ? (
+          <div className="loading-message">Loading students...</div>
+        ) : (
+          <div className="students-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Register Number</th>
+                  <th>Contact</th>
+                  <th>Parent Name</th>
+                  <th>Parent Email</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.id}>
+                    <td>{student.name}</td>
+                    <td>{student.email}</td>
+                    <td>{student.registerNumber || "N/A"}</td>
+                    <td>{student.contactNumber || "N/A"}</td>
+                    <td>{student.parentName || "N/A"}</td>
+                    <td>{student.parentEmail || "N/A"}</td>
+                    <td>
+                      <div className="action-buttons">
+                        {student.parentEmail && (
+                          <button
+                            className="test-btn"
+                            onClick={() => sendTestNotification(student)}
+                          >
+                            Test Notification
+                          </button>
+                        )}
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(student)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(student.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
