@@ -10,6 +10,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { NotificationModule } from './notification/notification.module';
 import { StudentModule } from './student/student.module';
+import { TeacherModule } from './teacher/teacher.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { StudentModule } from './student/student.module';
     AuthModule,
     NotificationModule,
     StudentModule,
+    TeacherModule,
   ],
   controllers: [AppController],
   providers: [AppService],
