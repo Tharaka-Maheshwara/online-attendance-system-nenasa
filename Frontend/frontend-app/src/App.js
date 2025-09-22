@@ -12,7 +12,8 @@ import LoginButton from "./LoginButton";
 import Dashboard from "./components/Dashboard/Dashboard";
 import AttendanceMarking from "./AttendanceMarking";
 import Navbar from "./components/Navbar/Navbar";
-import UserManagement from "./components/UserManagement/UserManagement";
+import StudentManagement from "./components/StudentManagement/StudentManagement";
+import TeacherManagement from "./components/TeacherManagement/TeacherManagement";
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
@@ -89,13 +90,24 @@ function AppContent() {
               }
             />
 
-            {/* User management: admin only */}
+            {/* Student management: admin only */}
             <Route
-              path="/users"
+              path="/students"
               element={
                 <PrivateRoute
                   allowedRoles={["admin"]}
-                  element={<UserManagement />}
+                  element={<StudentManagement />}
+                />
+              }
+            />
+
+            {/* Teacher management: admin only */}
+            <Route
+              path="/teachers"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<TeacherManagement />}
                 />
               }
             />

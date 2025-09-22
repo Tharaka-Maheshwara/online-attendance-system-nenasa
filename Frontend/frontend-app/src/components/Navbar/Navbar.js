@@ -111,10 +111,16 @@ const Navbar = () => {
                   📚 Classes
                 </Link>
                 <Link
-                  to="/users"
-                  className={`nav-link ${isActive("/users") ? "active" : ""}`}
+                  to="/students"
+                  className={`nav-link ${isActive("/students") ? "active" : ""}`}
                 >
-                  👥 Users
+                  🎓 Students
+                </Link>
+                <Link
+                  to="/teachers"
+                  className={`nav-link ${isActive("/teachers") ? "active" : ""}`}
+                >
+                  �‍🏫 Teachers
                 </Link>
                 <Link
                   to="/notifications"

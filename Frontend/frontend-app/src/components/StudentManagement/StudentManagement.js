@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import "./UserManagement.css";
+import "./StudentManagement.css";
+import { createStudent, getAllStudents, deleteStudent, lookupStudentByRegisterNumber as lookupStudent } from "../../services/studentService";
 
-const UserManagement = () => {
-  const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({
-    display_name: "",
+const StudentManagement = () => {
+  const [students, setStudents] = useState([]);
+  const [newStudent, setNewStudent] = useState({
+    name: "",
     email: "",
-    role: "student",
+    registerNumber: "",
     contactNumber: "",
-    register_number: "",
-    parentEmail: "",
     parentName: "",
+    parentEmail: "",
   });
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,23 +18,23 @@ const UserManagement = () => {
   const [lookupMessage, setLookupMessage] = useState("");
 
   useEffect(() => {
-    fetchUsers();
+    fetchStudents();
   }, []);
 
   // Auto-fill functionality for register number lookup
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (newUser.register_number && newUser.register_number.length > 2) {
-        lookupUserByRegisterNumber(newUser.register_number);
+      if (newStudent.registerNumber && newStudent.registerNumber.length > 2) {
+        lookupStudentByRegisterNumber(newStudent.registerNumber);
       } else {
         setLookupMessage("");
       }
     }, 500); // 500ms debounce
 
     return () => clearTimeout(timeoutId);
-  }, [newUser.register_number]);
+  }, [newStudent.registerNumber]);
 
-  const lookupUserByRegisterNumber = async (registerNumber) => {
+  const lookupStudentByRegisterNumber = async (registerNumber) => {
     if (!registerNumber.trim()) return;
 
     setLookupLoading(true);
@@ -53,9 +53,9 @@ const UserManagement = () => {
           const userData = responseData.user;
 
           // Auto-fill name and email fields
-          setNewUser((prev) => ({
+          setNewStudent((prev) => ({
             ...prev,
-            display_name: userData.display_name || "",
+            name: userData.display_name || "",
             email: userData.email || "",
           }));
           setLookupMessage(
@@ -65,32 +65,31 @@ const UserManagement = () => {
           setLookupMessage("⚠️ Unexpected response format");
         }
       } else if (response.status === 404) {
-        setLookupMessage("ℹ️ Register number not found - creating new user");
+        setLookupMessage("ℹ️ Register number not found - creating new student");
         // Don't clear existing data, user might be creating a new record
       } else {
         setLookupMessage("⚠️ Error looking up register number");
       }
     } catch (error) {
-      console.error("Error looking up user:", error);
+      console.error("Error looking up student:", error);
       setLookupMessage("⚠️ Error connecting to server");
     } finally {
       setLookupLoading(false);
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchStudents = async () => {
     try {
-      const response = await fetch("/api/users");
-      const data = await response.json();
-      setUsers(data);
+      const students = await getAllStudents();
+      setStudents(students);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching students:", error);
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewUser((prev) => ({
+    setNewStudent((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -101,55 +100,46 @@ const UserManagement = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
+      // Create student record using studentService
+      await createStudent(newStudent);
+      alert("Student created successfully!");
+      
+      // Reset form after successful creation
+      setNewStudent({
+        name: "",
+        email: "",
+        registerNumber: "",
+        contactNumber: "",
+        parentName: "",
+        parentEmail: "",
       });
-
-      if (response.ok) {
-        alert("User created successfully!");
-        setNewUser({
-          display_name: "",
-          email: "",
-          role: "student",
-          contactNumber: "",
-          register_number: "",
-          parentEmail: "",
-          parentName: "",
-        });
-        setShowAddForm(false);
-        fetchUsers();
-      } else {
-        alert("Failed to create user");
-      }
+      setShowAddForm(false);
+      fetchStudents();
     } catch (error) {
-      console.error("Error creating user:", error);
-      alert("Error creating user");
+      console.error("Error creating student:", error);
+      alert("Error creating student: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const sendTestNotification = async (user) => {
-    if (!user.parentEmail) {
+  const sendTestNotification = async (student) => {
+    if (!student.parentEmail) {
       alert("No parent email found for this student");
       return;
     }
 
     try {
-      const response = await fetch("/api/notifications/send-attendance", {
+      const response = await fetch("http://localhost:8000/notifications/send-attendance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          studentName: user.display_name,
-          parentEmail: user.parentEmail,
+          studentName: student.name,
+          parentEmail: student.parentEmail,
           classId: 1, // Example class ID
-          studentId: user.id,
+          studentId: student.id,
           isPresent: true,
           date: new Date().toISOString().split("T")[0],
         }),
@@ -167,29 +157,42 @@ const UserManagement = () => {
     }
   };
 
+  const handleDelete = async (studentId) => {
+    if (window.confirm("Are you sure you want to delete this student?")) {
+      try {
+        await deleteStudent(studentId);
+        alert("Student deleted successfully!");
+        fetchStudents();
+      } catch (error) {
+        console.error("Error deleting student:", error);
+        alert("Error deleting student: " + error.message);
+      }
+    }
+  };
+
   return (
-    <div className="user-management">
+    <div className="student-management">
       <div className="header">
-        <h2>User Management</h2>
+        <h2>Student Management</h2>
         <button
           className="add-btn"
           onClick={() => setShowAddForm(!showAddForm)}
         >
-          {showAddForm ? "Cancel" : "Add New User"}
+          {showAddForm ? "Cancel" : "Add New Student"}
         </button>
       </div>
 
       {showAddForm && (
-        <div className="add-user-form">
-          <h3>Add New User</h3>
+        <div className="add-student-form">
+          <h3>Add New Student</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
                 <label>Name:</label>
                 <input
                   type="text"
-                  name="display_name"
-                  value={newUser.display_name}
+                  name="name"
+                  value={newStudent.name}
                   onChange={handleInputChange}
                   required
                 />
@@ -199,7 +202,7 @@ const UserManagement = () => {
                 <input
                   type="email"
                   name="email"
-                  value={newUser.email}
+                  value={newStudent.email}
                   onChange={handleInputChange}
                   required
                 />
@@ -212,10 +215,11 @@ const UserManagement = () => {
                 <div className="register-input-container">
                   <input
                     type="text"
-                    name="register_number"
-                    value={newUser.register_number}
+                    name="registerNumber"
+                    value={newStudent.registerNumber}
                     onChange={handleInputChange}
                     placeholder="e.g., 131584"
+                    required
                   />
                   {lookupLoading && (
                     <span className="lookup-loading">🔍 Looking up...</span>
@@ -236,95 +240,89 @@ const UserManagement = () => {
                 )}
               </div>
               <div className="form-group">
-                <label>Role:</label>
-                <select
-                  name="role"
-                  value={newUser.role}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="student">Student</option>
-                  <option value="teacher">Teacher</option>
-                </select>
-              </div>
-              <div className="form-group">
                 <label>Contact Number:</label>
                 <input
                   type="tel"
                   name="contactNumber"
-                  value={newUser.contactNumber}
+                  value={newStudent.contactNumber}
                   onChange={handleInputChange}
                 />
               </div>
             </div>
 
-            {newUser.role === "student" && (
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Parent Name:</label>
-                  <input
-                    type="text"
-                    name="parentName"
-                    value={newUser.parentName}
-                    onChange={handleInputChange}
-                    placeholder="Parent/Guardian name"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Parent Email:</label>
-                  <input
-                    type="email"
-                    name="parentEmail"
-                    value={newUser.parentEmail}
-                    onChange={handleInputChange}
-                    placeholder="Parent email for notifications"
-                  />
-                </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Parent Name:</label>
+                <input
+                  type="text"
+                  name="parentName"
+                  value={newStudent.parentName}
+                  onChange={handleInputChange}
+                  placeholder="Parent/Guardian name"
+                />
               </div>
-            )}
+              <div className="form-group">
+                <label>Parent Email:</label>
+                <input
+                  type="email"
+                  name="parentEmail"
+                  value={newStudent.parentEmail}
+                  onChange={handleInputChange}
+                  placeholder="Parent email for notifications"
+                />
+              </div>
+            </div>
 
             <div className="form-actions">
               <button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create User"}
+                {loading ? "Creating..." : "Create Student"}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="users-list">
-        <h3>Users</h3>
-        <div className="users-table">
+      <div className="students-list">
+        <h3>Students</h3>
+        <div className="students-table">
           <table>
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Register Number</th>
-                <th>Role</th>
                 <th>Contact</th>
+                <th>Parent Name</th>
                 <th>Parent Email</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.display_name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.register_number || "N/A"}</td>
-                  <td>{user.role}</td>
-                  <td>{user.contactNumber || "N/A"}</td>
-                  <td>{user.parentEmail || "N/A"}</td>
+              {students.map((student) => (
+                <tr key={student.id}>
+                  <td>{student.name}</td>
+                  <td>{student.email}</td>
+                  <td>{student.registerNumber || "N/A"}</td>
+                  <td>{student.contactNumber || "N/A"}</td>
+                  <td>{student.parentName || "N/A"}</td>
+                  <td>{student.parentEmail || "N/A"}</td>
                   <td>
-                    {user.role === "student" && user.parentEmail && (
+                    <div className="action-buttons">
+                      {student.parentEmail && (
+                        <button
+                          className="test-btn"
+                          onClick={() => sendTestNotification(student)}
+                        >
+                          Test Notification
+                        </button>
+                      )}
                       <button
-                        className="test-btn"
-                        onClick={() => sendTestNotification(user)}
+                        className="delete-btn"
+                        onClick={() => handleDelete(student.id)}
                       >
-                        Test Notification
+                        Delete
                       </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -336,4 +334,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default StudentManagement;
