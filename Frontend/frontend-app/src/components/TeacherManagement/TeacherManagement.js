@@ -16,7 +16,7 @@ const TeacherManagement = () => {
 
   useEffect(() => {
     loadTeachers();
-    
+
     // Cleanup function to clear timeout when component unmounts
     return () => {
       if (window.registerNumberTimeout) {
@@ -44,16 +44,16 @@ const TeacherManagement = () => {
     setIsLookingUpUser(true);
     try {
       const user = await getUserByRegisterNumber(registerNumber);
-      
+
       if (user) {
         // Use the display_name directly as the single name field
-        const displayName = user.display_name || '';
+        const displayName = user.display_name || "";
 
         // Auto-fill the form fields
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           name: displayName,
-          email: user.email || '',
+          email: user.email || "",
         }));
 
         console.log("User found and auto-filled:", user);
@@ -65,7 +65,9 @@ const TeacherManagement = () => {
       console.error("Error looking up user:", error);
       // Show a subtle error message but don't block the user from continuing
       if (error.message && !error.message.includes("not found")) {
-        console.warn("Could not connect to server for user lookup. You can still create the teacher manually.");
+        console.warn(
+          "Could not connect to server for user lookup. You can still create the teacher manually."
+        );
       }
     } finally {
       setIsLookingUpUser(false);
@@ -80,7 +82,7 @@ const TeacherManagement = () => {
     }));
 
     // If register number is being changed, lookup user for auto-fill
-    if (name === 'registrationNumber') {
+    if (name === "registrationNumber") {
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
       window.registerNumberTimeout = setTimeout(() => {
@@ -121,7 +123,7 @@ const TeacherManagement = () => {
     if (window.registerNumberTimeout) {
       clearTimeout(window.registerNumberTimeout);
     }
-    
+
     setFormData({
       name: "",
       email: "",
@@ -194,8 +196,13 @@ const TeacherManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="registrationNumber">
-                  Teacher ID * 
-                  {isLookingUpUser && <span className="lookup-indicator"> (Looking up user...)</span>}
+                  Teacher ID *
+                  {isLookingUpUser && (
+                    <span className="lookup-indicator">
+                      {" "}
+                      (Looking up user...)
+                    </span>
+                  )}
                 </label>
                 <input
                   type="text"

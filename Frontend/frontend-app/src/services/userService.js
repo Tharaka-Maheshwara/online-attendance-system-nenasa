@@ -8,12 +8,15 @@ export const getUserByRegisterNumber = async (registerNumber) => {
       return null;
     }
 
-    const response = await fetch(`${API_BASE_URL}/users/by-register/${encodeURIComponent(registerNumber)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/users/by-register/${encodeURIComponent(registerNumber)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -80,12 +83,15 @@ export const getUserById = async (userId) => {
 // Get user profile by email
 export const getUserProfileByEmail = async (email) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/profile/${encodeURIComponent(email)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/users/profile/${encodeURIComponent(email)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to fetch user profile");
