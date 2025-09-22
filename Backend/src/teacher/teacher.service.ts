@@ -14,14 +14,16 @@ export class TeacherService {
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
     // Validate that at least one subject is provided
-    const hasAtLeastOneSubject = 
-      createTeacherDto.sub_01 || 
-      createTeacherDto.sub_02 || 
-      createTeacherDto.sub_03 || 
+    const hasAtLeastOneSubject =
+      createTeacherDto.sub_01 ||
+      createTeacherDto.sub_02 ||
+      createTeacherDto.sub_03 ||
       createTeacherDto.sub_04;
 
     if (!hasAtLeastOneSubject) {
-      throw new Error('At least one subject (sub_01, sub_02, sub_03, or sub_04) must be provided');
+      throw new Error(
+        'At least one subject (sub_01, sub_02, sub_03, or sub_04) must be provided',
+      );
     }
 
     const teacher = this.teacherRepository.create(createTeacherDto);
@@ -47,14 +49,16 @@ export class TeacherService {
 
     // If updating subjects, ensure at least one remains
     const updatedTeacher = { ...existingTeacher, ...updateTeacherDto };
-    const hasAtLeastOneSubject = 
-      updatedTeacher.sub_01 || 
-      updatedTeacher.sub_02 || 
-      updatedTeacher.sub_03 || 
+    const hasAtLeastOneSubject =
+      updatedTeacher.sub_01 ||
+      updatedTeacher.sub_02 ||
+      updatedTeacher.sub_03 ||
       updatedTeacher.sub_04;
 
     if (!hasAtLeastOneSubject) {
-      throw new Error('At least one subject (sub_01, sub_02, sub_03, or sub_04) must be provided');
+      throw new Error(
+        'At least one subject (sub_01, sub_02, sub_03, or sub_04) must be provided',
+      );
     }
 
     await this.teacherRepository.update(id, updateTeacherDto);
