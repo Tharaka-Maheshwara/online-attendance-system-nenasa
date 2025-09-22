@@ -242,7 +242,9 @@ const StudentManagement = () => {
       {error && (
         <div className="error-message">
           {error}
-          <button onClick={() => setError("")} className="error-close">×</button>
+          <button onClick={() => setError("")} className="error-close">
+            ×
+          </button>
         </div>
       )}
 
