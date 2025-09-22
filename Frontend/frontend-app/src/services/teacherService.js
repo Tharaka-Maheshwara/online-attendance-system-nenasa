@@ -115,8 +115,8 @@ export const deleteTeacher = async (teacherId) => {
 export const mapFormDataToTeacherDto = (formData, classes = []) => {
   // Map selectedClasses to class names for sub_01, sub_02, etc.
   const selectedClassNames = formData.selectedClasses
-    .map(classId => {
-      const classItem = classes.find(c => c.id === classId);
+    .map((classId) => {
+      const classItem = classes.find((c) => c.id === classId);
       return classItem ? classItem.name : null;
     })
     .filter(Boolean)
@@ -139,12 +139,16 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
 // Helper function to map backend teacher data to frontend format
 export const mapTeacherToFormData = (teacher, classes = []) => {
   // Map sub_01, sub_02, etc. back to selectedClasses IDs
-  const subjectNames = [teacher.sub_01, teacher.sub_02, teacher.sub_03, teacher.sub_04]
-    .filter(Boolean);
-  
+  const subjectNames = [
+    teacher.sub_01,
+    teacher.sub_02,
+    teacher.sub_03,
+    teacher.sub_04,
+  ].filter(Boolean);
+
   const selectedClasses = subjectNames
-    .map(subjectName => {
-      const classItem = classes.find(c => c.name === subjectName);
+    .map((subjectName) => {
+      const classItem = classes.find((c) => c.name === subjectName);
       return classItem ? classItem.id : null;
     })
     .filter(Boolean);

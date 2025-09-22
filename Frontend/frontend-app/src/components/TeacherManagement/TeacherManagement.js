@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./TeacherManagement.css";
 import { getUserByRegisterNumber } from "../../services/userService";
 import { getAllClasses } from "../../services/classService";
-import { 
-  getAllTeachers, 
-  createTeacher, 
-  updateTeacher, 
+import {
+  getAllTeachers,
+  createTeacher,
+  updateTeacher,
   deleteTeacher,
   mapFormDataToTeacherDto,
-  mapTeacherToFormData
+  mapTeacherToFormData,
 } from "../../services/teacherService";
 
 const TeacherManagement = () => {
@@ -150,7 +150,7 @@ const TeacherManagement = () => {
     try {
       // Convert form data to backend format
       const teacherDto = mapFormDataToTeacherDto(formData, classes);
-      
+
       if (isEditing && editingId) {
         // Update existing teacher
         await updateTeacher(editingId, teacherDto);
@@ -172,20 +172,26 @@ const TeacherManagement = () => {
       setShowAddForm(false);
       setIsEditing(false);
       setEditingId(null);
-      
+
       // Reload teachers list
       await loadTeachers();
     } catch (error) {
       console.error("Error saving teacher:", error);
-      
+
       // Show user-friendly error message
-      let errorMessage = `Error ${isEditing ? 'updating' : 'creating'} teacher. Please try again.`;
-      if (error.message.includes("duplicate") || error.message.includes("unique")) {
-        errorMessage = "A teacher with this email or register number already exists.";
+      let errorMessage = `Error ${
+        isEditing ? "updating" : "creating"
+      } teacher. Please try again.`;
+      if (
+        error.message.includes("duplicate") ||
+        error.message.includes("unique")
+      ) {
+        errorMessage =
+          "A teacher with this email or register number already exists.";
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       alert(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -214,26 +220,28 @@ const TeacherManagement = () => {
   const handleEdit = async (teacherId) => {
     try {
       // Find the teacher in our current list
-      const teacherToEdit = teachers.find(teacher => teacher.id === teacherId);
+      const teacherToEdit = teachers.find(
+        (teacher) => teacher.id === teacherId
+      );
       if (teacherToEdit) {
         // Map the teacher data to form data format
         const formData = mapTeacherToFormData(teacherToEdit);
-        
+
         // Populate the form with teacher data
         setFormData(formData);
         setIsEditing(true);
         setEditingId(teacherId);
         setShowAddForm(true); // Show the form for editing
-        
+
         // Scroll to form
-        const formElement = document.querySelector('.teacher-form');
+        const formElement = document.querySelector(".teacher-form");
         if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth' });
+          formElement.scrollIntoView({ behavior: "smooth" });
         }
       }
     } catch (error) {
-      console.error('Error preparing edit:', error);
-      alert('Error preparing teacher data for editing');
+      console.error("Error preparing edit:", error);
+      alert("Error preparing teacher data for editing");
     }
   };
 
@@ -385,10 +393,13 @@ const TeacherManagement = () => {
                 disabled={isSubmitting}
                 className="submit-btn"
               >
-                {isSubmitting 
-                  ? (isEditing ? "Updating..." : "Creating...") 
-                  : (isEditing ? "Update Teacher" : "Create Teacher")
-                }
+                {isSubmitting
+                  ? isEditing
+                    ? "Updating..."
+                    : "Creating..."
+                  : isEditing
+                  ? "Update Teacher"
+                  : "Create Teacher"}
               </button>
             </div>
           </form>
