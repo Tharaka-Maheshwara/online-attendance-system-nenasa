@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./TeacherManagement.css";
 import { getUserByRegisterNumber } from "../../services/userService";
 import { getAllClasses } from "../../services/classService";
+import { 
+  getAllTeachers, 
+  createTeacher, 
+  updateTeacher, 
+  deleteTeacher,
+  mapFormDataToTeacherDto,
+  mapTeacherToFormData
+} from "../../services/teacherService";
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
@@ -16,6 +24,8 @@ const TeacherManagement = () => {
     selectedClasses: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     loadTeachers();
@@ -31,11 +41,12 @@ const TeacherManagement = () => {
 
   const loadTeachers = async () => {
     try {
-      // For now, using a mock implementation
-      // TODO: Replace with actual teacher service call
-      setTeachers([]);
+      const teachersData = await getAllTeachers();
+      setTeachers(teachersData);
     } catch (error) {
       console.error("Error loading teachers:", error);
+      // Set empty array on error so component doesn't break
+      setTeachers([]);
     }
   };
 
@@ -137,8 +148,18 @@ const TeacherManagement = () => {
     setIsSubmitting(true);
 
     try {
-      // Mock teacher creation - replace with actual API call
-      console.log("Creating teacher with data:", formData);
+      // Convert form data to backend format
+      const teacherDto = mapFormDataToTeacherDto(formData, classes);
+      
+      if (isEditing && editingId) {
+        // Update existing teacher
+        await updateTeacher(editingId, teacherDto);
+        alert("Teacher updated successfully!");
+      } else {
+        // Create new teacher
+        await createTeacher(teacherDto);
+        alert("Teacher created successfully!");
+      }
 
       // Reset form after successful submission
       setFormData({
@@ -149,12 +170,23 @@ const TeacherManagement = () => {
         selectedClasses: [],
       });
       setShowAddForm(false);
-      loadTeachers();
-
-      alert("Teacher created successfully!");
+      setIsEditing(false);
+      setEditingId(null);
+      
+      // Reload teachers list
+      await loadTeachers();
     } catch (error) {
-      console.error("Error creating teacher:", error);
-      alert("Error creating teacher. Please try again.");
+      console.error("Error saving teacher:", error);
+      
+      // Show user-friendly error message
+      let errorMessage = `Error ${isEditing ? 'updating' : 'creating'} teacher. Please try again.`;
+      if (error.message.includes("duplicate") || error.message.includes("unique")) {
+        errorMessage = "A teacher with this email or register number already exists.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -175,22 +207,45 @@ const TeacherManagement = () => {
     });
     setShowAddForm(false);
     setIsLookingUpUser(false);
+    setIsEditing(false);
+    setEditingId(null);
   };
 
-  const handleEdit = (teacherId) => {
-    console.log("Edit teacher:", teacherId);
-    // TODO: Implement edit functionality
+  const handleEdit = async (teacherId) => {
+    try {
+      // Find the teacher in our current list
+      const teacherToEdit = teachers.find(teacher => teacher.id === teacherId);
+      if (teacherToEdit) {
+        // Map the teacher data to form data format
+        const formData = mapTeacherToFormData(teacherToEdit);
+        
+        // Populate the form with teacher data
+        setFormData(formData);
+        setIsEditing(true);
+        setEditingId(teacherId);
+        setShowAddForm(true); // Show the form for editing
+        
+        // Scroll to form
+        const formElement = document.querySelector('.teacher-form');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } catch (error) {
+      console.error('Error preparing edit:', error);
+      alert('Error preparing teacher data for editing');
+    }
   };
 
   const handleDelete = async (teacherId) => {
     if (window.confirm("Are you sure you want to delete this teacher?")) {
       try {
-        console.log("Delete teacher:", teacherId);
-        // TODO: Implement delete functionality
-        loadTeachers();
+        await deleteTeacher(teacherId);
+        await loadTeachers(); // Reload the teachers list
+        alert("Teacher deleted successfully!");
       } catch (error) {
         console.error("Error deleting teacher:", error);
-        alert("Error deleting teacher");
+        alert("Error deleting teacher. Please try again.");
       }
     }
   };
@@ -209,7 +264,7 @@ const TeacherManagement = () => {
 
       {showAddForm && (
         <div className="add-teacher-form">
-          <h3>Add New Teacher</h3>
+          <h3>{isEditing ? "Edit Teacher" : "Add New Teacher"}</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
@@ -330,7 +385,10 @@ const TeacherManagement = () => {
                 disabled={isSubmitting}
                 className="submit-btn"
               >
-                {isSubmitting ? "Creating..." : "Create Teacher"}
+                {isSubmitting 
+                  ? (isEditing ? "Updating..." : "Creating...") 
+                  : (isEditing ? "Update Teacher" : "Create Teacher")
+                }
               </button>
             </div>
           </form>
@@ -358,10 +416,10 @@ const TeacherManagement = () => {
               <tbody>
                 {teachers.map((teacher) => (
                   <tr key={teacher.id}>
-                    <td>{teacher.registrationNumber}</td>
+                    <td>{teacher.registerNumber}</td>
                     <td>{teacher.name}</td>
                     <td>{teacher.email}</td>
-                    <td>{teacher.contact}</td>
+                    <td>{teacher.contactNumber}</td>
                     <td>
                       <div className="action-buttons">
                         <button
