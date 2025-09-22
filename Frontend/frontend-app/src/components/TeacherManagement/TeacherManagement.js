@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./TeacherManagement.css";
 import { getUserByRegisterNumber } from "../../services/userService";
+import { getAllClasses } from "../../services/classService";
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
   const [formData, setFormData] = useState({
@@ -11,11 +13,13 @@ const TeacherManagement = () => {
     email: "",
     registrationNumber: "",
     contact: "",
+    selectedClasses: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadTeachers();
+    loadClasses();
 
     // Cleanup function to clear timeout when component unmounts
     return () => {
@@ -32,6 +36,17 @@ const TeacherManagement = () => {
       setTeachers([]);
     } catch (error) {
       console.error("Error loading teachers:", error);
+    }
+  };
+
+  const loadClasses = async () => {
+    try {
+      const classesData = await getAllClasses();
+      setClasses(classesData);
+    } catch (error) {
+      console.error("Error loading classes:", error);
+      // Set empty array on error so component doesn't break
+      setClasses([]);
     }
   };
 
@@ -74,6 +89,32 @@ const TeacherManagement = () => {
     }
   };
 
+  // Function to handle class selection (max 4 classes)
+  const handleClassSelection = (classId) => {
+    setFormData(prev => {
+      const currentSelected = prev.selectedClasses;
+      const isAlreadySelected = currentSelected.includes(classId);
+      
+      if (isAlreadySelected) {
+        // Remove class if already selected
+        return {
+          ...prev,
+          selectedClasses: currentSelected.filter(id => id !== classId)
+        };
+      } else if (currentSelected.length < 4) {
+        // Add class if less than 4 selected
+        return {
+          ...prev,
+          selectedClasses: [...currentSelected, classId]
+        };
+      } else {
+        // Show message if trying to select more than 4
+        alert("You can only select up to 4 classes");
+        return prev;
+      }
+    });
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -105,6 +146,7 @@ const TeacherManagement = () => {
         email: "",
         registrationNumber: "",
         contact: "",
+        selectedClasses: [],
       });
       setShowAddForm(false);
       loadTeachers();
@@ -129,6 +171,7 @@ const TeacherManagement = () => {
       email: "",
       registrationNumber: "",
       contact: "",
+      selectedClasses: [],
     });
     setShowAddForm(false);
     setIsLookingUpUser(false);
@@ -224,6 +267,49 @@ const TeacherManagement = () => {
                   onChange={handleInputChange}
                   required
                 />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group full-width">
+                <label htmlFor="classes">
+                  Select Classes (Max 4) 
+                  <span className="selected-count">
+                    ({formData.selectedClasses.length}/4 selected)
+                  </span>
+                </label>
+                <div className="class-selection-container">
+                  {classes.length > 0 ? (
+                    <div className="class-options">
+                      {classes.map((classItem) => (
+                        <div
+                          key={classItem.id}
+                          className={`class-option ${
+                            formData.selectedClasses.includes(classItem.id) 
+                              ? 'selected' 
+                              : ''
+                          }`}
+                          onClick={() => handleClassSelection(classItem.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.selectedClasses.includes(classItem.id)}
+                            onChange={() => {}} // Handled by div onClick
+                            readOnly
+                          />
+                          <span className="class-name">{classItem.name}</span>
+                          {classItem.subject && (
+                            <span className="class-subject">({classItem.subject})</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-classes">
+                      <p>No classes available. Please contact administrator.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
