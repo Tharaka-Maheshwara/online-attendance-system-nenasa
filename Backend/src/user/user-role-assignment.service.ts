@@ -29,7 +29,10 @@ export class UserRoleAssignmentService {
         this.logger.log(`User ${user.email} added to teachers table`);
       }
     } catch (error) {
-      this.logger.error(`Failed to assign user ${user.email} to role table:`, error);
+      this.logger.error(
+        `Failed to assign user ${user.email} to role table:`,
+        error,
+      );
     }
   }
 }

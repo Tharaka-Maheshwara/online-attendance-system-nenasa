@@ -37,12 +37,14 @@ export class AuthService {
     return this.userService.createOrUpdateFromAzure(azureUserDto);
   }
 
-  async validateAndProvisionAzureUser(accessToken: string): Promise<User | null> {
+  async validateAndProvisionAzureUser(
+    accessToken: string,
+  ): Promise<User | null> {
     try {
       // Note: In a production environment, you MUST validate the token signature
       // and issuer against the Azure AD public keys.
       // For this implementation, we are only decoding it.
-      const decodedToken = this.jwtService.decode(accessToken) as AzureTokenPayload;
+      const decodedToken = this.jwtService.decode(accessToken);
 
       if (!decodedToken) {
         this.logger.warn('Could not decode Azure access token.');
@@ -50,7 +52,10 @@ export class AuthService {
       }
 
       // Prefer UPN for email, fallback to email or preferred_username
-      const email = decodedToken.upn || decodedToken.email || decodedToken.preferred_username;
+      const email =
+        decodedToken.upn ||
+        decodedToken.email ||
+        decodedToken.preferred_username;
       if (!email) {
         this.logger.error(
           'Azure token does not contain an email (upn, email, or preferred_username).',
@@ -59,13 +64,16 @@ export class AuthService {
       }
 
       // Extract register_number from user principal name (UPN)
-      const userPrincipalName = decodedToken.upn || decodedToken.preferred_username || email;
+      const userPrincipalName =
+        decodedToken.upn || decodedToken.preferred_username || email;
       let registerNumber = '';
-      
+
       if (userPrincipalName) {
         // Extract everything before '@' as register_number
         registerNumber = userPrincipalName.split('@')[0];
-        this.logger.log(`Extracted register_number: ${registerNumber} from UPN: ${userPrincipalName}`);
+        this.logger.log(
+          `Extracted register_number: ${registerNumber} from UPN: ${userPrincipalName}`,
+        );
       }
 
       const userDto = {

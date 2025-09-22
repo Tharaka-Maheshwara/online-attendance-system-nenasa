@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TeacherService {
   constructor(
     @InjectRepository(Teacher)
     private teacherRepository: Repository<Teacher>,
+    private userService: UserService,
   ) {}
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
@@ -27,7 +29,39 @@ export class TeacherService {
     }
 
     const teacher = this.teacherRepository.create(createTeacherDto);
-    return await this.teacherRepository.save(teacher);
+    const savedTeacher = await this.teacherRepository.save(teacher);
+
+    // Create or update user in nenasala_users table with teacher role
+    try {
+      const existingUser = await this.userService.findByEmail(
+        createTeacherDto.email,
+      );
+
+      if (existingUser) {
+        // Update existing user with teacher role and teacher-specific data
+        await this.userService.update(existingUser.id, {
+          role: 'teacher',
+          display_name: createTeacherDto.name,
+          register_number: createTeacherDto.registerNumber,
+          contactNumber: createTeacherDto.contactNumber,
+        });
+      } else {
+        // Create new user with teacher role
+        await this.userService.createUser({
+          email: createTeacherDto.email,
+          role: 'teacher',
+          display_name: createTeacherDto.name,
+          register_number: createTeacherDto.registerNumber,
+          contactNumber: createTeacherDto.contactNumber,
+        });
+      }
+    } catch (error) {
+      console.error('Error creating/updating user for teacher:', error);
+      // Note: We don't throw here to avoid breaking teacher creation
+      // But you might want to handle this differently based on your requirements
+    }
+
+    return savedTeacher;
   }
 
   async findAll(): Promise<Teacher[]> {

@@ -13,22 +13,32 @@ export class AzureUserSyncService {
   }
 
   private initializeGraphClient() {
-    const tenantId = process.env.AZURE_TENANT_ID || 'a7a43c95-55b0-4d14-98c5-a7478dfb87d3';
-    const clientId = process.env.AZURE_CLIENT_ID || '9a2a5624-5ed7-4449-b2b0-e1862e68fdcc';
+    const tenantId =
+      process.env.AZURE_TENANT_ID || 'a7a43c95-55b0-4d14-98c5-a7478dfb87d3';
+    const clientId =
+      process.env.AZURE_CLIENT_ID || '9a2a5624-5ed7-4449-b2b0-e1862e68fdcc';
     const clientSecret = process.env.AZURE_CLIENT_SECRET;
 
     if (!clientSecret) {
-      this.logger.warn('Azure client secret not configured. Azure sync functionality will be disabled.');
+      this.logger.warn(
+        'Azure client secret not configured. Azure sync functionality will be disabled.',
+      );
       return;
     }
 
-    const credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+    const credential = new ClientSecretCredential(
+      tenantId,
+      clientId,
+      clientSecret,
+    );
 
     this.graphClient = Client.initWithMiddleware({
       authProvider: {
         getAccessToken: async () => {
           try {
-            const token = await credential.getToken('https://graph.microsoft.com/.default');
+            const token = await credential.getToken(
+              'https://graph.microsoft.com/.default',
+            );
             return token.token;
           } catch (error) {
             this.logger.error('Failed to get access token:', error);
@@ -46,12 +56,12 @@ export class AzureUserSyncService {
 
     try {
       this.logger.log('Starting Azure AD user sync...');
-      
+
       // Fetch users from Azure AD
       const users = await this.graphClient.api('/users').get();
-      
+
       this.logger.log(`Found ${users.value.length} users in Azure AD`);
-      
+
       let syncedCount = 0;
       let errorCount = 0;
 
@@ -59,7 +69,9 @@ export class AzureUserSyncService {
         try {
           // Skip users without email
           if (!user.mail && !user.userPrincipalName) {
-            this.logger.warn(`Skipping user ${user.displayName} - no email found`);
+            this.logger.warn(
+              `Skipping user ${user.displayName} - no email found`,
+            );
             continue;
           }
 
@@ -72,19 +84,23 @@ export class AzureUserSyncService {
           });
 
           syncedCount++;
-          this.logger.log(`Synced user: ${user.displayName} (${user.mail || user.userPrincipalName})`);
+          this.logger.log(
+            `Synced user: ${user.displayName} (${user.mail || user.userPrincipalName})`,
+          );
         } catch (error) {
           errorCount++;
           this.logger.error(`Failed to sync user ${user.displayName}:`, error);
         }
       }
 
-      this.logger.log(`Azure AD sync completed. Synced: ${syncedCount}, Errors: ${errorCount}`);
-      
-      return { 
-        totalUsers: users.value.length, 
-        syncedUsers: syncedCount, 
-        errors: errorCount 
+      this.logger.log(
+        `Azure AD sync completed. Synced: ${syncedCount}, Errors: ${errorCount}`,
+      );
+
+      return {
+        totalUsers: users.value.length,
+        syncedUsers: syncedCount,
+        errors: errorCount,
       };
     } catch (error) {
       this.logger.error('Failed to sync Azure AD users:', error);
@@ -116,7 +132,7 @@ export class AzureUserSyncService {
         .api('/users')
         .filter(`mail eq '${email}' or userPrincipalName eq '${email}'`)
         .get();
-      
+
       return users.value.length > 0 ? users.value[0] : null;
     } catch (error) {
       this.logger.error(`Failed to fetch Azure user by email ${email}:`, error);

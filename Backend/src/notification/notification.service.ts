@@ -1,7 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Notification, NotificationType, NotificationStatus } from './notification.entity';
+import {
+  Notification,
+  NotificationType,
+  NotificationStatus,
+} from './notification.entity';
 import * as nodemailer from 'nodemailer';
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 import { ConfigService } from '@nestjs/config';
@@ -26,7 +30,7 @@ export class NotificationService {
         auth: {
           api_key: this.configService.get('SENDGRID_API_KEY'),
         },
-      })
+      }),
     );
   }
 
@@ -36,19 +40,19 @@ export class NotificationService {
     classId: number,
     studentId: number,
     isPresent: boolean,
-    date: string
+    date: string,
   ): Promise<void> {
-    const subject = isPresent 
-      ? `Attendance Confirmation - ${studentName}` 
+    const subject = isPresent
+      ? `Attendance Confirmation - ${studentName}`
       : `Attendance Alert - ${studentName} Absent`;
-    
+
     const message = isPresent
       ? `Dear Parent,\n\nYour child ${studentName} was marked present in class today (${date}).\n\nBest regards,\nSchool Administration`
       : `Dear Parent,\n\nYour child ${studentName} was marked absent from class today (${date}). Please contact the school if this is unexpected.\n\nBest regards,\nSchool Administration`;
 
     try {
       await this.sendEmail(parentEmail, subject, message);
-      
+
       // Log the notification
       await this.logNotification({
         recipientEmail: parentEmail,
@@ -60,10 +64,15 @@ export class NotificationService {
         classId,
       });
 
-      this.logger.log(`Attendance notification sent to ${parentEmail} for student ${studentName}`);
+      this.logger.log(
+        `Attendance notification sent to ${parentEmail} for student ${studentName}`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to send notification to ${parentEmail}:`, error.message);
-      
+      this.logger.error(
+        `Failed to send notification to ${parentEmail}:`,
+        error.message,
+      );
+
       // Log the failed notification
       await this.logNotification({
         recipientEmail: parentEmail,
@@ -78,7 +87,11 @@ export class NotificationService {
     }
   }
 
-  private async sendEmail(to: string, subject: string, text: string): Promise<void> {
+  private async sendEmail(
+    to: string,
+    subject: string,
+    text: string,
+  ): Promise<void> {
     const mailOptions = {
       from: this.configService.get('EMAIL_USER') || 'your-email@gmail.com',
       to,
@@ -89,7 +102,9 @@ export class NotificationService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  private async logNotification(notificationData: Partial<Notification>): Promise<Notification> {
+  private async logNotification(
+    notificationData: Partial<Notification>,
+  ): Promise<Notification> {
     const notification = this.notificationRepository.create(notificationData);
     return this.notificationRepository.save(notification);
   }

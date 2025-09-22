@@ -9,6 +9,6 @@ import { AzureUserSyncService } from './azure-user-sync.service';
   imports: [TypeOrmModule.forFeature([User])],
   controllers: [UserController],
   providers: [UserService, AzureUserSyncService],
-  exports: [UserService, AzureUserSyncService] // Export services for use in other modules
+  exports: [UserService, AzureUserSyncService], // Export services for use in other modules
 })
 export class UserModule {}

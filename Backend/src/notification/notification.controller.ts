@@ -7,7 +7,9 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get('history')
-  async getNotificationHistory(@Query('studentId') studentId?: number): Promise<Notification[]> {
+  async getNotificationHistory(
+    @Query('studentId') studentId?: number,
+  ): Promise<Notification[]> {
     return this.notificationService.getNotificationHistory(studentId);
   }
 
@@ -16,19 +18,24 @@ export class NotificationController {
     const isConnected = await this.notificationService.testEmailConnection();
     return {
       success: isConnected,
-      message: isConnected ? 'Email connection successful' : 'Email connection failed',
+      message: isConnected
+        ? 'Email connection successful'
+        : 'Email connection failed',
     };
   }
 
   @Post('send-attendance')
-  async sendAttendanceNotification(@Body() notificationData: {
-    studentName: string;
-    parentEmail: string;
-    classId: number;
-    studentId: number;
-    isPresent: boolean;
-    date: string;
-  }): Promise<{ success: boolean; message: string }> {
+  async sendAttendanceNotification(
+    @Body()
+    notificationData: {
+      studentName: string;
+      parentEmail: string;
+      classId: number;
+      studentId: number;
+      isPresent: boolean;
+      date: string;
+    },
+  ): Promise<{ success: boolean; message: string }> {
     try {
       await this.notificationService.sendAttendanceNotification(
         notificationData.studentName,
@@ -36,7 +43,7 @@ export class NotificationController {
         notificationData.classId,
         notificationData.studentId,
         notificationData.isPresent,
-        notificationData.date
+        notificationData.date,
       );
       return { success: true, message: 'Notification sent successfully' };
     } catch (error) {

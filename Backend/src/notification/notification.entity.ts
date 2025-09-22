@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 export type NotificationType = 'email' | 'sms';
 export type NotificationStatus = 'sent' | 'failed' | 'pending';
@@ -20,7 +25,11 @@ export class Notification {
   @Column({ type: 'enum', enum: ['email', 'sms'], default: 'email' })
   type: NotificationType;
 
-  @Column({ type: 'enum', enum: ['sent', 'failed', 'pending'], default: 'pending' })
+  @Column({
+    type: 'enum',
+    enum: ['sent', 'failed', 'pending'],
+    default: 'pending',
+  })
   status: NotificationStatus;
 
   @Column({ nullable: true })
