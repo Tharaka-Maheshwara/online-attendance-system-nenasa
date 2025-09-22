@@ -229,20 +229,20 @@
   .form-row {
     flex-direction: column;
   }
-  
+
   .form-group {
     min-width: unset;
   }
-  
+
   .students-table {
     font-size: 12px;
   }
-  
+
   .students-table th,
   .students-table td {
     padding: 8px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }

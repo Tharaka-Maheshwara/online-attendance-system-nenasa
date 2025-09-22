@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./StudentManagement.css";
-import { createStudent, getAllStudents, deleteStudent, lookupStudentByRegisterNumber as lookupStudent } from "../../services/studentService";
+import {
+  createStudent,
+  getAllStudents,
+  deleteStudent,
+  lookupStudentByRegisterNumber as lookupStudent,
+} from "../../services/studentService";
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
@@ -103,7 +108,7 @@ const StudentManagement = () => {
       // Create student record using studentService
       await createStudent(newStudent);
       alert("Student created successfully!");
-      
+
       // Reset form after successful creation
       setNewStudent({
         name: "",
@@ -130,20 +135,23 @@ const StudentManagement = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/notifications/send-attendance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentName: student.name,
-          parentEmail: student.parentEmail,
-          classId: 1, // Example class ID
-          studentId: student.id,
-          isPresent: true,
-          date: new Date().toISOString().split("T")[0],
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8000/notifications/send-attendance",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            studentName: student.name,
+            parentEmail: student.parentEmail,
+            classId: 1, // Example class ID
+            studentId: student.id,
+            isPresent: true,
+            date: new Date().toISOString().split("T")[0],
+          }),
+        }
+      );
 
       const result = await response.json();
       if (result.success) {

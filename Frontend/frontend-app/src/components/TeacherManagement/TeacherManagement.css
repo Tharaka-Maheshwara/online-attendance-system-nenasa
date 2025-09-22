@@ -215,20 +215,20 @@
   .form-row {
     flex-direction: column;
   }
-  
+
   .form-group {
     min-width: unset;
   }
-  
+
   .teachers-table {
     font-size: 12px;
   }
-  
+
   .teachers-table th,
   .teachers-table td {
     padding: 8px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
