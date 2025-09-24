@@ -11,7 +11,7 @@ import { RolesGuard } from '../auth/roles.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Attendance, User]), 
+    TypeOrmModule.forFeature([Attendance, User]),
     NotificationModule,
     UserModule,
     JwtModule.register({

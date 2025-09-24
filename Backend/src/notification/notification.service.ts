@@ -161,9 +161,10 @@ export class NotificationService {
                 <div class="status">${statusIcon} Status: ${statusText}</div>
             </div>
             
-            ${isPresent 
-              ? '<p>Your child was marked <strong style="color: #28a745;">PRESENT</strong> in class today.</p>'
-              : '<p>Your child was marked <strong style="color: #dc3545;">ABSENT</strong> from class today. Please contact the school if this is unexpected.</p>'
+            ${
+              isPresent
+                ? '<p>Your child was marked <strong style="color: #28a745;">PRESENT</strong> in class today.</p>'
+                : '<p>Your child was marked <strong style="color: #dc3545;">ABSENT</strong> from class today. Please contact the school if this is unexpected.</p>'
             }
             
             <div class="footer">
@@ -229,7 +230,8 @@ export class NotificationService {
   async sendTestEmail(toEmail: string): Promise<boolean> {
     try {
       const subject = 'Test Email - Nenasala Attendance System';
-      const textMessage = 'This is a test email from the Nenasala Attendance System. If you received this, email configuration is working correctly.';
+      const textMessage =
+        'This is a test email from the Nenasala Attendance System. If you received this, email configuration is working correctly.';
       const htmlMessage = `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2 style="color: #007bff;">🏫 Nenasala Attendance System</h2>
@@ -243,19 +245,24 @@ export class NotificationService {
       this.logger.log(`Test email sent successfully to ${toEmail}`);
       return true;
     } catch (error) {
-      this.logger.error(`Failed to send test email to ${toEmail}:`, error.message);
+      this.logger.error(
+        `Failed to send test email to ${toEmail}:`,
+        error.message,
+      );
       return false;
     }
   }
 
-  async sendBulkAttendanceNotifications(attendanceRecords: Array<{
-    studentName: string;
-    parentEmail: string;
-    classId: number;
-    studentId: number;
-    isPresent: boolean;
-    date: string;
-  }>): Promise<{ sent: number; failed: number }> {
+  async sendBulkAttendanceNotifications(
+    attendanceRecords: Array<{
+      studentName: string;
+      parentEmail: string;
+      classId: number;
+      studentId: number;
+      isPresent: boolean;
+      date: string;
+    }>,
+  ): Promise<{ sent: number; failed: number }> {
     let sent = 0;
     let failed = 0;
 
@@ -272,11 +279,16 @@ export class NotificationService {
         sent++;
       } catch (error) {
         failed++;
-        this.logger.error(`Failed to send notification for student ${record.studentName}:`, error.message);
+        this.logger.error(
+          `Failed to send notification for student ${record.studentName}:`,
+          error.message,
+        );
       }
     }
 
-    this.logger.log(`Bulk notification completed: ${sent} sent, ${failed} failed`);
+    this.logger.log(
+      `Bulk notification completed: ${sent} sent, ${failed} failed`,
+    );
     return { sent, failed };
   }
 }

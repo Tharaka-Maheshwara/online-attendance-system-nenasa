@@ -327,38 +327,38 @@
     padding: 15px;
     margin: 10px;
   }
-  
+
   .attendance-header {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
-  
+
   .mode-selector {
     width: 100%;
     justify-content: center;
   }
-  
+
   .mode-selector button {
     flex: 1;
     max-width: 150px;
   }
-  
+
   .student-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
   }
-  
+
   .attendance-options {
     width: 100%;
     justify-content: space-around;
   }
-  
+
   .class-selector select {
     max-width: 100%;
   }
-  
+
   .qr-video {
     max-width: 100%;
     height: 250px;
@@ -369,16 +369,16 @@
   .attendance-header h2 {
     font-size: 1.5rem;
   }
-  
+
   .attendance-options {
     flex-direction: column;
     gap: 10px;
   }
-  
+
   .student-row {
     padding: 12px 15px;
   }
-  
+
   .qr-generation,
   .manual-attendance,
   .qr-scanning,
@@ -669,19 +669,19 @@
     padding: 20px;
     min-height: 400px;
   }
-  
+
   .access-denied {
     padding: 30px 20px;
   }
-  
+
   .restriction-icon {
     font-size: 3rem;
   }
-  
+
   .access-denied h2 {
     font-size: 1.6rem;
   }
-  
+
   .info-box {
     padding: 20px;
   }

@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import QRCode from 'react-qr-code';
-import QrScanner from 'qr-scanner';
+import QRCode from "react-qr-code";
+import QrScanner from "qr-scanner";
 import { useMsal } from "@azure/msal-react";
-import './AttendanceMarking.css';
+import "./AttendanceMarking.css";
 
 const AttendanceMarking = () => {
   const { accounts } = useMsal();
-  const [userRole, setUserRole] = useState('student');
-  const [markingMode, setMarkingMode] = useState('manual'); // 'manual' or 'qr'
+  const [userRole, setUserRole] = useState("student");
+  const [markingMode, setMarkingMode] = useState("manual"); // 'manual' or 'qr'
   const [classes, setClasses] = useState([]);
-  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedClass, setSelectedClass] = useState("");
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
-  const [qrCode, setQrCode] = useState('');
+  const [qrCode, setQrCode] = useState("");
   const [scanning, setScanning] = useState(false);
-  const [scanResult, setScanResult] = useState('');
-  const [cameraError, setCameraError] = useState('');
+  const [scanResult, setScanResult] = useState("");
+  const [cameraError, setCameraError] = useState("");
   const [cameraPermission, setCameraPermission] = useState(null);
   const videoRef = useRef(null);
   const qrScannerRef = useRef(null);
@@ -39,68 +39,72 @@ const AttendanceMarking = () => {
         const user = accounts[0];
         // Use the email from Azure AD account
         const userEmail = user.username || user.name;
-        console.log('Fetching user role for:', userEmail);
-        
-        const response = await fetch(`http://localhost:8000/users/profile/${userEmail}`);
+        console.log("Fetching user role for:", userEmail);
+
+        const response = await fetch(
+          `http://localhost:8000/users/profile/${userEmail}`
+        );
         if (response.ok) {
           const userData = await response.json();
           setUserRole(userData.role);
-          console.log('User role fetched:', userData.role);
+          console.log("User role fetched:", userData.role);
         } else {
-          console.error('Failed to fetch user role:', response.status);
+          console.error("Failed to fetch user role:", response.status);
           // Default to student if user not found
-          setUserRole('student');
+          setUserRole("student");
         }
       }
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error("Error fetching user role:", error);
       // Default to student on error
-      setUserRole('student');
+      setUserRole("student");
     }
   };
 
   const checkCameraPermission = async () => {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraPermission('not_supported');
-        setCameraError('Camera is not supported on this device');
+        setCameraPermission("not_supported");
+        setCameraError("Camera is not supported on this device");
         return;
       }
 
       // Check if camera permission is already granted
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
-      setCameraPermission('granted');
-      setCameraError('');
+      stream.getTracks().forEach((track) => track.stop()); // Stop the stream immediately
+      setCameraPermission("granted");
+      setCameraError("");
     } catch (error) {
-      console.error('Camera permission check failed:', error);
-      if (error.name === 'NotAllowedError') {
-        setCameraPermission('denied');
-        setCameraError('Camera access denied. Please allow camera access in your browser settings.');
-      } else if (error.name === 'NotFoundError') {
-        setCameraPermission('not_found');
-        setCameraError('No camera device found on this device.');
+      console.error("Camera permission check failed:", error);
+      if (error.name === "NotAllowedError") {
+        setCameraPermission("denied");
+        setCameraError(
+          "Camera access denied. Please allow camera access in your browser settings."
+        );
+      } else if (error.name === "NotFoundError") {
+        setCameraPermission("not_found");
+        setCameraError("No camera device found on this device.");
       } else {
-        setCameraPermission('error');
-        setCameraError('Unable to access camera: ' + error.message);
+        setCameraPermission("error");
+        setCameraError("Unable to access camera: " + error.message);
       }
     }
   };
 
   const fetchClasses = async () => {
     try {
-      const response = await fetch('http://localhost:8000/class');
+      const response = await fetch("http://localhost:8000/class");
       if (response.ok) {
         const classData = await response.json();
         setClasses(classData);
       }
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      console.error("Error fetching classes:", error);
       // Mock data for demo
       setClasses([
-        { id: 1, name: 'Grade 12 - Physics', code: 'PHY12' },
-        { id: 2, name: 'Grade 11 - Chemistry', code: 'CHE11' },
-        { id: 3, name: 'Grade 10 - Biology', code: 'BIO10' }
+        { id: 1, name: "Grade 12 - Physics", code: "PHY12" },
+        { id: 2, name: "Grade 11 - Chemistry", code: "CHE11" },
+        { id: 3, name: "Grade 10 - Biology", code: "BIO10" },
       ]);
     }
   };
@@ -112,31 +116,31 @@ const AttendanceMarking = () => {
       if (response.ok) {
         const allUsers = await response.json();
         // Filter only students
-        const studentData = allUsers.filter(user => user.role === 'student');
+        const studentData = allUsers.filter((user) => user.role === "student");
         setStudents(studentData);
-        
+
         // Initialize attendance state
         const initialAttendance = {};
-        studentData.forEach(student => {
-          initialAttendance[student.id] = 'absent';
+        studentData.forEach((student) => {
+          initialAttendance[student.id] = "absent";
         });
         setAttendance(initialAttendance);
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error("Error fetching students:", error);
       // Mock data for demo
       const mockStudents = [
-        { id: 1, name: 'John Doe', email: 'john@example.com' },
-        { id: 2, name: 'Jane Smith', email: 'jane@example.com' },
-        { id: 3, name: 'Mike Johnson', email: 'mike@example.com' },
-        { id: 4, name: 'Sarah Wilson', email: 'sarah@example.com' },
-        { id: 5, name: 'David Brown', email: 'david@example.com' }
+        { id: 1, name: "John Doe", email: "john@example.com" },
+        { id: 2, name: "Jane Smith", email: "jane@example.com" },
+        { id: 3, name: "Mike Johnson", email: "mike@example.com" },
+        { id: 4, name: "Sarah Wilson", email: "sarah@example.com" },
+        { id: 5, name: "David Brown", email: "david@example.com" },
       ];
       setStudents(mockStudents);
-      
+
       const initialAttendance = {};
-      mockStudents.forEach(student => {
-        initialAttendance[student.id] = 'absent';
+      mockStudents.forEach((student) => {
+        initialAttendance[student.id] = "absent";
       });
       setAttendance(initialAttendance);
     }
@@ -144,51 +148,51 @@ const AttendanceMarking = () => {
 
   const generateQRCode = () => {
     if (!selectedClass) return;
-    
-    const classData = classes.find(c => c.id === parseInt(selectedClass));
+
+    const classData = classes.find((c) => c.id === parseInt(selectedClass));
     const teacherInfo = accounts[0];
-    
+
     const qrData = {
       classId: selectedClass,
       className: classData?.name,
       timestamp: Date.now(),
       teacherId: teacherInfo?.username || teacherInfo?.name,
-      action: 'mark_attendance',
-      validUntil: Date.now() + (30 * 60 * 1000) // Valid for 30 minutes
+      action: "mark_attendance",
+      validUntil: Date.now() + 30 * 60 * 1000, // Valid for 30 minutes
     };
-    
-    console.log('Generated QR Code data:', qrData);
+
+    console.log("Generated QR Code data:", qrData);
     setQrCode(JSON.stringify(qrData));
   };
 
   const startQRScanning = async () => {
     try {
       setScanning(true);
-      setScanResult('');
-      setCameraError('');
-      
+      setScanResult("");
+      setCameraError("");
+
       // Check if camera is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera not supported on this device');
+        throw new Error("Camera not supported on this device");
       }
-      
+
       // Request camera permission explicitly
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          facingMode: 'environment', // Prefer back camera for QR scanning
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment", // Prefer back camera for QR scanning
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
+          height: { ideal: 720 },
+        },
       });
-      
+
       if (videoRef.current) {
         // Set the video source
         videoRef.current.srcObject = stream;
-        
+
         const qrScanner = new QrScanner(
           videoRef.current,
           (result) => {
-            console.log('QR Code detected:', result.data);
+            console.log("QR Code detected:", result.data);
             setScanResult(result.data);
             markAttendanceFromQR(result.data);
             stopQRScanning();
@@ -197,31 +201,39 @@ const AttendanceMarking = () => {
             highlightScanRegion: true,
             highlightCodeOutline: true,
             returnDetailedScanResult: true,
-            preferredCamera: 'environment'
+            preferredCamera: "environment",
           }
         );
-        
+
         qrScannerRef.current = qrScanner;
         await qrScanner.start();
-        console.log('QR Scanner started successfully');
+        console.log("QR Scanner started successfully");
       }
     } catch (error) {
-      console.error('Error starting QR scanner:', error);
+      console.error("Error starting QR scanner:", error);
       setScanning(false);
-      
+
       // Set specific error messages based on error type
-      if (error.name === 'NotAllowedError') {
-        setCameraError('Camera access denied. Please click on the camera icon in your browser\'s address bar and allow camera access.');
-      } else if (error.name === 'NotFoundError') {
-        setCameraError('No camera found on this device. Please ensure your device has a working camera.');
-      } else if (error.name === 'NotReadableError') {
-        setCameraError('Camera is already in use by another application. Please close other camera applications and try again.');
-      } else if (error.name === 'OverconstrainedError') {
-        setCameraError('Camera settings are not supported. Trying with default settings...');
+      if (error.name === "NotAllowedError") {
+        setCameraError(
+          "Camera access denied. Please click on the camera icon in your browser's address bar and allow camera access."
+        );
+      } else if (error.name === "NotFoundError") {
+        setCameraError(
+          "No camera found on this device. Please ensure your device has a working camera."
+        );
+      } else if (error.name === "NotReadableError") {
+        setCameraError(
+          "Camera is already in use by another application. Please close other camera applications and try again."
+        );
+      } else if (error.name === "OverconstrainedError") {
+        setCameraError(
+          "Camera settings are not supported. Trying with default settings..."
+        );
         // Retry with basic camera settings
         retryWithBasicCamera();
       } else {
-        setCameraError('Failed to start camera: ' + error.message);
+        setCameraError("Failed to start camera: " + error.message);
       }
     }
   };
@@ -229,29 +241,26 @@ const AttendanceMarking = () => {
   const retryWithBasicCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        
-        const qrScanner = new QrScanner(
-          videoRef.current,
-          (result) => {
-            console.log('QR Code detected:', result.data);
-            setScanResult(result.data);
-            markAttendanceFromQR(result.data);
-            stopQRScanning();
-          }
-        );
-        
+
+        const qrScanner = new QrScanner(videoRef.current, (result) => {
+          console.log("QR Code detected:", result.data);
+          setScanResult(result.data);
+          markAttendanceFromQR(result.data);
+          stopQRScanning();
+        });
+
         qrScannerRef.current = qrScanner;
         await qrScanner.start();
         setScanning(true);
-        setCameraError('');
-        console.log('QR Scanner started with basic settings');
+        setCameraError("");
+        console.log("QR Scanner started with basic settings");
       }
     } catch (retryError) {
-      console.error('Retry with basic camera failed:', retryError);
-      setCameraError('Unable to access camera even with basic settings.');
+      console.error("Retry with basic camera failed:", retryError);
+      setCameraError("Unable to access camera even with basic settings.");
       setScanning(false);
     }
   };
@@ -261,79 +270,89 @@ const AttendanceMarking = () => {
       qrScannerRef.current.stop();
       qrScannerRef.current = null;
     }
-    
+
     // Stop the camera stream
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach(track => track.stop());
+      tracks.forEach((track) => track.stop());
       videoRef.current.srcObject = null;
     }
-    
+
     setScanning(false);
-    setCameraError('');
+    setCameraError("");
   };
 
   const markAttendanceFromQR = async (qrData) => {
     try {
       const data = JSON.parse(qrData);
-      console.log('QR Data received:', data);
-      
-      if (data.classId && userRole === 'student') {
+      console.log("QR Data received:", data);
+
+      if (data.classId && userRole === "student") {
         // Get current user info
         const currentUser = accounts[0];
         const userEmail = currentUser.username || currentUser.name;
-        
+
         // Find the current user in the backend to get their ID
-        const response = await fetch(`http://localhost:8000/users/profile/${userEmail}`);
+        const response = await fetch(
+          `http://localhost:8000/users/profile/${userEmail}`
+        );
         if (response.ok) {
           const userData = await response.json();
-          console.log('Current user data:', userData);
-          
+          console.log("Current user data:", userData);
+
           // Mark attendance for this student
           const attendanceData = {
             classId: parseInt(data.classId),
-            date: new Date().toISOString().split('T')[0],
-            attendance: [{
-              studentId: userData.id,
-              status: 'present',
-              timestamp: new Date().toISOString()
-            }]
+            date: new Date().toISOString().split("T")[0],
+            attendance: [
+              {
+                studentId: userData.id,
+                status: "present",
+                timestamp: new Date().toISOString(),
+              },
+            ],
           };
-          
-          console.log('Submitting attendance:', attendanceData);
-          
-          const attendanceResponse = await fetch('http://localhost:8000/attendance', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(attendanceData)
-          });
-          
+
+          console.log("Submitting attendance:", attendanceData);
+
+          const attendanceResponse = await fetch(
+            "http://localhost:8000/attendance",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(attendanceData),
+            }
+          );
+
           if (attendanceResponse.ok) {
-            alert('Attendance marked successfully!');
-            console.log('Attendance saved successfully');
+            alert("Attendance marked successfully!");
+            console.log("Attendance saved successfully");
           } else {
             const errorData = await attendanceResponse.json();
-            console.error('Failed to save attendance:', errorData);
-            alert('Failed to save attendance: ' + (errorData.message || 'Unknown error'));
+            console.error("Failed to save attendance:", errorData);
+            alert(
+              "Failed to save attendance: " +
+                (errorData.message || "Unknown error")
+            );
           }
         } else {
-          alert('User not found in system!');
+          alert("User not found in system!");
         }
       } else {
-        alert('Invalid QR code or unauthorized access!');
+        alert("Invalid QR code or unauthorized access!");
       }
     } catch (error) {
-      console.error('Error processing QR code:', error);
-      alert('Invalid QR code format!');
+      console.error("Error processing QR code:", error);
+      alert("Invalid QR code format!");
     }
   };
 
   const handleAttendanceChange = (studentId, status) => {
-    setAttendance(prev => ({
+    setAttendance((prev) => ({
       ...prev,
-      [studentId]: status
+      [studentId]: status,
     }));
   };
 
@@ -348,30 +367,30 @@ const AttendanceMarking = () => {
     try {
       const attendanceData = {
         classId: selectedClass,
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString().split("T")[0],
         attendance: Object.entries(attendance).map(([studentId, status]) => ({
           studentId: parseInt(studentId),
           status,
-          timestamp: new Date().toISOString()
-        }))
+          timestamp: new Date().toISOString(),
+        })),
       };
 
-      const response = await fetch('http://localhost:8000/attendance', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/attendance", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(attendanceData)
+        body: JSON.stringify(attendanceData),
       });
 
       if (response.ok) {
-        alert('Attendance saved successfully!');
+        alert("Attendance saved successfully!");
       } else {
-        alert('Failed to save attendance!');
+        alert("Failed to save attendance!");
       }
     } catch (error) {
-      console.error('Error saving attendance:', error);
-      alert('Error saving attendance!');
+      console.error("Error saving attendance:", error);
+      alert("Error saving attendance!");
     }
   };
 
@@ -379,17 +398,17 @@ const AttendanceMarking = () => {
     <div className="attendance-marking">
       <div className="attendance-header">
         <h2>Attendance Marking</h2>
-        {(userRole === 'teacher' || userRole === 'admin') && (
+        {(userRole === "teacher" || userRole === "admin") && (
           <div className="mode-selector">
-            <button 
-              className={markingMode === 'manual' ? 'active' : ''}
-              onClick={() => setMarkingMode('manual')}
+            <button
+              className={markingMode === "manual" ? "active" : ""}
+              onClick={() => setMarkingMode("manual")}
             >
               📝 Manual
             </button>
-            <button 
-              className={markingMode === 'qr' ? 'active' : ''}
-              onClick={() => setMarkingMode('qr')}
+            <button
+              className={markingMode === "qr" ? "active" : ""}
+              onClick={() => setMarkingMode("qr")}
             >
               📱 QR Code
             </button>
@@ -397,16 +416,16 @@ const AttendanceMarking = () => {
         )}
       </div>
 
-      {userRole === 'teacher' || userRole === 'admin' ? (
+      {userRole === "teacher" || userRole === "admin" ? (
         <div className="teacher-interface">
           <div className="class-selector">
             <label>Select Class:</label>
-            <select 
-              value={selectedClass} 
+            <select
+              value={selectedClass}
               onChange={(e) => handleClassChange(e.target.value)}
             >
               <option value="">-- Select a Class --</option>
-              {classes.map(cls => (
+              {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>
                   {cls.name} ({cls.code})
                 </option>
@@ -414,7 +433,7 @@ const AttendanceMarking = () => {
             </select>
           </div>
 
-          {markingMode === 'qr' && selectedClass && (
+          {markingMode === "qr" && selectedClass && (
             <div className="qr-generation">
               <h3>QR Code for Attendance</h3>
               <button onClick={generateQRCode} className="generate-qr-btn">
@@ -429,14 +448,16 @@ const AttendanceMarking = () => {
             </div>
           )}
 
-          {markingMode === 'manual' && selectedClass && students.length > 0 && (
+          {markingMode === "manual" && selectedClass && students.length > 0 && (
             <div className="manual-attendance">
               <h3>Mark Attendance Manually</h3>
               <div className="student-list">
-                {students.map(student => (
+                {students.map((student) => (
                   <div key={student.id} className="student-row">
                     <div className="student-info">
-                      <span className="student-name">{student.display_name || student.email}</span>
+                      <span className="student-name">
+                        {student.display_name || student.email}
+                      </span>
                       <span className="student-email">{student.email}</span>
                     </div>
                     <div className="attendance-options">
@@ -445,8 +466,10 @@ const AttendanceMarking = () => {
                           type="radio"
                           name={`attendance-${student.id}`}
                           value="present"
-                          checked={attendance[student.id] === 'present'}
-                          onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
+                          checked={attendance[student.id] === "present"}
+                          onChange={(e) =>
+                            handleAttendanceChange(student.id, e.target.value)
+                          }
                         />
                         Present
                       </label>
@@ -455,8 +478,10 @@ const AttendanceMarking = () => {
                           type="radio"
                           name={`attendance-${student.id}`}
                           value="absent"
-                          checked={attendance[student.id] === 'absent'}
-                          onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
+                          checked={attendance[student.id] === "absent"}
+                          onChange={(e) =>
+                            handleAttendanceChange(student.id, e.target.value)
+                          }
                         />
                         Absent
                       </label>
@@ -465,8 +490,10 @@ const AttendanceMarking = () => {
                           type="radio"
                           name={`attendance-${student.id}`}
                           value="late"
-                          checked={attendance[student.id] === 'late'}
-                          onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
+                          checked={attendance[student.id] === "late"}
+                          onChange={(e) =>
+                            handleAttendanceChange(student.id, e.target.value)
+                          }
                         />
                         Late
                       </label>
@@ -486,21 +513,31 @@ const AttendanceMarking = () => {
             <div className="restriction-icon">🚫</div>
             <h2>Access Restricted</h2>
             <p>Students are not allowed to mark their own attendance.</p>
-            <p>Please contact your teacher or administrator if you need to report your attendance.</p>
-            
+            <p>
+              Please contact your teacher or administrator if you need to report
+              your attendance.
+            </p>
+
             <div className="info-box">
               <h4>📋 How Attendance Works:</h4>
               <ul>
                 <li>✅ Teachers mark attendance using this system</li>
-                <li>📧 You'll receive email notifications about your attendance</li>
-                <li>👀 You can view your attendance history in your dashboard</li>
+                <li>
+                  📧 You'll receive email notifications about your attendance
+                </li>
+                <li>
+                  👀 You can view your attendance history in your dashboard
+                </li>
                 <li>📞 Contact your teacher for attendance corrections</li>
               </ul>
             </div>
-            
+
             <div className="contact-info">
               <h4>📞 Need Help?</h4>
-              <p>Contact your class teacher or school administration for attendance-related inquiries.</p>
+              <p>
+                Contact your class teacher or school administration for
+                attendance-related inquiries.
+              </p>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import './StudentDashboard.css';
+import React from "react";
+import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
   return (
@@ -51,7 +51,7 @@ const StudentDashboard = () => {
                 <span className="status-badge present">Present</span>
               </div>
             </div>
-            
+
             <div className="schedule-item current">
               <div className="time-slot">11:00 AM</div>
               <div className="class-info">
@@ -63,7 +63,7 @@ const StudentDashboard = () => {
                 <span className="status-badge current">In Progress</span>
               </div>
             </div>
-            
+
             <div className="schedule-item upcoming">
               <div className="time-slot">2:00 PM</div>
               <div className="class-info">
@@ -144,7 +144,10 @@ const StudentDashboard = () => {
             <div className="notification-item warning">
               <div className="notification-icon">⚠️</div>
               <div className="notification-content">
-                <p>Your attendance is below 90%. Please maintain regular attendance.</p>
+                <p>
+                  Your attendance is below 90%. Please maintain regular
+                  attendance.
+                </p>
                 <span className="notification-time">2 hours ago</span>
               </div>
             </div>
@@ -173,7 +176,7 @@ const StudentDashboard = () => {
               <div className="subject-name">Mathematics</div>
               <div className="subject-progress">
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{width: '95%'}}></div>
+                  <div className="progress-fill" style={{ width: "95%" }}></div>
                 </div>
                 <span className="progress-text">95%</span>
               </div>
@@ -182,7 +185,7 @@ const StudentDashboard = () => {
               <div className="subject-name">Physics</div>
               <div className="subject-progress">
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{width: '88%'}}></div>
+                  <div className="progress-fill" style={{ width: "88%" }}></div>
                 </div>
                 <span className="progress-text">88%</span>
               </div>
@@ -191,7 +194,7 @@ const StudentDashboard = () => {
               <div className="subject-name">Chemistry</div>
               <div className="subject-progress">
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{width: '82%'}}></div>
+                  <div className="progress-fill" style={{ width: "82%" }}></div>
                 </div>
                 <span className="progress-text">82%</span>
               </div>
@@ -200,7 +203,7 @@ const StudentDashboard = () => {
               <div className="subject-name">Biology</div>
               <div className="subject-progress">
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{width: '90%'}}></div>
+                  <div className="progress-fill" style={{ width: "90%" }}></div>
                 </div>
                 <span className="progress-text">90%</span>
               </div>

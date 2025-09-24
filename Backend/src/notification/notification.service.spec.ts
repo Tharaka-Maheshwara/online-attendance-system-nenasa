@@ -67,7 +67,7 @@ describe('NotificationService', () => {
 
   it('should log notification when email fails', async () => {
     mockRepository.save.mockResolvedValue({ id: 1 });
-    
+
     // This test would need proper mocking of the email transporter
     expect(service).toBeDefined();
   });
