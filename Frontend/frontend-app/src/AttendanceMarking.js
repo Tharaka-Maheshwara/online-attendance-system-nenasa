@@ -427,7 +427,8 @@ const AttendanceMarking = () => {
               <option value="">-- Select a Class --</option>
               {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>
-                  {cls.name}{cls.code ? ` (${cls.code})` : ''}
+                  {cls.name}
+                  {cls.code ? ` (${cls.code})` : ""}
                 </option>
               ))}
             </select>
