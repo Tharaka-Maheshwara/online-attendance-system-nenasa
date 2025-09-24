@@ -21,9 +21,7 @@ const AdminDashboard = () => {
   const [selectedClass, setSelectedClass] = React.useState(null);
   const [classFormData, setClassFormData] = React.useState({
     name: '',
-    subject: '',
-    batch: '',
-    teacherId: ''
+    subject: ''
   });
 
   React.useEffect(() => {
@@ -130,17 +128,13 @@ const AdminDashboard = () => {
       setSelectedClass(cls);
       setClassFormData({
         name: cls.name || '',
-        subject: cls.subject || '',
-        batch: cls.batch || '',
-        teacherId: cls.teacherId || ''
+        subject: cls.subject || ''
       });
     } else {
       setSelectedClass(null);
       setClassFormData({
         name: '',
-        subject: '',
-        batch: '',
-        teacherId: ''
+        subject: ''
       });
     }
     setClassModalOpen(true);
@@ -215,12 +209,6 @@ const AdminDashboard = () => {
       console.error('Error deleting class:', error);
       setNotification({ type: 'error', message: 'Error deleting class' });
     }
-  };
-
-  // Get teacher name by ID
-  const getTeacherName = (teacherId) => {
-    const teacher = users.find(u => u.id === teacherId && u.role === 'teacher');
-    return teacher ? teacher.email : 'No teacher assigned';
   };
 
   return (
@@ -355,8 +343,6 @@ const AdminDashboard = () => {
                     <div className="class-info">
                       <h3>{cls.name}</h3>
                       <p><strong>Subject:</strong> {cls.subject || 'Not specified'}</p>
-                      <p><strong>Batch:</strong> {cls.batch || 'Not specified'}</p>
-                      <p><strong>Teacher:</strong> {getTeacherName(cls.teacherId)}</p>
                     </div>
                     <div className="class-actions">
                       <button
@@ -410,32 +396,6 @@ const AdminDashboard = () => {
                     onChange={handleClassInputChange}
                     disabled={updating}
                   />
-                </div>
-                <div className="form-group">
-                  <label>Batch</label>
-                  <input
-                    type="text"
-                    name="batch"
-                    value={classFormData.batch}
-                    onChange={handleClassInputChange}
-                    disabled={updating}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Assign Teacher</label>
-                  <select
-                    name="teacherId"
-                    value={classFormData.teacherId}
-                    onChange={handleClassInputChange}
-                    disabled={updating}
-                  >
-                    <option value="">No teacher assigned</option>
-                    {users.filter(u => u.role === 'teacher').map(teacher => (
-                      <option key={teacher.id} value={teacher.id}>
-                        {teacher.email}
-                      </option>
-                    ))}
-                  </select>
                 </div>
                 <div className="modal-actions">
                   <button
