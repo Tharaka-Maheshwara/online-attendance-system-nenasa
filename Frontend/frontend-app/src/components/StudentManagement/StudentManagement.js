@@ -138,43 +138,6 @@ const StudentManagement = () => {
     }
   };
 
-  const sendTestNotification = async (student) => {
-    if (!student.parentEmail) {
-      alert("No parent email found for this student");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "http://localhost:8000/notifications/send-attendance",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            studentName: student.name,
-            parentEmail: student.parentEmail,
-            classId: 1, // Example class ID
-            studentId: student.id,
-            isPresent: true,
-            date: new Date().toISOString().split("T")[0],
-          }),
-        }
-      );
-
-      const result = await response.json();
-      if (result.success) {
-        alert("Test notification sent successfully!");
-      } else {
-        alert("Failed to send notification: " + result.message);
-      }
-    } catch (error) {
-      console.error("Error sending notification:", error);
-      alert("Error sending notification");
-    }
-  };
-
   const handleDelete = async (studentId) => {
     if (window.confirm("Are you sure you want to delete this student?")) {
       setError("");
@@ -461,14 +424,6 @@ const StudentManagement = () => {
                     <td>{student.parentEmail || "N/A"}</td>
                     <td>
                       <div className="action-buttons">
-                        {student.parentEmail && (
-                          <button
-                            className="test-btn"
-                            onClick={() => sendTestNotification(student)}
-                          >
-                            Test Notification
-                          </button>
-                        )}
                         <button
                           className="edit-btn"
                           onClick={() => handleEdit(student)}
