@@ -82,10 +82,6 @@ const StudentDashboard = () => {
         <div className="student-actions">
           <h2>Quick Actions</h2>
           <div className="action-buttons">
-            <button className="action-btn primary" onClick={() => window.location.href = '/attendance'}>
-              <span className="btn-icon">📱</span>
-              Scan QR Code
-            </button>
             <button className="action-btn secondary">
               <span className="btn-icon">📝</span>
               Request Leave

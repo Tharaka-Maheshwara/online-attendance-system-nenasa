@@ -24,6 +24,23 @@ export class NotificationController {
     };
   }
 
+  @Post('send-test-email')
+  async sendTestEmail(
+    @Body('email') email: string,
+  ): Promise<{ success: boolean; message: string }> {
+    if (!email) {
+      return { success: false, message: 'Email address is required' };
+    }
+
+    const success = await this.notificationService.sendTestEmail(email);
+    return {
+      success,
+      message: success
+        ? 'Test email sent successfully'
+        : 'Failed to send test email',
+    };
+  }
+
   @Post('send-attendance')
   async sendAttendanceNotification(
     @Body()

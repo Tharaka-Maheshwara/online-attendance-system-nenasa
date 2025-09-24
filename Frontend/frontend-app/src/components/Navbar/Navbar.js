@@ -91,16 +91,7 @@ const Navbar = () => {
               </Link>
             )}
 
-            {userRole === "student" && (
-              <Link
-                to="/attendance"
-                className={`nav-link ${
-                  isActive("/attendance") ? "active" : ""
-                }`}
-              >
-                📱 Scan QR
-              </Link>
-            )}
+            {/* Students no longer have access to attendance marking */}
 
             {userRole === "admin" && (
               <>
@@ -147,11 +138,6 @@ const Navbar = () => {
           <div className="navbar-user">
             <div className="user-info">
               <span className="user-name">{accounts[0]?.name}</span>
-              {currentUser?.registerNumber && (
-                <span className="user-register">
-                  #{currentUser.registerNumber}
-                </span>
-              )}
               <span className="user-role">{userRole.toUpperCase()}</span>
             </div>
             <button onClick={handleLogout} className="logout-btn">

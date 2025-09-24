@@ -379,20 +379,22 @@ const AttendanceMarking = () => {
     <div className="attendance-marking">
       <div className="attendance-header">
         <h2>Attendance Marking</h2>
-        <div className="mode-selector">
-          <button 
-            className={markingMode === 'manual' ? 'active' : ''}
-            onClick={() => setMarkingMode('manual')}
-          >
-            📝 Manual
-          </button>
-          <button 
-            className={markingMode === 'qr' ? 'active' : ''}
-            onClick={() => setMarkingMode('qr')}
-          >
-            📱 QR Code
-          </button>
-        </div>
+        {(userRole === 'teacher' || userRole === 'admin') && (
+          <div className="mode-selector">
+            <button 
+              className={markingMode === 'manual' ? 'active' : ''}
+              onClick={() => setMarkingMode('manual')}
+            >
+              📝 Manual
+            </button>
+            <button 
+              className={markingMode === 'qr' ? 'active' : ''}
+              onClick={() => setMarkingMode('qr')}
+            >
+              📱 QR Code
+            </button>
+          </div>
+        )}
       </div>
 
       {userRole === 'teacher' || userRole === 'admin' ? (
@@ -479,108 +481,28 @@ const AttendanceMarking = () => {
           )}
         </div>
       ) : (
-        <div className="student-interface">
-          {markingMode === 'qr' && (
-            <div className="qr-scanning">
-              <h3>Scan QR Code for Attendance</h3>
-              
-              {/* Camera Permission Status */}
-              {cameraPermission && (
-                <div className={`camera-status ${cameraPermission}`}>
-                  {cameraPermission === 'granted' && (
-                    <p className="success">✅ Camera access granted</p>
-                  )}
-                  {cameraPermission === 'denied' && (
-                    <div className="warning">
-                      <p>❌ Camera access denied</p>
-                      <p>Please click on the camera icon in your browser's address bar and allow camera access.</p>
-                      <button onClick={checkCameraPermission} className="retry-permission-btn">
-                        🔄 Check Permission Again
-                      </button>
-                    </div>
-                  )}
-                  {cameraPermission === 'not_found' && (
-                    <p className="error">📷 No camera found on this device</p>
-                  )}
-                  {cameraPermission === 'not_supported' && (
-                    <p className="error">❌ Camera not supported on this browser</p>
-                  )}
-                </div>
-              )}
-              
-              {/* Camera Error Messages */}
-              {cameraError && (
-                <div className="camera-error">
-                  <p className="error-message">⚠️ {cameraError}</p>
-                  <button onClick={checkCameraPermission} className="retry-btn">
-                    🔄 Try Again
-                  </button>
-                </div>
-              )}
-              
-              {/* Scanning Controls */}
-              {cameraPermission === 'granted' && !cameraError && (
-                <>
-                  {!scanning ? (
-                    <button onClick={startQRScanning} className="scan-qr-btn">
-                      📷 Start Scanning
-                    </button>
-                  ) : (
-                    <div className="scanner-container">
-                      <video 
-                        ref={videoRef} 
-                        className="qr-video" 
-                        autoPlay 
-                        playsInline
-                        muted
-                      ></video>
-                      <div className="scanning-overlay">
-                        <p>📱 Point your camera at the QR code</p>
-                        <div className="scanning-frame"></div>
-                      </div>
-                      <button onClick={stopQRScanning} className="stop-scan-btn">
-                        ⏹️ Stop Scanning
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-              
-              {/* Scan Results */}
-              {scanResult && (
-                <div className="scan-result">
-                  <p className="success">✅ QR Code Scanned Successfully!</p>
-                  <p>Processing attendance...</p>
-                </div>
-              )}
+        <div className="student-restricted">
+          <div className="access-denied">
+            <div className="restriction-icon">🚫</div>
+            <h2>Access Restricted</h2>
+            <p>Students are not allowed to mark their own attendance.</p>
+            <p>Please contact your teacher or administrator if you need to report your attendance.</p>
+            
+            <div className="info-box">
+              <h4>📋 How Attendance Works:</h4>
+              <ul>
+                <li>✅ Teachers mark attendance using this system</li>
+                <li>📧 You'll receive email notifications about your attendance</li>
+                <li>👀 You can view your attendance history in your dashboard</li>
+                <li>📞 Contact your teacher for attendance corrections</li>
+              </ul>
             </div>
-          )}
-          
-          {markingMode === 'manual' && (
-            <div className="student-manual">
-              <h3>Manual Check-in</h3>
-              <p>Select your class and mark your attendance:</p>
-              <div className="class-selector">
-                <label>Select Your Class:</label>
-                <select 
-                  value={selectedClass} 
-                  onChange={(e) => handleClassChange(e.target.value)}
-                >
-                  <option value="">-- Select a Class --</option>
-                  {classes.map(cls => (
-                    <option key={cls.id} value={cls.id}>
-                      {cls.name} ({cls.code})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {selectedClass && (
-                <button onClick={saveAttendance} className="checkin-btn">
-                  ✓ Check In
-                </button>
-              )}
+            
+            <div className="contact-info">
+              <h4>📞 Need Help?</h4>
+              <p>Contact your class teacher or school administration for attendance-related inquiries.</p>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>

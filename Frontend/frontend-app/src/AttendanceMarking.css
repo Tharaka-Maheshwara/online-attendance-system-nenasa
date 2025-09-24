@@ -566,3 +566,123 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
 }
+
+/* Student Restriction Styles */
+.student-restricted {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  padding: 40px;
+}
+
+.access-denied {
+  text-align: center;
+  max-width: 600px;
+  padding: 40px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.restriction-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.access-denied h2 {
+  color: #dc3545;
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.access-denied p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.info-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 4px solid #17a2b8;
+  margin: 30px 0;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-box h4 {
+  color: #17a2b8;
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.info-box ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.info-box li {
+  padding: 8px 0;
+  color: #495057;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.info-box li:last-child {
+  border-bottom: none;
+}
+
+.contact-info {
+  background: #fff3cd;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+  margin-top: 25px;
+}
+
+.contact-info h4 {
+  color: #856404;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.contact-info p {
+  color: #856404;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design for Student Restriction */
+@media (max-width: 768px) {
+  .student-restricted {
+    padding: 20px;
+    min-height: 400px;
+  }
+  
+  .access-denied {
+    padding: 30px 20px;
+  }
+  
+  .restriction-icon {
+    font-size: 3rem;
+  }
+  
+  .access-denied h2 {
+    font-size: 1.6rem;
+  }
+  
+  .info-box {
+    padding: 20px;
+  }
+}
