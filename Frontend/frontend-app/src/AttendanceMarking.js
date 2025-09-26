@@ -313,9 +313,14 @@ const AttendanceMarking = () => {
       console.log("QR Data received:", data);
 
       // Check if this is a student QR code and user is teacher/admin
-      if (data.type === "student_attendance" && (userRole === "teacher" || userRole === "admin")) {
+      if (
+        data.type === "student_attendance" &&
+        (userRole === "teacher" || userRole === "admin")
+      ) {
         if (!selectedClass) {
-          alert("Please select a class first before scanning student QR codes.");
+          alert(
+            "Please select a class first before scanning student QR codes."
+          );
           return;
         }
 
@@ -323,18 +328,24 @@ const AttendanceMarking = () => {
         const studentId = data.studentId;
         const studentName = data.name;
         const studentRegisterNumber = data.registerNumber;
-        
-        console.log(`Scanning QR for student: ${studentName} (ID: ${studentId})`);
+
+        console.log(
+          `Scanning QR for student: ${studentName} (ID: ${studentId})`
+        );
 
         // Verify the student exists and is enrolled in the selected class
-        const selectedClassInfo = classes.find((c) => c.id === parseInt(selectedClass));
+        const selectedClassInfo = classes.find(
+          (c) => c.id === parseInt(selectedClass)
+        );
         if (!selectedClassInfo) {
           alert("Selected class not found.");
           return;
         }
 
         // Check if student is enrolled in the selected class
-        const studentResponse = await fetch(`http://localhost:8000/student/${studentId}`);
+        const studentResponse = await fetch(
+          `http://localhost:8000/student/${studentId}`
+        );
         if (!studentResponse.ok) {
           alert("Student not found in the system.");
           return;
@@ -345,15 +356,18 @@ const AttendanceMarking = () => {
           studentData.sub_1,
           studentData.sub_2,
           studentData.sub_3,
-          studentData.sub_4
+          studentData.sub_4,
         ].filter(Boolean);
 
-        const isEnrolled = studentSubjects.some(subject => 
-          subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+        const isEnrolled = studentSubjects.some(
+          (subject) =>
+            subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
         );
 
         if (!isEnrolled) {
-          alert(`${studentName} is not enrolled in ${selectedClassInfo.name} class.`);
+          alert(
+            `${studentName} is not enrolled in ${selectedClassInfo.name} class.`
+          );
           return;
         }
 
@@ -363,9 +377,12 @@ const AttendanceMarking = () => {
         setAttendance(newAttendance);
 
         // Show success message
-        alert(`✅ Attendance marked for ${studentName} in ${selectedClassInfo.name} class`);
-        console.log(`Attendance marked for student ${studentName} (${studentRegisterNumber})`);
-
+        alert(
+          `✅ Attendance marked for ${studentName} in ${selectedClassInfo.name} class`
+        );
+        console.log(
+          `Attendance marked for student ${studentName} (${studentRegisterNumber})`
+        );
       } else if (data.classId && userRole === "student") {
         // Keep existing logic for students scanning class QR codes
         // Get current user info
@@ -517,8 +534,12 @@ const AttendanceMarking = () => {
           {markingMode === "qr" && selectedClass && (
             <div className="qr-scanning">
               <h3>Scan Student QR Codes</h3>
-              <p>Scan each student's QR code to mark their attendance in {classes.find(c => c.id === parseInt(selectedClass))?.name} class</p>
-              
+              <p>
+                Scan each student's QR code to mark their attendance in{" "}
+                {classes.find((c) => c.id === parseInt(selectedClass))?.name}{" "}
+                class
+              </p>
+
               {!scanning ? (
                 <button onClick={startQRScanning} className="start-scan-btn">
                   📱 Start Scanning
@@ -547,7 +568,7 @@ const AttendanceMarking = () => {
                   )}
                 </div>
               )}
-              
+
               {cameraError && (
                 <div className="camera-error">
                   <p>❌ {cameraError}</p>
@@ -560,13 +581,20 @@ const AttendanceMarking = () => {
                   <h4>Attendance Status:</h4>
                   <div className="attendance-summary">
                     {students.map((student) => (
-                      <div key={student.id} className={`student-status ${attendance[student.id] || 'absent'}`}>
+                      <div
+                        key={student.id}
+                        className={`student-status ${
+                          attendance[student.id] || "absent"
+                        }`}
+                      >
                         <span className="status-icon">
-                          {attendance[student.id] === 'present' ? '✅' : '⭕'}
+                          {attendance[student.id] === "present" ? "✅" : "⭕"}
                         </span>
                         <span className="student-name">{student.name}</span>
                         <span className="status-text">
-                          {attendance[student.id] === 'present' ? 'Present' : 'Not Scanned'}
+                          {attendance[student.id] === "present"
+                            ? "Present"
+                            : "Not Scanned"}
                         </span>
                       </div>
                     ))}
