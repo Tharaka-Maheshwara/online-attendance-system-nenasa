@@ -1,0 +1,710 @@
+/* AttendanceMarking.css */
+.attendance-marking {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f2f5;
+}
+
+.attendance-header h2 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.mode-selector {
+  display: flex;
+  gap: 10px;
+}
+
+.mode-selector button {
+  padding: 10px 20px;
+  border: 2px solid #e9ecef;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.mode-selector button:hover {
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.mode-selector button.active {
+  background: #3498db;
+  border-color: #3498db;
+  color: white;
+}
+
+/* Teacher Interface */
+.teacher-interface {
+  margin-top: 20px;
+}
+
+.class-selector {
+  margin-bottom: 25px;
+}
+
+.class-selector label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.class-selector select {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+}
+
+.class-selector select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* QR Generation */
+.qr-generation {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.qr-generation h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.generate-qr-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.generate-qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.qr-display {
+  margin-top: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.qr-display p {
+  margin-top: 15px;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* Manual Attendance */
+.manual-attendance {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+}
+
+.manual-attendance h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.student-email {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.attendance-options {
+  display: flex;
+  gap: 20px;
+}
+
+.attendance-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.attendance-options input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.save-attendance-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.save-attendance-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Student Interface */
+.student-interface {
+  margin-top: 20px;
+}
+
+.qr-scanning {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.qr-scanning h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.scan-qr-btn {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.scan-qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.scanner-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-video {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.stop-scan-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.stop-scan-btn:hover {
+  background: #c0392b;
+}
+
+.scan-result {
+  margin-top: 15px;
+  padding: 15px;
+  background: #d5f4e6;
+  border: 1px solid #27ae60;
+  border-radius: 8px;
+  color: #1e8449;
+}
+
+.student-manual {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.student-manual h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.student-manual p {
+  color: #7f8c8d;
+  margin-bottom: 25px;
+}
+
+.checkin-btn {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 15px;
+}
+
+.checkin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .attendance-marking {
+    padding: 15px;
+    margin: 10px;
+  }
+
+  .attendance-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .mode-selector {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .mode-selector button {
+    flex: 1;
+    max-width: 150px;
+  }
+
+  .student-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .attendance-options {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .class-selector select {
+    max-width: 100%;
+  }
+
+  .qr-video {
+    max-width: 100%;
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendance-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .attendance-options {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .student-row {
+    padding: 12px 15px;
+  }
+
+  .qr-generation,
+  .manual-attendance,
+  .qr-scanning,
+  .student-manual {
+    padding: 20px;
+  }
+}
+
+/* Camera Status and Error Handling Styles */
+.camera-status {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.camera-status.granted {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.camera-status.denied {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.camera-status.not_found,
+.camera-status.not_supported,
+.camera-status.error {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+}
+
+.camera-error {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8d7da;
+  border: 2px solid #f5c6cb;
+  border-radius: 8px;
+  color: #721c24;
+}
+
+.camera-status .success {
+  color: #155724;
+  font-weight: 500;
+  margin: 0;
+}
+
+.camera-status .warning p,
+.camera-status .error {
+  margin: 8px 0;
+}
+
+.error-message {
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.retry-permission-btn,
+.retry-btn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.retry-permission-btn:hover,
+.retry-btn:hover {
+  background: #138496;
+}
+
+/* Enhanced Scanner Container */
+.scanner-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.qr-video {
+  width: 100%;
+  max-width: 500px;
+  height: 350px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  background: #f8f9fa;
+}
+
+.scanning-overlay {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10;
+}
+
+.scanning-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  z-index: 5;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+  }
+}
+
+.scan-result .success {
+  color: #155724;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.scan-result p {
+  margin: 5px 0;
+}
+
+/* Enhanced Button Styles */
+.scan-qr-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.scan-qr-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.stop-scan-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+.stop-scan-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+}
+
+/* Student Restriction Styles */
+.student-restricted {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  padding: 40px;
+}
+
+.access-denied {
+  text-align: center;
+  max-width: 600px;
+  padding: 40px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.restriction-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.access-denied h2 {
+  color: #dc3545;
+  margin: 0 0 20px 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.access-denied p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.info-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 4px solid #17a2b8;
+  margin: 30px 0;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-box h4 {
+  color: #17a2b8;
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.info-box ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.info-box li {
+  padding: 8px 0;
+  color: #495057;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.info-box li:last-child {
+  border-bottom: none;
+}
+
+.contact-info {
+  background: #fff3cd;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+  margin-top: 25px;
+}
+
+.contact-info h4 {
+  color: #856404;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.contact-info p {
+  color: #856404;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design for Student Restriction */
+@media (max-width: 768px) {
+  .student-restricted {
+    padding: 20px;
+    min-height: 400px;
+  }
+
+  .access-denied {
+    padding: 30px 20px;
+  }
+
+  .restriction-icon {
+    font-size: 3rem;
+  }
+
+  .access-denied h2 {
+    font-size: 1.6rem;
+  }
+
+  .info-box {
+    padding: 20px;
+  }
+}
+
+/* No students message */
+.no-students-message {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-students-message p {
+  margin: 10px 0;
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.no-students-message p:first-child {
+  font-weight: 600;
+  color: #495057;
+  font-size: 18px;
+}

@@ -1,0 +1,461 @@
+import React, { useState, useEffect } from "react";
+import "./TeacherManagement.css";
+import { getUserByRegisterNumber } from "../../services/userService";
+import { getAllClasses } from "../../services/classService";
+import {
+  getAllTeachers,
+  createTeacher,
+  updateTeacher,
+  deleteTeacher,
+  mapFormDataToTeacherDto,
+  mapTeacherToFormData,
+} from "../../services/teacherService";
+
+const TeacherManagement = () => {
+  const [teachers, setTeachers] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [isLookingUpUser, setIsLookingUpUser] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    registrationNumber: "",
+    contact: "",
+    selectedClasses: [],
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+  useEffect(() => {
+    loadTeachers();
+    loadClasses();
+
+    // Cleanup function to clear timeout when component unmounts
+    return () => {
+      if (window.registerNumberTimeout) {
+        clearTimeout(window.registerNumberTimeout);
+      }
+    };
+  }, []);
+
+  const loadTeachers = async () => {
+    try {
+      const teachersData = await getAllTeachers();
+      setTeachers(teachersData);
+    } catch (error) {
+      console.error("Error loading teachers:", error);
+      // Set empty array on error so component doesn't break
+      setTeachers([]);
+    }
+  };
+
+  const loadClasses = async () => {
+    try {
+      const classesData = await getAllClasses();
+      setClasses(classesData);
+    } catch (error) {
+      console.error("Error loading classes:", error);
+      // Set empty array on error so component doesn't break
+      setClasses([]);
+    }
+  };
+
+  // Function to lookup user by register number and auto-fill fields
+  const lookupUserByRegisterNumber = async (registerNumber) => {
+    if (!registerNumber || registerNumber.trim() === "") {
+      return;
+    }
+
+    setIsLookingUpUser(true);
+    try {
+      const user = await getUserByRegisterNumber(registerNumber);
+
+      if (user) {
+        // Use the display_name directly as the single name field
+        const displayName = user.display_name || "";
+
+        // Auto-fill the form fields
+        setFormData((prev) => ({
+          ...prev,
+          name: displayName,
+          email: user.email || "",
+        }));
+
+        console.log("User found and auto-filled:", user);
+      } else {
+        console.log("No user found with register number:", registerNumber);
+        // Don't show error for not found - this is normal when user doesn't exist
+      }
+    } catch (error) {
+      console.error("Error looking up user:", error);
+      // Show a subtle error message but don't block the user from continuing
+      if (error.message && !error.message.includes("not found")) {
+        console.warn(
+          "Could not connect to server for user lookup. You can still create the teacher manually."
+        );
+      }
+    } finally {
+      setIsLookingUpUser(false);
+    }
+  };
+
+  // Function to handle class selection (max 4 classes)
+  const handleClassSelection = (classId) => {
+    setFormData((prev) => {
+      const currentSelected = prev.selectedClasses;
+      const isAlreadySelected = currentSelected.includes(classId);
+
+      if (isAlreadySelected) {
+        // Remove class if already selected
+        return {
+          ...prev,
+          selectedClasses: currentSelected.filter((id) => id !== classId),
+        };
+      } else if (currentSelected.length < 4) {
+        // Add class if less than 4 selected
+        return {
+          ...prev,
+          selectedClasses: [...currentSelected, classId],
+        };
+      } else {
+        // Show message if trying to select more than 4
+        alert("You can only select up to 4 classes");
+        return prev;
+      }
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // If register number is being changed, lookup user for auto-fill
+    if (name === "registrationNumber") {
+      // Use setTimeout to debounce the API call
+      clearTimeout(window.registerNumberTimeout);
+      window.registerNumberTimeout = setTimeout(() => {
+        lookupUserByRegisterNumber(value);
+      }, 500); // Wait 500ms after user stops typing
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Convert form data to backend format
+      const teacherDto = mapFormDataToTeacherDto(formData, classes);
+
+      if (isEditing && editingId) {
+        // Update existing teacher
+        await updateTeacher(editingId, teacherDto);
+        alert("Teacher updated successfully!");
+      } else {
+        // Create new teacher
+        await createTeacher(teacherDto);
+        alert("Teacher created successfully!");
+      }
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        registrationNumber: "",
+        contact: "",
+        selectedClasses: [],
+      });
+      setShowAddForm(false);
+      setIsEditing(false);
+      setEditingId(null);
+
+      // Reload teachers list
+      await loadTeachers();
+    } catch (error) {
+      console.error("Error saving teacher:", error);
+
+      // Show user-friendly error message
+      let errorMessage = `Error ${
+        isEditing ? "updating" : "creating"
+      } teacher. Please try again.`;
+      if (
+        error.message.includes("duplicate") ||
+        error.message.includes("unique")
+      ) {
+        errorMessage =
+          "A teacher with this email or register number already exists.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      alert(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    // Clear any pending register number lookup
+    if (window.registerNumberTimeout) {
+      clearTimeout(window.registerNumberTimeout);
+    }
+
+    setFormData({
+      name: "",
+      email: "",
+      registrationNumber: "",
+      contact: "",
+      selectedClasses: [],
+    });
+    setShowAddForm(false);
+    setIsLookingUpUser(false);
+    setIsEditing(false);
+    setEditingId(null);
+  };
+
+  const handleEdit = async (teacherId) => {
+    try {
+      // Find the teacher in our current list
+      const teacherToEdit = teachers.find(
+        (teacher) => teacher.id === teacherId
+      );
+      if (teacherToEdit) {
+        // Map the teacher data to form data format
+        const formData = mapTeacherToFormData(teacherToEdit);
+
+        // Populate the form with teacher data
+        setFormData(formData);
+        setIsEditing(true);
+        setEditingId(teacherId);
+        setShowAddForm(true); // Show the form for editing
+
+        // Scroll to form
+        const formElement = document.querySelector(".teacher-form");
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    } catch (error) {
+      console.error("Error preparing edit:", error);
+      alert("Error preparing teacher data for editing");
+    }
+  };
+
+  const handleDelete = async (teacherId) => {
+    if (window.confirm("Are you sure you want to delete this teacher?")) {
+      try {
+        await deleteTeacher(teacherId);
+        await loadTeachers(); // Reload the teachers list
+        alert("Teacher deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting teacher:", error);
+        alert("Error deleting teacher. Please try again.");
+      }
+    }
+  };
+
+  return (
+    <div className="teacher-management">
+      <div className="header">
+        <h2>Teacher Management</h2>
+        <button
+          className="add-btn"
+          onClick={() => setShowAddForm(!showAddForm)}
+        >
+          {showAddForm ? "Cancel" : "Add New Teacher"}
+        </button>
+      </div>
+
+      {showAddForm && (
+        <div className="add-teacher-form">
+          <h3>{isEditing ? "Edit Teacher" : "Add New Teacher"}</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="name">Name *</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="email">Email *</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="registrationNumber">
+                  Teacher ID *
+                  {isLookingUpUser && (
+                    <span className="lookup-indicator">
+                      {" "}
+                      (Looking up user...)
+                    </span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  id="registrationNumber"
+                  name="registrationNumber"
+                  value={formData.registrationNumber}
+                  onChange={handleInputChange}
+                  placeholder="e.g., T001"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="contact">Contact Number *</label>
+                <input
+                  type="tel"
+                  id="contact"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group full-width">
+                <label htmlFor="classes">
+                  Select Classes (Max 4)
+                  <span className="selected-count">
+                    ({formData.selectedClasses.length}/4 selected)
+                  </span>
+                </label>
+                <div className="class-selection-container">
+                  {classes.length > 0 ? (
+                    <div className="class-options">
+                      {classes.map((classItem) => (
+                        <div
+                          key={classItem.id}
+                          className={`class-option ${
+                            formData.selectedClasses.includes(classItem.id)
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() => handleClassSelection(classItem.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.selectedClasses.includes(
+                              classItem.id
+                            )}
+                            onChange={() => {}} // Handled by div onClick
+                            readOnly
+                          />
+                          <span className="class-name">{classItem.name}</span>
+                          {classItem.subject && (
+                            <span className="class-subject">
+                              ({classItem.subject})
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="no-classes">
+                      <p>No classes available. Please contact administrator.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="submit-btn"
+              >
+                {isSubmitting
+                  ? isEditing
+                    ? "Updating..."
+                    : "Creating..."
+                  : isEditing
+                  ? "Update Teacher"
+                  : "Create Teacher"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      <div className="teachers-list">
+        <h3>Teachers List</h3>
+        {teachers.length === 0 ? (
+          <div className="no-data">
+            <p>No teachers found. Add a new teacher to get started.</p>
+          </div>
+        ) : (
+          <div className="teachers-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Teacher ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Contact</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {teachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>{teacher.registerNumber}</td>
+                    <td>{teacher.name}</td>
+                    <td>{teacher.email}</td>
+                    <td>{teacher.contactNumber}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(teacher.id)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(teacher.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default TeacherManagement;
