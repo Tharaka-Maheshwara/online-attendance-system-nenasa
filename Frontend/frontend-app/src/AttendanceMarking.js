@@ -111,38 +111,60 @@ const AttendanceMarking = () => {
 
   const fetchStudents = async (classId) => {
     try {
-      // Fetch all users with student role
-      const response = await fetch(`http://localhost:8000/users`);
-      if (response.ok) {
-        const allUsers = await response.json();
-        // Filter only students
-        const studentData = allUsers.filter((user) => user.role === "student");
-        setStudents(studentData);
+      if (!classId) {
+        setStudents([]);
+        setAttendance({});
+        return;
+      }
+
+      // Get the selected class information
+      const selectedClassInfo = classes.find((c) => c.id === parseInt(classId));
+      if (!selectedClassInfo) {
+        console.error("Selected class not found");
+        setStudents([]);
+        setAttendance({});
+        return;
+      }
+
+      // Fetch students from the student endpoint instead of users
+      const studentsResponse = await fetch("http://localhost:8000/student");
+      if (studentsResponse.ok) {
+        const allStudents = await studentsResponse.json();
+        
+        // Filter students who are enrolled in the selected class
+        // Check if any of their subjects (sub_1, sub_2, sub_3, sub_4) match the class name
+        const enrolledStudents = allStudents.filter((student) => {
+          const studentSubjects = [
+            student.sub_1,
+            student.sub_2,
+            student.sub_3,
+            student.sub_4
+          ].filter(Boolean); // Remove null/undefined values
+          
+          // Check if any of the student's subjects match the selected class name
+          return studentSubjects.some(subject => 
+            subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+          );
+        });
+
+        console.log(`Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.name}`);
+        setStudents(enrolledStudents);
 
         // Initialize attendance state
         const initialAttendance = {};
-        studentData.forEach((student) => {
+        enrolledStudents.forEach((student) => {
           initialAttendance[student.id] = "absent";
         });
         setAttendance(initialAttendance);
+      } else {
+        console.error("Failed to fetch students:", studentsResponse.status);
+        setStudents([]);
+        setAttendance({});
       }
     } catch (error) {
       console.error("Error fetching students:", error);
-      // Mock data for demo
-      const mockStudents = [
-        { id: 1, name: "John Doe", email: "john@example.com" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com" },
-        { id: 3, name: "Mike Johnson", email: "mike@example.com" },
-        { id: 4, name: "Sarah Wilson", email: "sarah@example.com" },
-        { id: 5, name: "David Brown", email: "david@example.com" },
-      ];
-      setStudents(mockStudents);
-
-      const initialAttendance = {};
-      mockStudents.forEach((student) => {
-        initialAttendance[student.id] = "absent";
-      });
-      setAttendance(initialAttendance);
+      setStudents([]);
+      setAttendance({});
     }
   };
 
@@ -449,15 +471,16 @@ const AttendanceMarking = () => {
             </div>
           )}
 
-          {markingMode === "manual" && selectedClass && students.length > 0 && (
+          {markingMode === "manual" && selectedClass && (
             <div className="manual-attendance">
               <h3>Mark Attendance Manually</h3>
-              <div className="student-list">
-                {students.map((student) => (
+              {students.length > 0 ? (
+                <div className="student-list">
+                  {students.map((student) => (
                   <div key={student.id} className="student-row">
                     <div className="student-info">
                       <span className="student-name">
-                        {student.display_name || student.email}
+                        {student.name || student.email}
                       </span>
                       <span className="student-email">{student.email}</span>
                     </div>
@@ -500,11 +523,19 @@ const AttendanceMarking = () => {
                       </label>
                     </div>
                   </div>
-                ))}
-              </div>
-              <button onClick={saveAttendance} className="save-attendance-btn">
-                Save Attendance
-              </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="no-students-message">
+                  <p>No students are enrolled in the selected class.</p>
+                  <p>Please check the class selection or ensure students are properly enrolled.</p>
+                </div>
+              )}
+              {students.length > 0 && (
+                <button onClick={saveAttendance} className="save-attendance-btn">
+                  Save Attendance
+                </button>
+              )}
             </div>
           )}
         </div>
