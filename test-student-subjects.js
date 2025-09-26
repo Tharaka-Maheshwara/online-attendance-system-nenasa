@@ -4,7 +4,7 @@ const API_BASE_URL = "http://localhost:8000";
 // Test data
 const testStudent = {
   name: "Test Student with Subjects",
-  email: "testsubject@example.com", 
+  email: "testsubject@example.com",
   registerNumber: "TS123456",
   contactNumber: "0771234567",
   parentName: "Parent Name",
@@ -12,13 +12,13 @@ const testStudent = {
   sub_1_id: 1, // Assuming class ID 1 exists
   sub_2_id: 2, // Assuming class ID 2 exists
   sub_3_id: null, // Optional
-  sub_4_id: null  // Optional
+  sub_4_id: null, // Optional
 };
 
 async function testStudentWithSubjects() {
   try {
     console.log("Testing student creation with subjects...");
-    
+
     // Create student
     const createResponse = await fetch(`${API_BASE_URL}/student`, {
       method: "POST",
@@ -36,18 +36,19 @@ async function testStudentWithSubjects() {
     console.log("Student created successfully:", createdStudent);
 
     // Get student with subjects
-    const getResponse = await fetch(`${API_BASE_URL}/student/${createdStudent.id}`);
+    const getResponse = await fetch(
+      `${API_BASE_URL}/student/${createdStudent.id}`
+    );
     const studentWithSubjects = await getResponse.json();
-    
+
     console.log("Student with subjects:", studentWithSubjects);
-    
+
     // Verify subjects are loaded
     if (studentWithSubjects.sub_1 || studentWithSubjects.sub_2) {
       console.log("✅ Subjects successfully loaded with student");
     } else {
       console.log("❌ Subjects not loaded with student");
     }
-
   } catch (error) {
     console.error("Test failed:", error.message);
   }

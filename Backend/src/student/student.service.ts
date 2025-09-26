@@ -19,10 +19,14 @@ export class StudentService {
       createStudentDto.sub_2,
       createStudentDto.sub_3,
       createStudentDto.sub_4,
-    ].filter(subject => subject !== undefined && subject !== null && subject !== '');
+    ].filter(
+      (subject) => subject !== undefined && subject !== null && subject !== '',
+    );
 
     if (subjects.length > 4) {
-      throw new Error('A student can only be assigned to a maximum of 4 subjects');
+      throw new Error(
+        'A student can only be assigned to a maximum of 4 subjects',
+      );
     }
 
     // Check for duplicate subject assignments
@@ -34,7 +38,7 @@ export class StudentService {
 
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
     this.validateSubjects(createStudentDto);
-    
+
     const student = this.studentRepository.create(createStudentDto);
     const savedStudent = await this.studentRepository.save(student);
 
@@ -104,7 +108,7 @@ export class StudentService {
     };
 
     this.validateSubjects(mergedData);
-    
+
     await this.studentRepository.update(id, updateStudentDto);
     return await this.findOne(id);
   }
