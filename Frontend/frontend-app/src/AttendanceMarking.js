@@ -98,7 +98,7 @@ const AttendanceMarking = () => {
         const classData = await response.json();
         setClasses(classData);
       } else {
-        throw new Error('Failed to fetch classes');
+        throw new Error("Failed to fetch classes");
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
@@ -352,7 +352,6 @@ const AttendanceMarking = () => {
 
         // Save attendance to the backend
         await saveStudentAttendance(studentId, "present", studentName);
-
       } else if (data.classId && userRole === "student") {
         const currentUser = accounts[0];
         const userEmail = currentUser.username || currentUser.name;
@@ -453,7 +452,9 @@ const AttendanceMarking = () => {
         alert(`✅ Attendance for ${studentDisplayName} saved successfully!`);
       } else {
         const errorData = await response.json();
-        alert(`Failed to save attendance: ${errorData.message || 'Unknown error'}`);
+        alert(
+          `Failed to save attendance: ${errorData.message || "Unknown error"}`
+        );
       }
     } catch (error) {
       console.error("Error saving student attendance:", error);
@@ -625,7 +626,12 @@ const AttendanceMarking = () => {
                         </label>
                       </div>
                       <button
-                        onClick={() => saveStudentAttendance(student.id, attendance[student.id])}
+                        onClick={() =>
+                          saveStudentAttendance(
+                            student.id,
+                            attendance[student.id]
+                          )
+                        }
                         className="save-student-attendance-btn"
                       >
                         Save
@@ -642,7 +648,6 @@ const AttendanceMarking = () => {
                   </p>
                 </div>
               )}
-              
             </div>
           )}
         </div>
@@ -686,4 +691,3 @@ const AttendanceMarking = () => {
 };
 
 export default AttendanceMarking;
-
