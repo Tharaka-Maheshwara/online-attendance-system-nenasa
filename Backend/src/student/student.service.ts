@@ -37,7 +37,7 @@ export class StudentService {
     }
   }
 
-  private async generateQRCode(student: Student): Promise<string> {
+  async generateQRCodeDataURL(student: Student): Promise<string> {
     // Create QR code data with student information
     const qrData = {
       studentId: student.id,
@@ -105,15 +105,7 @@ export class StudentService {
       // But you might want to handle this differently based on your requirements
     }
 
-    // Generate QR code for the student
-    try {
-      const qrCode = await this.generateQRCode(savedStudent);
-      await this.studentRepository.update(savedStudent.id, { qrCode });
-      savedStudent.qrCode = qrCode;
-    } catch (error) {
-      console.error('Error generating QR code for student:', error);
-      // Continue without QR code if generation fails
-    }
+    
 
     return savedStudent;
   }
@@ -177,20 +169,5 @@ export class StudentService {
     }
   }
 
-  async regenerateQRCode(studentId: number): Promise<Student | null> {
-    const student = await this.findOne(studentId);
-    if (!student) {
-      throw new Error('Student not found');
-    }
-
-    try {
-      const qrCode = await this.generateQRCode(student);
-      await this.studentRepository.update(studentId, { qrCode });
-      student.qrCode = qrCode;
-      return student;
-    } catch (error) {
-      console.error('Error regenerating QR code:', error);
-      throw new Error('Failed to regenerate QR code');
-    }
-  }
+  
 }

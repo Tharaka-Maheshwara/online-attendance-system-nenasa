@@ -50,7 +50,8 @@ export class StudentController {
     if (!student) {
       throw new Error('Student not found');
     }
-    return { qrCode: student.qrCode };
+    const qrCode = await this.studentService.generateQRCodeDataURL(student);
+    return { qrCode };
   }
 
   @Post('qr-lookup')
@@ -58,8 +59,5 @@ export class StudentController {
     return await this.studentService.findByQRData(qrData);
   }
 
-  @Post(':studentId/regenerate-qr')
-  async regenerateQRCode(@Param('studentId') studentId: string) {
-    return await this.studentService.regenerateQRCode(+studentId);
-  }
+  
 }
