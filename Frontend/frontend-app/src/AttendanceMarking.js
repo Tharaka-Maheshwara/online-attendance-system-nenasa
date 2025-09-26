@@ -460,16 +460,24 @@ const AttendanceMarking = () => {
     }
   };
 
-  const saveAttendance = async () => {
+  const saveStudentAttendance = async (studentId) => {
     try {
+      const status = attendance[studentId];
+      if (!status) {
+        alert("Please select an attendance status.");
+        return;
+      }
+
       const attendanceData = {
         classId: selectedClass,
         date: new Date().toISOString().split("T")[0],
-        attendance: Object.entries(attendance).map(([studentId, status]) => ({
-          studentId: parseInt(studentId),
-          status,
-          timestamp: new Date().toISOString(),
-        })),
+        attendance: [
+          {
+            studentId: parseInt(studentId),
+            status,
+            timestamp: new Date().toISOString(),
+          },
+        ],
       };
 
       const response = await fetch("http://localhost:8000/attendance", {
@@ -481,13 +489,13 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
-        alert("Attendance saved successfully!");
+        alert(`Attendance for the student saved successfully!`);
       } else {
-        alert("Failed to save attendance!");
+        alert(`Failed to save attendance for the student!`);
       }
     } catch (error) {
-      console.error("Error saving attendance:", error);
-      alert("Error saving attendance!");
+      console.error("Error saving student attendance:", error);
+      alert("Error saving student attendance!");
     }
   };
 
@@ -655,6 +663,12 @@ const AttendanceMarking = () => {
                           Late
                         </label>
                       </div>
+                      <button
+                        onClick={() => saveStudentAttendance(student.id)}
+                        className="save-student-attendance-btn"
+                      >
+                        Save
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -667,14 +681,7 @@ const AttendanceMarking = () => {
                   </p>
                 </div>
               )}
-              {students.length > 0 && (
-                <button
-                  onClick={saveAttendance}
-                  className="save-attendance-btn"
-                >
-                  Save Attendance
-                </button>
-              )}
+              
             </div>
           )}
         </div>
