@@ -130,7 +130,7 @@ const AttendanceMarking = () => {
       const studentsResponse = await fetch("http://localhost:8000/student");
       if (studentsResponse.ok) {
         const allStudents = await studentsResponse.json();
-        
+
         // Filter students who are enrolled in the selected class
         // Check if any of their subjects (sub_1, sub_2, sub_3, sub_4) match the class name
         const enrolledStudents = allStudents.filter((student) => {
@@ -138,16 +138,19 @@ const AttendanceMarking = () => {
             student.sub_1,
             student.sub_2,
             student.sub_3,
-            student.sub_4
+            student.sub_4,
           ].filter(Boolean); // Remove null/undefined values
-          
+
           // Check if any of the student's subjects match the selected class name
-          return studentSubjects.some(subject => 
-            subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+          return studentSubjects.some(
+            (subject) =>
+              subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
           );
         });
 
-        console.log(`Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.name}`);
+        console.log(
+          `Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.name}`
+        );
         setStudents(enrolledStudents);
 
         // Initialize attendance state
@@ -477,62 +480,68 @@ const AttendanceMarking = () => {
               {students.length > 0 ? (
                 <div className="student-list">
                   {students.map((student) => (
-                  <div key={student.id} className="student-row">
-                    <div className="student-info">
-                      <span className="student-name">
-                        {student.name || student.email}
-                      </span>
-                      <span className="student-email">{student.email}</span>
+                    <div key={student.id} className="student-row">
+                      <div className="student-info">
+                        <span className="student-name">
+                          {student.name || student.email}
+                        </span>
+                        <span className="student-email">{student.email}</span>
+                      </div>
+                      <div className="attendance-options">
+                        <label>
+                          <input
+                            type="radio"
+                            name={`attendance-${student.id}`}
+                            value="present"
+                            checked={attendance[student.id] === "present"}
+                            onChange={(e) =>
+                              handleAttendanceChange(student.id, e.target.value)
+                            }
+                          />
+                          Present
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`attendance-${student.id}`}
+                            value="absent"
+                            checked={attendance[student.id] === "absent"}
+                            onChange={(e) =>
+                              handleAttendanceChange(student.id, e.target.value)
+                            }
+                          />
+                          Absent
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name={`attendance-${student.id}`}
+                            value="late"
+                            checked={attendance[student.id] === "late"}
+                            onChange={(e) =>
+                              handleAttendanceChange(student.id, e.target.value)
+                            }
+                          />
+                          Late
+                        </label>
+                      </div>
                     </div>
-                    <div className="attendance-options">
-                      <label>
-                        <input
-                          type="radio"
-                          name={`attendance-${student.id}`}
-                          value="present"
-                          checked={attendance[student.id] === "present"}
-                          onChange={(e) =>
-                            handleAttendanceChange(student.id, e.target.value)
-                          }
-                        />
-                        Present
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`attendance-${student.id}`}
-                          value="absent"
-                          checked={attendance[student.id] === "absent"}
-                          onChange={(e) =>
-                            handleAttendanceChange(student.id, e.target.value)
-                          }
-                        />
-                        Absent
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          name={`attendance-${student.id}`}
-                          value="late"
-                          checked={attendance[student.id] === "late"}
-                          onChange={(e) =>
-                            handleAttendanceChange(student.id, e.target.value)
-                          }
-                        />
-                        Late
-                      </label>
-                    </div>
-                  </div>
                   ))}
                 </div>
               ) : (
                 <div className="no-students-message">
                   <p>No students are enrolled in the selected class.</p>
-                  <p>Please check the class selection or ensure students are properly enrolled.</p>
+                  <p>
+                    Please check the class selection or ensure students are
+                    properly enrolled.
+                  </p>
                 </div>
               )}
               {students.length > 0 && (
-                <button onClick={saveAttendance} className="save-attendance-btn">
+                <button
+                  onClick={saveAttendance}
+                  className="save-attendance-btn"
+                >
                   Save Attendance
                 </button>
               )}
