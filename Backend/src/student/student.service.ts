@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Student } from './student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UserService } from '../user/user.service';
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export class StudentService {
@@ -33,6 +34,34 @@ export class StudentService {
     const uniqueSubjects = new Set(subjects);
     if (uniqueSubjects.size !== subjects.length) {
       throw new Error('Duplicate subject assignments are not allowed');
+    }
+  }
+
+  private async generateQRCode(student: Student): Promise<string> {
+    // Create QR code data with student information
+    const qrData = {
+      studentId: student.id,
+      name: student.name,
+      registerNumber: student.registerNumber,
+      email: student.email,
+      type: 'student_attendance'
+    };
+
+    try {
+      // Generate QR code as base64 data URL
+      const qrCodeDataURL = await QRCode.toDataURL(JSON.stringify(qrData), {
+        errorCorrectionLevel: 'M',
+        margin: 1,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      });
+      
+      return qrCodeDataURL;
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      throw new Error('Failed to generate QR code');
     }
   }
 
@@ -76,6 +105,16 @@ export class StudentService {
       // But you might want to handle this differently based on your requirements
     }
 
+    // Generate QR code for the student
+    try {
+      const qrCode = await this.generateQRCode(savedStudent);
+      await this.studentRepository.update(savedStudent.id, { qrCode });
+      savedStudent.qrCode = qrCode;
+    } catch (error) {
+      console.error('Error generating QR code for student:', error);
+      // Continue without QR code if generation fails
+    }
+
     return savedStudent;
   }
 
@@ -115,5 +154,43 @@ export class StudentService {
 
   async remove(id: number): Promise<void> {
     await this.studentRepository.delete(id);
+  }
+
+  async findByQRData(qrData: any): Promise<Student | null> {
+    try {
+      // If qrData contains studentId, find by ID
+      if (qrData.studentId) {
+        return await this.findOne(qrData.studentId);
+      }
+      
+      // If qrData contains registerNumber, find by register number
+      if (qrData.registerNumber) {
+        return await this.studentRepository.findOne({ 
+          where: { registerNumber: qrData.registerNumber } 
+        });
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error finding student by QR data:', error);
+      return null;
+    }
+  }
+
+  async regenerateQRCode(studentId: number): Promise<Student | null> {
+    const student = await this.findOne(studentId);
+    if (!student) {
+      throw new Error('Student not found');
+    }
+
+    try {
+      const qrCode = await this.generateQRCode(student);
+      await this.studentRepository.update(studentId, { qrCode });
+      student.qrCode = qrCode;
+      return student;
+    } catch (error) {
+      console.error('Error regenerating QR code:', error);
+      throw new Error('Failed to regenerate QR code');
+    }
   }
 }

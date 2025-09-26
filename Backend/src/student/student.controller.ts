@@ -43,4 +43,23 @@ export class StudentController {
   async getAllStudents() {
     return await this.studentService.findAll();
   }
+
+  @Get(':studentId/qrcode')
+  async getStudentQRCode(@Param('studentId') studentId: string) {
+    const student = await this.studentService.findOne(+studentId);
+    if (!student) {
+      throw new Error('Student not found');
+    }
+    return { qrCode: student.qrCode };
+  }
+
+  @Post('qr-lookup')
+  async getStudentByQRData(@Body() qrData: any) {
+    return await this.studentService.findByQRData(qrData);
+  }
+
+  @Post(':studentId/regenerate-qr')
+  async regenerateQRCode(@Param('studentId') studentId: string) {
+    return await this.studentService.regenerateQRCode(+studentId);
+  }
 }

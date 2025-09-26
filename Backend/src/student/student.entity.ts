@@ -35,4 +35,8 @@ export class Student {
 
   @Column({ nullable: true })
   sub_4: string;
+
+  // QR Code for attendance marking
+  @Column({ nullable: true })
+  qrCode: string;
 }
