@@ -8,6 +8,7 @@ import {
   lookupStudentByRegisterNumber as lookupStudent,
 } from "../../services/studentService";
 import { getAllClasses } from "../../services/classService";
+import QRCode from "react-qr-code";
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
@@ -257,46 +258,23 @@ const StudentManagement = () => {
     setSelectedStudentQR(null);
   };
 
-  const handleRegenerateQR = async (studentId) => {
-    if (window.confirm("Are you sure you want to regenerate the QR code?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/student/${studentId}/regenerate-qr`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.ok) {
-          const updatedStudent = await response.json();
-          alert("QR Code regenerated successfully!");
-
-          // Update the selected student QR if it's currently displayed
-          if (selectedStudentQR && selectedStudentQR.id === studentId) {
-            setSelectedStudentQR(updatedStudent);
-          }
-
-          await fetchStudents();
-        } else {
-          throw new Error("Failed to regenerate QR code");
-        }
-      } catch (error) {
-        console.error("Error regenerating QR code:", error);
-        alert("Error regenerating QR code: " + error.message);
-      }
-    }
-  };
-
   const downloadQRCode = () => {
-    if (selectedStudentQR && selectedStudentQR.qrCode) {
-      const link = document.createElement("a");
-      link.download = `${selectedStudentQR.name}_QR.png`;
-      link.href = selectedStudentQR.qrCode;
-      link.click();
-    }
+    const svg = document.getElementById("QRCode");
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `${selectedStudentQR.name}_QR.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   };
 
   return (
@@ -736,36 +714,20 @@ const StudentManagement = () => {
                   <strong>Email:</strong> {selectedStudentQR.email}
                 </p>
               </div>
-              {selectedStudentQR.qrCode ? (
-                <div className="qr-code-container">
-                  <img
-                    src={selectedStudentQR.qrCode}
-                    alt={`QR Code for ${selectedStudentQR.name}`}
-                    className="qr-code-image"
-                  />
-                  <div className="qr-actions">
-                    <button className="download-btn" onClick={downloadQRCode}>
-                      Download QR Code
-                    </button>
-                    <button
-                      className="regenerate-btn"
-                      onClick={() => handleRegenerateQR(selectedStudentQR.id)}
-                    >
-                      Regenerate QR Code
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="no-qr">
-                  <p>No QR code available for this student.</p>
-                  <button
-                    className="generate-btn"
-                    onClick={() => handleRegenerateQR(selectedStudentQR.id)}
-                  >
-                    Generate QR Code
+              <div className="qr-code-container">
+                <QRCode
+                  id="QRCode"
+                  value={selectedStudentQR.registerNumber}
+                  size={256}
+                  level={"H"}
+                  includeMargin={true}
+                />
+                <div className="qr-actions">
+                  <button className="download-btn" onClick={downloadQRCode}>
+                    Download QR Code
                   </button>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
