@@ -717,7 +717,12 @@ const StudentManagement = () => {
               <div className="qr-code-container">
                 <QRCode
                   id="QRCode"
-                  value={selectedStudentQR.registerNumber}
+                  value={JSON.stringify({
+                    type: "student_attendance",
+                    studentId: selectedStudentQR.id,
+                    name: selectedStudentQR.name,
+                    registerNumber: selectedStudentQR.registerNumber,
+                  })}
                   size={256}
                   level={"H"}
                   includeMargin={true}

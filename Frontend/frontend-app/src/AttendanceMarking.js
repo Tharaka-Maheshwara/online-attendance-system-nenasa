@@ -97,15 +97,11 @@ const AttendanceMarking = () => {
       if (response.ok) {
         const classData = await response.json();
         setClasses(classData);
+      } else {
+        throw new Error('Failed to fetch classes');
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
-      // Mock data for demo
-      setClasses([
-        { id: 1, name: "Grade 12 - Physics", code: "PHY12" },
-        { id: 2, name: "Grade 11 - Chemistry", code: "CHE11" },
-        { id: 3, name: "Grade 10 - Biology", code: "BIO10" },
-      ]);
     }
   };
 
@@ -117,7 +113,6 @@ const AttendanceMarking = () => {
         return;
       }
 
-      // Get the selected class information
       const selectedClassInfo = classes.find((c) => c.id === parseInt(classId));
       if (!selectedClassInfo) {
         console.error("Selected class not found");
@@ -126,22 +121,18 @@ const AttendanceMarking = () => {
         return;
       }
 
-      // Fetch students from the student endpoint instead of users
       const studentsResponse = await fetch("http://localhost:8000/student");
       if (studentsResponse.ok) {
         const allStudents = await studentsResponse.json();
 
-        // Filter students who are enrolled in the selected class
-        // Check if any of their subjects (sub_1, sub_2, sub_3, sub_4) match the class name
         const enrolledStudents = allStudents.filter((student) => {
           const studentSubjects = [
             student.sub_1,
             student.sub_2,
             student.sub_3,
             student.sub_4,
-          ].filter(Boolean); // Remove null/undefined values
+          ].filter(Boolean);
 
-          // Check if any of the student's subjects match the selected class name
           return studentSubjects.some(
             (subject) =>
               subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
@@ -153,7 +144,6 @@ const AttendanceMarking = () => {
         );
         setStudents(enrolledStudents);
 
-        // Initialize attendance state
         const initialAttendance = {};
         enrolledStudents.forEach((student) => {
           initialAttendance[student.id] = "absent";
@@ -196,22 +186,19 @@ const AttendanceMarking = () => {
       setScanResult("");
       setCameraError("");
 
-      // Check if camera is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("Camera not supported on this device");
       }
 
-      // Request camera permission explicitly
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: "environment", // Prefer back camera for QR scanning
+          facingMode: "environment",
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
       });
 
       if (videoRef.current) {
-        // Set the video source
         videoRef.current.srcObject = stream;
 
         const qrScanner = new QrScanner(
@@ -238,7 +225,6 @@ const AttendanceMarking = () => {
       console.error("Error starting QR scanner:", error);
       setScanning(false);
 
-      // Set specific error messages based on error type
       if (error.name === "NotAllowedError") {
         setCameraError(
           "Camera access denied. Please click on the camera icon in your browser's address bar and allow camera access."
@@ -255,7 +241,6 @@ const AttendanceMarking = () => {
         setCameraError(
           "Camera settings are not supported. Trying with default settings..."
         );
-        // Retry with basic camera settings
         retryWithBasicCamera();
       } else {
         setCameraError("Failed to start camera: " + error.message);
@@ -296,7 +281,6 @@ const AttendanceMarking = () => {
       qrScannerRef.current = null;
     }
 
-    // Stop the camera stream
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach((track) => track.stop());
@@ -312,7 +296,6 @@ const AttendanceMarking = () => {
       const data = JSON.parse(qrData);
       console.log("QR Data received:", data);
 
-      // Check if this is a student QR code and user is teacher/admin
       if (
         data.type === "student_attendance" &&
         (userRole === "teacher" || userRole === "admin")
@@ -324,16 +307,9 @@ const AttendanceMarking = () => {
           return;
         }
 
-        // Get student information from QR code
         const studentId = data.studentId;
         const studentName = data.name;
-        const studentRegisterNumber = data.registerNumber;
 
-        console.log(
-          `Scanning QR for student: ${studentName} (ID: ${studentId})`
-        );
-
-        // Verify the student exists and is enrolled in the selected class
         const selectedClassInfo = classes.find(
           (c) => c.id === parseInt(selectedClass)
         );
@@ -342,7 +318,6 @@ const AttendanceMarking = () => {
           return;
         }
 
-        // Check if student is enrolled in the selected class
         const studentResponse = await fetch(
           `http://localhost:8000/student/${studentId}`
         );
@@ -371,33 +346,23 @@ const AttendanceMarking = () => {
           return;
         }
 
-        // Update attendance in the UI
         const newAttendance = { ...attendance };
         newAttendance[studentId] = "present";
         setAttendance(newAttendance);
 
-        // Show success message
-        alert(
-          `✅ Attendance marked for ${studentName} in ${selectedClassInfo.name} class`
-        );
-        console.log(
-          `Attendance marked for student ${studentName} (${studentRegisterNumber})`
-        );
+        // Save attendance to the backend
+        await saveStudentAttendance(studentId, "present", studentName);
+
       } else if (data.classId && userRole === "student") {
-        // Keep existing logic for students scanning class QR codes
-        // Get current user info
         const currentUser = accounts[0];
         const userEmail = currentUser.username || currentUser.name;
 
-        // Find the current user in the backend to get their ID
         const response = await fetch(
           `http://localhost:8000/users/profile/${userEmail}`
         );
         if (response.ok) {
           const userData = await response.json();
-          console.log("Current user data:", userData);
 
-          // Mark attendance for this student
           const attendanceData = {
             classId: parseInt(data.classId),
             date: new Date().toISOString().split("T")[0],
@@ -409,8 +374,6 @@ const AttendanceMarking = () => {
               },
             ],
           };
-
-          console.log("Submitting attendance:", attendanceData);
 
           const attendanceResponse = await fetch(
             "http://localhost:8000/attendance",
@@ -425,10 +388,8 @@ const AttendanceMarking = () => {
 
           if (attendanceResponse.ok) {
             alert("Attendance marked successfully!");
-            console.log("Attendance saved successfully");
           } else {
             const errorData = await attendanceResponse.json();
-            console.error("Failed to save attendance:", errorData);
             alert(
               "Failed to save attendance: " +
                 (errorData.message || "Unknown error")
@@ -460,9 +421,8 @@ const AttendanceMarking = () => {
     }
   };
 
-  const saveStudentAttendance = async (studentId) => {
+  const saveStudentAttendance = async (studentId, status, studentName) => {
     try {
-      const status = attendance[studentId];
       if (!status) {
         alert("Please select an attendance status.");
         return;
@@ -489,9 +449,11 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
-        alert(`Attendance for the student saved successfully!`);
+        const studentDisplayName = studentName || `student ID ${studentId}`;
+        alert(`✅ Attendance for ${studentDisplayName} saved successfully!`);
       } else {
-        alert(`Failed to save attendance for the student!`);
+        const errorData = await response.json();
+        alert(`Failed to save attendance: ${errorData.message || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error saving student attendance:", error);
@@ -583,7 +545,6 @@ const AttendanceMarking = () => {
                 </div>
               )}
 
-              {/* Show attendance status for scanned students */}
               {students.length > 0 && (
                 <div className="scanned-attendance">
                   <h4>Attendance Status:</h4>
@@ -664,7 +625,7 @@ const AttendanceMarking = () => {
                         </label>
                       </div>
                       <button
-                        onClick={() => saveStudentAttendance(student.id)}
+                        onClick={() => saveStudentAttendance(student.id, attendance[student.id])}
                         className="save-student-attendance-btn"
                       >
                         Save
@@ -725,3 +686,4 @@ const AttendanceMarking = () => {
 };
 
 export default AttendanceMarking;
+
