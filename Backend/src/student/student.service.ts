@@ -44,7 +44,7 @@ export class StudentService {
       name: student.name,
       registerNumber: student.registerNumber,
       email: student.email,
-      type: 'student_attendance'
+      type: 'student_attendance',
     };
 
     try {
@@ -54,10 +54,10 @@ export class StudentService {
         margin: 1,
         color: {
           dark: '#000000',
-          light: '#FFFFFF'
-        }
+          light: '#FFFFFF',
+        },
       });
-      
+
       return qrCodeDataURL;
     } catch (error) {
       console.error('Error generating QR code:', error);
@@ -162,11 +162,11 @@ export class StudentService {
       if (qrData.studentId) {
         return await this.findOne(qrData.studentId);
       }
-      
+
       // If qrData contains registerNumber, find by register number
       if (qrData.registerNumber) {
-        return await this.studentRepository.findOne({ 
-          where: { registerNumber: qrData.registerNumber } 
+        return await this.studentRepository.findOne({
+          where: { registerNumber: qrData.registerNumber },
         });
       }
 

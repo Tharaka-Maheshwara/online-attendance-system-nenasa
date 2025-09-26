@@ -4,20 +4,20 @@ const API_BASE_URL = "http://localhost:8000";
 // Test data for creating a student with QR code
 const testStudent = {
   name: "QR Test Student",
-  email: "qrtest@example.com", 
+  email: "qrtest@example.com",
   registerNumber: "QR123456",
   contactNumber: "0771234567",
   parentName: "Parent Name",
   parentEmail: "parent@example.com",
   sub_1: "Mathematics",
-  sub_2: "Science"
+  sub_2: "Science",
 };
 
 async function testQRCodeGeneration() {
   try {
     console.log("Testing QR code generation for students...");
     console.log("Test data:", testStudent);
-    
+
     // Create student (should automatically generate QR code)
     console.log("\n1. Creating student...");
     const createResponse = await fetch(`${API_BASE_URL}/student`, {
@@ -30,13 +30,15 @@ async function testQRCodeGeneration() {
 
     if (!createResponse.ok) {
       const errorText = await createResponse.text();
-      throw new Error(`Failed to create student: ${createResponse.status} - ${errorText}`);
+      throw new Error(
+        `Failed to create student: ${createResponse.status} - ${errorText}`
+      );
     }
 
     const createdStudent = await createResponse.json();
     console.log("✅ Student created successfully");
     console.log("Student ID:", createdStudent.id);
-    
+
     // Check if QR code was generated
     if (createdStudent.qrCode) {
       console.log("✅ QR code generated automatically");
@@ -47,7 +49,9 @@ async function testQRCodeGeneration() {
 
     // Test getting student QR code
     console.log("\n2. Testing QR code retrieval...");
-    const qrResponse = await fetch(`${API_BASE_URL}/student/${createdStudent.id}/qrcode`);
+    const qrResponse = await fetch(
+      `${API_BASE_URL}/student/${createdStudent.id}/qrcode`
+    );
     if (qrResponse.ok) {
       const qrData = await qrResponse.json();
       if (qrData.qrCode) {
@@ -61,23 +65,28 @@ async function testQRCodeGeneration() {
 
     // Test QR code regeneration
     console.log("\n3. Testing QR code regeneration...");
-    const regenerateResponse = await fetch(`${API_BASE_URL}/student/${createdStudent.id}/regenerate-qr`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const regenerateResponse = await fetch(
+      `${API_BASE_URL}/student/${createdStudent.id}/regenerate-qr`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (regenerateResponse.ok) {
       const regeneratedStudent = await regenerateResponse.json();
       if (regeneratedStudent.qrCode) {
         console.log("✅ QR code regenerated successfully");
-        
+
         // Check if QR code changed
         if (regeneratedStudent.qrCode !== createdStudent.qrCode) {
           console.log("✅ New QR code is different from original");
         } else {
-          console.log("ℹ️ New QR code is same as original (expected if data unchanged)");
+          console.log(
+            "ℹ️ New QR code is same as original (expected if data unchanged)"
+          );
         }
       } else {
         console.log("❌ No QR code in regeneration response");
@@ -90,7 +99,7 @@ async function testQRCodeGeneration() {
     console.log("\n4. Testing QR data lookup...");
     const qrLookupData = {
       studentId: createdStudent.id,
-      registerNumber: createdStudent.registerNumber
+      registerNumber: createdStudent.registerNumber,
     };
 
     const lookupResponse = await fetch(`${API_BASE_URL}/student/qr-lookup`, {
@@ -119,7 +128,7 @@ async function testQRCodeGeneration() {
       try {
         // QR codes are base64 data URLs, so we can't easily decode them in this test
         // But we can verify it's a proper data URL
-        if (createdStudent.qrCode.startsWith('data:image/png;base64,')) {
+        if (createdStudent.qrCode.startsWith("data:image/png;base64,")) {
           console.log("✅ QR code is properly formatted as PNG data URL");
         } else {
           console.log("❌ QR code format is unexpected");
@@ -130,7 +139,6 @@ async function testQRCodeGeneration() {
     }
 
     console.log("\n✅ All QR code tests completed successfully!");
-
   } catch (error) {
     console.error("❌ QR code test failed:", error.message);
   }

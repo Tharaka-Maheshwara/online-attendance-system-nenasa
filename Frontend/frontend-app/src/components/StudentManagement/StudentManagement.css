@@ -451,7 +451,9 @@
   flex-wrap: wrap;
 }
 
-.download-btn, .regenerate-btn, .generate-btn {
+.download-btn,
+.regenerate-btn,
+.generate-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -469,12 +471,14 @@
   background-color: #218838;
 }
 
-.regenerate-btn, .generate-btn {
+.regenerate-btn,
+.generate-btn {
   background-color: #ffc107;
   color: #212529;
 }
 
-.regenerate-btn:hover, .generate-btn:hover {
+.regenerate-btn:hover,
+.generate-btn:hover {
   background-color: #e0a800;
 }
 
@@ -493,17 +497,19 @@
   .qr-modal {
     width: 95%;
   }
-  
+
   .qr-actions {
     flex-direction: column;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 5px;
   }
-  
-  .qr-btn, .edit-btn, .delete-btn {
+
+  .qr-btn,
+  .edit-btn,
+  .delete-btn {
     width: 100%;
   }
 }

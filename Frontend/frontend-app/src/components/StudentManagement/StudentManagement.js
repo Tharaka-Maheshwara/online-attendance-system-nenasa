@@ -260,25 +260,28 @@ const StudentManagement = () => {
   const handleRegenerateQR = async (studentId) => {
     if (window.confirm("Are you sure you want to regenerate the QR code?")) {
       try {
-        const response = await fetch(`http://localhost:8000/student/${studentId}/regenerate-qr`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          `http://localhost:8000/student/${studentId}/regenerate-qr`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
           const updatedStudent = await response.json();
           alert("QR Code regenerated successfully!");
-          
+
           // Update the selected student QR if it's currently displayed
           if (selectedStudentQR && selectedStudentQR.id === studentId) {
             setSelectedStudentQR(updatedStudent);
           }
-          
+
           await fetchStudents();
         } else {
-          throw new Error('Failed to regenerate QR code');
+          throw new Error("Failed to regenerate QR code");
         }
       } catch (error) {
         console.error("Error regenerating QR code:", error);
@@ -289,7 +292,7 @@ const StudentManagement = () => {
 
   const downloadQRCode = () => {
     if (selectedStudentQR && selectedStudentQR.qrCode) {
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `${selectedStudentQR.name}_QR.png`;
       link.href = selectedStudentQR.qrCode;
       link.click();
@@ -716,30 +719,36 @@ const StudentManagement = () => {
           <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
             <div className="qr-modal-header">
               <h3>QR Code - {selectedStudentQR.name}</h3>
-              <button className="close-btn" onClick={handleCloseQR}>×</button>
+              <button className="close-btn" onClick={handleCloseQR}>
+                ×
+              </button>
             </div>
             <div className="qr-modal-content">
               <div className="student-info">
-                <p><strong>Name:</strong> {selectedStudentQR.name}</p>
-                <p><strong>Register Number:</strong> {selectedStudentQR.registerNumber}</p>
-                <p><strong>Email:</strong> {selectedStudentQR.email}</p>
+                <p>
+                  <strong>Name:</strong> {selectedStudentQR.name}
+                </p>
+                <p>
+                  <strong>Register Number:</strong>{" "}
+                  {selectedStudentQR.registerNumber}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedStudentQR.email}
+                </p>
               </div>
               {selectedStudentQR.qrCode ? (
                 <div className="qr-code-container">
-                  <img 
-                    src={selectedStudentQR.qrCode} 
+                  <img
+                    src={selectedStudentQR.qrCode}
                     alt={`QR Code for ${selectedStudentQR.name}`}
                     className="qr-code-image"
                   />
                   <div className="qr-actions">
-                    <button 
-                      className="download-btn" 
-                      onClick={downloadQRCode}
-                    >
+                    <button className="download-btn" onClick={downloadQRCode}>
                       Download QR Code
                     </button>
-                    <button 
-                      className="regenerate-btn" 
+                    <button
+                      className="regenerate-btn"
                       onClick={() => handleRegenerateQR(selectedStudentQR.id)}
                     >
                       Regenerate QR Code
@@ -749,8 +758,8 @@ const StudentManagement = () => {
               ) : (
                 <div className="no-qr">
                   <p>No QR code available for this student.</p>
-                  <button 
-                    className="generate-btn" 
+                  <button
+                    className="generate-btn"
                     onClick={() => handleRegenerateQR(selectedStudentQR.id)}
                   >
                     Generate QR Code
