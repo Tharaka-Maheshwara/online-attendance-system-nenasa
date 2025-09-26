@@ -312,7 +312,62 @@ const AttendanceMarking = () => {
       const data = JSON.parse(qrData);
       console.log("QR Data received:", data);
 
-      if (data.classId && userRole === "student") {
+      // Check if this is a student QR code and user is teacher/admin
+      if (data.type === "student_attendance" && (userRole === "teacher" || userRole === "admin")) {
+        if (!selectedClass) {
+          alert("Please select a class first before scanning student QR codes.");
+          return;
+        }
+
+        // Get student information from QR code
+        const studentId = data.studentId;
+        const studentName = data.name;
+        const studentRegisterNumber = data.registerNumber;
+        
+        console.log(`Scanning QR for student: ${studentName} (ID: ${studentId})`);
+
+        // Verify the student exists and is enrolled in the selected class
+        const selectedClassInfo = classes.find((c) => c.id === parseInt(selectedClass));
+        if (!selectedClassInfo) {
+          alert("Selected class not found.");
+          return;
+        }
+
+        // Check if student is enrolled in the selected class
+        const studentResponse = await fetch(`http://localhost:8000/student/${studentId}`);
+        if (!studentResponse.ok) {
+          alert("Student not found in the system.");
+          return;
+        }
+
+        const studentData = await studentResponse.json();
+        const studentSubjects = [
+          studentData.sub_1,
+          studentData.sub_2,
+          studentData.sub_3,
+          studentData.sub_4
+        ].filter(Boolean);
+
+        const isEnrolled = studentSubjects.some(subject => 
+          subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+        );
+
+        if (!isEnrolled) {
+          alert(`${studentName} is not enrolled in ${selectedClassInfo.name} class.`);
+          return;
+        }
+
+        // Update attendance in the UI
+        const newAttendance = { ...attendance };
+        newAttendance[studentId] = "present";
+        setAttendance(newAttendance);
+
+        // Show success message
+        alert(`✅ Attendance marked for ${studentName} in ${selectedClassInfo.name} class`);
+        console.log(`Attendance marked for student ${studentName} (${studentRegisterNumber})`);
+
+      } else if (data.classId && userRole === "student") {
+        // Keep existing logic for students scanning class QR codes
         // Get current user info
         const currentUser = accounts[0];
         const userEmail = currentUser.username || currentUser.name;
@@ -460,15 +515,62 @@ const AttendanceMarking = () => {
           </div>
 
           {markingMode === "qr" && selectedClass && (
-            <div className="qr-generation">
-              <h3>QR Code for Attendance</h3>
-              <button onClick={generateQRCode} className="generate-qr-btn">
-                Generate QR Code
-              </button>
-              {qrCode && (
-                <div className="qr-display">
-                  <QRCode value={qrCode} size={200} />
-                  <p>Students can scan this QR code to mark attendance</p>
+            <div className="qr-scanning">
+              <h3>Scan Student QR Codes</h3>
+              <p>Scan each student's QR code to mark their attendance in {classes.find(c => c.id === parseInt(selectedClass))?.name} class</p>
+              
+              {!scanning ? (
+                <button onClick={startQRScanning} className="start-scan-btn">
+                  📱 Start Scanning
+                </button>
+              ) : (
+                <div className="scanner-container">
+                  <div className="camera-container">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="qr-camera"
+                    />
+                    <div className="scan-overlay">
+                      <div className="scan-frame"></div>
+                    </div>
+                  </div>
+                  <button onClick={stopQRScanning} className="stop-scan-btn">
+                    ⏹️ Stop Scanning
+                  </button>
+                  {scanResult && (
+                    <div className="scan-result">
+                      <p>Last scanned: {scanResult}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {cameraError && (
+                <div className="camera-error">
+                  <p>❌ {cameraError}</p>
+                </div>
+              )}
+
+              {/* Show attendance status for scanned students */}
+              {students.length > 0 && (
+                <div className="scanned-attendance">
+                  <h4>Attendance Status:</h4>
+                  <div className="attendance-summary">
+                    {students.map((student) => (
+                      <div key={student.id} className={`student-status ${attendance[student.id] || 'absent'}`}>
+                        <span className="status-icon">
+                          {attendance[student.id] === 'present' ? '✅' : '⭕'}
+                        </span>
+                        <span className="student-name">{student.name}</span>
+                        <span className="status-text">
+                          {attendance[student.id] === 'present' ? 'Present' : 'Not Scanned'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
