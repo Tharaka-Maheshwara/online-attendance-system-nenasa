@@ -7,9 +7,11 @@ import {
   updateStudent,
   lookupStudentByRegisterNumber as lookupStudent,
 } from "../../services/studentService";
+import { getAllClasses } from "../../services/classService";
 
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [newStudent, setNewStudent] = useState({
     name: "",
     email: "",
@@ -17,6 +19,10 @@ const StudentManagement = () => {
     contactNumber: "",
     parentName: "",
     parentEmail: "",
+    sub_1: "",
+    sub_2: "",
+    sub_3: "",
+    sub_4: "",
   });
   const [editingStudent, setEditingStudent] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -28,7 +34,17 @@ const StudentManagement = () => {
 
   useEffect(() => {
     fetchStudents();
+    fetchClasses();
   }, []);
+
+  const fetchClasses = async () => {
+    try {
+      const classData = await getAllClasses();
+      setClasses(classData);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+    }
+  };
 
   // Auto-fill functionality for register number lookup
   useEffect(() => {
@@ -101,6 +117,20 @@ const StudentManagement = () => {
     }
   };
 
+  const validateSubjects = (studentData) => {
+    const subjects = [
+      studentData.sub_1,
+      studentData.sub_2,
+      studentData.sub_3,
+      studentData.sub_4,
+    ].filter(subject => subject && subject !== "");
+
+    const uniqueSubjects = [...new Set(subjects)];
+    if (subjects.length !== uniqueSubjects.length) {
+      throw new Error("Duplicate subject assignments are not allowed");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStudent((prev) => ({
@@ -115,8 +145,20 @@ const StudentManagement = () => {
     setError("");
 
     try {
+      // Validate subjects before submission
+      validateSubjects(newStudent);
+      
+      // Filter out empty subject names
+      const studentData = {
+        ...newStudent,
+        sub_1: newStudent.sub_1 || null,
+        sub_2: newStudent.sub_2 || null,
+        sub_3: newStudent.sub_3 || null,
+        sub_4: newStudent.sub_4 || null,
+      };
+
       // Create student record using studentService
-      await createStudent(newStudent);
+      await createStudent(studentData);
       alert("Student created successfully!");
 
       // Reset form after successful creation
@@ -127,6 +169,10 @@ const StudentManagement = () => {
         contactNumber: "",
         parentName: "",
         parentEmail: "",
+        sub_1: "",
+        sub_2: "",
+        sub_3: "",
+        sub_4: "",
       });
       setShowAddForm(false);
       await fetchStudents();
@@ -171,7 +217,19 @@ const StudentManagement = () => {
     setError("");
 
     try {
-      await updateStudent(editingStudent.id, editingStudent);
+      // Validate subjects before submission
+      validateSubjects(editingStudent);
+      
+      // Filter out empty subject names
+      const studentData = {
+        ...editingStudent,
+        sub_1: editingStudent.sub_1 || null,
+        sub_2: editingStudent.sub_2 || null,
+        sub_3: editingStudent.sub_3 || null,
+        sub_4: editingStudent.sub_4 || null,
+      };
+      
+      await updateStudent(editingStudent.id, studentData);
       alert("Student updated successfully!");
       setEditingStudent(null);
       await fetchStudents();
@@ -302,6 +360,74 @@ const StudentManagement = () => {
               </div>
             </div>
 
+            <div className="subjects-section">
+              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 1:</label>
+                  <select
+                    name="sub_1"
+                    value={newStudent.sub_1}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 2:</label>
+                  <select
+                    name="sub_2"
+                    value={newStudent.sub_2}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 3:</label>
+                  <select
+                    name="sub_3"
+                    value={newStudent.sub_3}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 4:</label>
+                  <select
+                    name="sub_4"
+                    value={newStudent.sub_4}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="form-actions">
               <button type="submit" disabled={loading}>
                 {loading ? "Creating..." : "Create Student"}
@@ -383,6 +509,74 @@ const StudentManagement = () => {
               </div>
             </div>
 
+            <div className="subjects-section">
+              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 1:</label>
+                  <select
+                    name="sub_1"
+                    value={editingStudent.sub_1 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 2:</label>
+                  <select
+                    name="sub_2"
+                    value={editingStudent.sub_2 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 3:</label>
+                  <select
+                    name="sub_3"
+                    value={editingStudent.sub_3 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 4:</label>
+                  <select
+                    name="sub_4"
+                    value={editingStudent.sub_4 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `- ${cls.subject}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="form-actions">
               <button type="submit" disabled={loading}>
                 {loading ? "Updating..." : "Update Student"}
@@ -410,36 +604,47 @@ const StudentManagement = () => {
                   <th>Contact</th>
                   <th>Parent Name</th>
                   <th>Parent Email</th>
+                  <th>Subjects</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => (
-                  <tr key={student.id}>
-                    <td>{student.name}</td>
-                    <td>{student.email}</td>
-                    <td>{student.registerNumber || "N/A"}</td>
-                    <td>{student.contactNumber || "N/A"}</td>
-                    <td>{student.parentName || "N/A"}</td>
-                    <td>{student.parentEmail || "N/A"}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="edit-btn"
-                          onClick={() => handleEdit(student)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-btn"
-                          onClick={() => handleDelete(student.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {students.map((student) => {
+                  const subjects = [
+                    student.sub_1,
+                    student.sub_2,
+                    student.sub_3,
+                    student.sub_4,
+                  ].filter(Boolean).join(', ');
+                  
+                  return (
+                    <tr key={student.id}>
+                      <td>{student.name}</td>
+                      <td>{student.email}</td>
+                      <td>{student.registerNumber || "N/A"}</td>
+                      <td>{student.contactNumber || "N/A"}</td>
+                      <td>{student.parentName || "N/A"}</td>
+                      <td>{student.parentEmail || "N/A"}</td>
+                      <td>{subjects || "No subjects assigned"}</td>
+                      <td>
+                        <div className="action-buttons">
+                          <button
+                            className="edit-btn"
+                            onClick={() => handleEdit(student)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleDelete(student.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

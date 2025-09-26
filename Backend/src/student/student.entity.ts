@@ -22,4 +22,17 @@ export class Student {
 
   @Column({ nullable: true })
   parentEmail: string;
+
+  // Subject names (maximum 4 subjects per student)
+  @Column({ nullable: true })
+  sub_1: string;
+
+  @Column({ nullable: true })
+  sub_2: string;
+
+  @Column({ nullable: true })
+  sub_3: string;
+
+  @Column({ nullable: true })
+  sub_4: string;
 }

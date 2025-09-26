@@ -282,6 +282,39 @@
   background-color: #545b62;
 }
 
+/* Subjects section styling */
+.subjects-section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.subjects-section h4 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.subjects-section select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.subjects-section select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.subjects-section .form-group label {
+  color: #555;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .form-row {
     flex-direction: column;
@@ -302,5 +335,9 @@
 
   .action-buttons {
     flex-direction: column;
+  }
+
+  .subjects-section h4 {
+    font-size: 14px;
   }
 }

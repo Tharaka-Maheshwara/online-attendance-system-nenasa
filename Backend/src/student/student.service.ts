@@ -13,7 +13,28 @@ export class StudentService {
     private userService: UserService,
   ) {}
 
+  private validateSubjects(createStudentDto: CreateStudentDto): void {
+    const subjects = [
+      createStudentDto.sub_1,
+      createStudentDto.sub_2,
+      createStudentDto.sub_3,
+      createStudentDto.sub_4,
+    ].filter(subject => subject !== undefined && subject !== null && subject !== '');
+
+    if (subjects.length > 4) {
+      throw new Error('A student can only be assigned to a maximum of 4 subjects');
+    }
+
+    // Check for duplicate subject assignments
+    const uniqueSubjects = new Set(subjects);
+    if (uniqueSubjects.size !== subjects.length) {
+      throw new Error('Duplicate subject assignments are not allowed');
+    }
+  }
+
   async create(createStudentDto: CreateStudentDto): Promise<Student> {
+    this.validateSubjects(createStudentDto);
+    
     const student = this.studentRepository.create(createStudentDto);
     const savedStudent = await this.studentRepository.save(student);
 
@@ -66,6 +87,24 @@ export class StudentService {
     id: number,
     updateStudentDto: Partial<CreateStudentDto>,
   ): Promise<Student | null> {
+    // Get current student data for validation
+    const currentStudent = await this.findOne(id);
+    if (!currentStudent) {
+      throw new Error('Student not found');
+    }
+
+    // Merge current data with updates for validation
+    const mergedData = {
+      ...currentStudent,
+      ...updateStudentDto,
+      sub_1: updateStudentDto.sub_1 ?? currentStudent.sub_1,
+      sub_2: updateStudentDto.sub_2 ?? currentStudent.sub_2,
+      sub_3: updateStudentDto.sub_3 ?? currentStudent.sub_3,
+      sub_4: updateStudentDto.sub_4 ?? currentStudent.sub_4,
+    };
+
+    this.validateSubjects(mergedData);
+    
     await this.studentRepository.update(id, updateStudentDto);
     return await this.findOne(id);
   }
