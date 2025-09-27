@@ -585,7 +585,6 @@ const AttendanceMarking = () => {
                         <span className="student-name">
                           {student.name || student.email}
                         </span>
-                        <span className="student-email">{student.email}</span>
                       </div>
                       <div className="attendance-options">
                         <label>
