@@ -44,7 +44,7 @@ function PrivateRoute({ element, allowedRoles }) {
   return <Navigate to="/dashboard" replace />;
 }
 
-const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = new PublicClientApplication(msalConfig);
 
 function AppContent() {
   const { accounts } = useMsal();
@@ -160,6 +160,17 @@ function AppContent() {
             {/* Reports: admin only */}
             <Route
               path="/reports"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<Dashboard />}
+                />
+              }
+            />
+
+            {/* Student Attendance History: admin only */}
+            <Route
+              path="/attendance-history"
               element={
                 <PrivateRoute
                   allowedRoles={["admin"]}

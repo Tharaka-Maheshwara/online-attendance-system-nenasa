@@ -123,6 +123,31 @@ export class AttendanceController {
     };
   }
 
+  @Get('history/all')
+  @Roles('admin')
+  async getAttendanceHistoryWithDetails(): Promise<any[]> {
+    return this.attendanceService.getAttendanceWithStudentAndClassDetails();
+  }
+
+  @Get('history/student/:studentId')
+  // @Roles('teacher', 'admin') // Temporarily disabled for testing
+  async getStudentAttendanceHistory(
+    @Param('studentId') studentId: number,
+  ): Promise<any[]> {
+    try {
+      console.log(`Controller: Getting attendance history for student ${studentId}`);
+      const result = await this.attendanceService.getAttendanceByStudentWithClassDetails(Number(studentId));
+      console.log(`Controller: Returning ${result.length} records`);
+      return result;
+    } catch (error) {
+      console.error('Controller error:', error);
+      throw new HttpException(
+        'Failed to fetch attendance history',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Get('class/:classId/date/:date')
   @Roles('teacher', 'admin')
   async findByClassAndDate(

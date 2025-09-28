@@ -7,11 +7,13 @@ import { AttendanceService } from './attendance.service';
 import { NotificationModule } from '../notification/notification.module';
 import { UserModule } from '../user/user.module';
 import { User } from '../user/user.entity';
+import { Student } from '../student/student.entity';
+import { Class } from '../class/class.entity';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Attendance, User]),
+    TypeOrmModule.forFeature([Attendance, User, Student, Class]),
     NotificationModule,
     UserModule,
     JwtModule.register({
