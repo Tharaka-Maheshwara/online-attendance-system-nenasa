@@ -27,7 +27,10 @@ export class AttendanceService {
     console.log('✅ Attendance saved with ID:', attendance.id);
 
     // Send notification after attendance is marked
-    console.log('📧 Attempting to send notification for attendance ID:', attendance.id);
+    console.log(
+      '📧 Attempting to send notification for attendance ID:',
+      attendance.id,
+    );
     await this.sendAttendanceNotification(attendance);
 
     return attendance;
@@ -231,8 +234,12 @@ export class AttendanceService {
         return;
       }
 
-      console.log(`📨 Sending attendance notification to ${parentEmail} for student ${studentName}`);
-      console.log(`📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${attendance.classId}`);
+      console.log(
+        `📨 Sending attendance notification to ${parentEmail} for student ${studentName}`,
+      );
+      console.log(
+        `📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${attendance.classId}`,
+      );
 
       // Send notification
       await this.notificationService.sendAttendanceNotification(
@@ -243,7 +250,7 @@ export class AttendanceService {
         attendance.status === 'present',
         attendance.date,
       );
-      
+
       console.log('✅ Email notification sent successfully!');
     } catch (error) {
       console.error('Error sending attendance notification:', error);
