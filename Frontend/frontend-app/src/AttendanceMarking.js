@@ -5,7 +5,7 @@ import { useMsal } from "@azure/msal-react";
 import "./AttendanceMarking.css";
 
 const AttendanceMarking = () => {
-  const { accounts } = useMsal();
+  const { instance, accounts } = useMsal();
   const [userRole, setUserRole] = useState("student");
   const [markingMode, setMarkingMode] = useState("manual"); // 'manual' or 'qr'
   const [classes, setClasses] = useState([]);
@@ -32,6 +32,28 @@ const AttendanceMarking = () => {
       stopQRScanning();
     };
   }, []);
+
+  // Get MSAL access token
+  const getAccessToken = async () => {
+    if (!accounts || accounts.length === 0) {
+      throw new Error('No account found');
+    }
+    
+    const request = {
+      scopes: ["openid", "profile", "User.Read"],
+      account: accounts[0],
+    };
+    
+    try {
+      const response = await instance.acquireTokenSilent(request);
+      return response.accessToken;
+    } catch (error) {
+      console.error('Silent token acquisition failed:', error);
+      // Fallback to popup
+      const response = await instance.acquireTokenPopup(request);
+      return response.accessToken;
+    }
+  };
 
   const fetchUserRole = async () => {
     try {
@@ -439,10 +461,12 @@ const AttendanceMarking = () => {
         ],
       };
 
+      const token = await getAccessToken();
       const response = await fetch("http://localhost:8000/attendance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(attendanceData),
       });
@@ -459,6 +483,46 @@ const AttendanceMarking = () => {
     } catch (error) {
       console.error("Error saving student attendance:", error);
       alert("Error saving student attendance!");
+    }
+  };
+
+  // Bulk save all students' attendance
+  const saveAllAttendance = async () => {
+    if (!selectedClass || students.length === 0) {
+      alert("Please select a class and ensure students are loaded.");
+      return;
+    }
+
+    const attendanceData = {
+      classId: selectedClass,
+      date: new Date().toISOString().split("T")[0],
+      attendance: students.map((student) => ({
+        studentId: student.id,
+        status: attendance[student.id] || "absent",
+        timestamp: new Date().toISOString(),
+      })),
+    };
+
+    try {
+      const token = await getAccessToken();
+      const response = await fetch("http://localhost:8000/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(attendanceData),
+      });
+
+      if (response.ok) {
+        alert("All attendance saved successfully!");
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to save all attendance: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error saving all attendance:", error);
+      alert("Error saving all attendance!");
     }
   };
 
@@ -579,6 +643,24 @@ const AttendanceMarking = () => {
               <h3>Mark Attendance Manually</h3>
               {students.length > 0 ? (
                 <div className="student-list">
+                  {/* Save All Attendance button */}
+                  <button
+                    className="save-all-attendance-btn"
+                    onClick={saveAllAttendance}
+                    style={{
+                      marginBottom: "16px",
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      padding: "10px 20px",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    💾 Save All Attendance
+                  </button>
                   {students.map((student) => (
                     <div key={student.id} className="student-row">
                       <div className="student-info">

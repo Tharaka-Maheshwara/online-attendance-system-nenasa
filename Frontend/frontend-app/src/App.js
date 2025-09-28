@@ -17,6 +17,7 @@ import TeacherManagement from "./components/TeacherManagement/TeacherManagement"
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
+import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -163,6 +164,17 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["admin"]}
                   element={<Dashboard />}
+                />
+              }
+            />
+
+            {/* Admin attendance marking: admin only */}
+            <Route
+              path="/admin/mark-attendance"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<AdminAttendanceMarking />}
                 />
               }
             />
