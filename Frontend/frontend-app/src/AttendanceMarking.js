@@ -36,19 +36,19 @@ const AttendanceMarking = () => {
   // Get MSAL access token
   const getAccessToken = async () => {
     if (!accounts || accounts.length === 0) {
-      throw new Error('No account found');
+      throw new Error("No account found");
     }
-    
+
     const request = {
       scopes: ["openid", "profile", "User.Read"],
       account: accounts[0],
     };
-    
+
     try {
       const response = await instance.acquireTokenSilent(request);
       return response.accessToken;
     } catch (error) {
-      console.error('Silent token acquisition failed:', error);
+      console.error("Silent token acquisition failed:", error);
       // Fallback to popup
       const response = await instance.acquireTokenPopup(request);
       return response.accessToken;
@@ -466,7 +466,7 @@ const AttendanceMarking = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(attendanceData),
       });
@@ -509,7 +509,7 @@ const AttendanceMarking = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(attendanceData),
       });
@@ -518,7 +518,11 @@ const AttendanceMarking = () => {
         alert("All attendance saved successfully!");
       } else {
         const errorData = await response.json();
-        alert(`Failed to save all attendance: ${errorData.message || response.statusText}`);
+        alert(
+          `Failed to save all attendance: ${
+            errorData.message || response.statusText
+          }`
+        );
       }
     } catch (error) {
       console.error("Error saving all attendance:", error);
