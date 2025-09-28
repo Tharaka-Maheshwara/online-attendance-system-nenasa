@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import './StudentAttendanceHistory.css';
-import { getAccessToken } from '../../utils/auth';
+import React, { useState, useEffect } from "react";
+import "./StudentAttendanceHistory.css";
+import { getAccessToken } from "../../utils/auth";
 
 const StudentAttendanceHistory = () => {
   const [students, setStudents] = useState([]);
@@ -8,9 +8,9 @@ const StudentAttendanceHistory = () => {
   const [attendanceHistory, setAttendanceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
   const [error, setError] = useState(null);
 
   // Fetch students when component mounts
@@ -22,22 +22,22 @@ const StudentAttendanceHistory = () => {
     try {
       setLoading(true);
       const token = await getAccessToken();
-      const response = await fetch('http://localhost:8000/student', {
+      const response = await fetch("http://localhost:8000/student", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.ok) {
         const studentsData = await response.json();
         setStudents(studentsData);
       } else {
-        throw new Error('Failed to fetch students');
+        throw new Error("Failed to fetch students");
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
-      setError('Failed to load students');
+      console.error("Error fetching students:", error);
+      setError("Failed to load students");
     } finally {
       setLoading(false);
     }
@@ -48,22 +48,25 @@ const StudentAttendanceHistory = () => {
       setHistoryLoading(true);
       setError(null);
       const token = await getAccessToken();
-      const response = await fetch(`http://localhost:8000/attendance/history/student/${studentId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `http://localhost:8000/attendance/history/student/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (response.ok) {
         const historyData = await response.json();
         setAttendanceHistory(historyData);
       } else {
-        throw new Error('Failed to fetch attendance history');
+        throw new Error("Failed to fetch attendance history");
       }
     } catch (error) {
-      console.error('Error fetching attendance history:', error);
-      setError('Failed to load attendance history');
+      console.error("Error fetching attendance history:", error);
+      setError("Failed to load attendance history");
       setAttendanceHistory([]);
     } finally {
       setHistoryLoading(false);
@@ -80,44 +83,60 @@ const StudentAttendanceHistory = () => {
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'present': return 'status-present';
-      case 'absent': return 'status-absent';
-      case 'late': return 'status-late';
-      default: return 'status-unknown';
+      case "present":
+        return "status-present";
+      case "absent":
+        return "status-absent";
+      case "late":
+        return "status-late";
+      default:
+        return "status-unknown";
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'present': return '✅';
-      case 'absent': return '❌';
-      case 'late': return '🕐';
-      default: return '❓';
+      case "present":
+        return "✅";
+      case "absent":
+        return "❌";
+      case "late":
+        return "🕐";
+      default:
+        return "❓";
     }
   };
 
   // Filter students based on search term
-  const filteredStudents = students.filter(student =>
-    student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (student.registerNumber && student.registerNumber.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredStudents = students.filter(
+    (student) =>
+      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (student.registerNumber &&
+        student.registerNumber.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Filter attendance history based on filters
-  const filteredHistory = attendanceHistory.filter(record => {
-    const statusMatch = statusFilter === 'all' || record.status === statusFilter;
+  const filteredHistory = attendanceHistory.filter((record) => {
+    const statusMatch =
+      statusFilter === "all" || record.status === statusFilter;
     const dateMatch = !dateFilter || record.date === dateFilter;
     return statusMatch && dateMatch;
   });
 
   // Calculate attendance statistics
   const getAttendanceStats = () => {
-    if (attendanceHistory.length === 0) return { total: 0, present: 0, absent: 0, late: 0, percentage: 0 };
+    if (attendanceHistory.length === 0)
+      return { total: 0, present: 0, absent: 0, late: 0, percentage: 0 };
 
     const total = attendanceHistory.length;
-    const present = attendanceHistory.filter(r => r.status === 'present').length;
-    const absent = attendanceHistory.filter(r => r.status === 'absent').length;
-    const late = attendanceHistory.filter(r => r.status === 'late').length;
+    const present = attendanceHistory.filter(
+      (r) => r.status === "present"
+    ).length;
+    const absent = attendanceHistory.filter(
+      (r) => r.status === "absent"
+    ).length;
+    const late = attendanceHistory.filter((r) => r.status === "late").length;
     const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
 
     return { total, present, absent, late, percentage };
@@ -138,7 +157,10 @@ const StudentAttendanceHistory = () => {
     <div className="student-attendance-history">
       <div className="header">
         <h2>📊 Student Attendance History</h2>
-        <p>Select a student to view their detailed attendance history with class information</p>
+        <p>
+          Select a student to view their detailed attendance history with class
+          information
+        </p>
       </div>
 
       {error && (
@@ -165,21 +187,25 @@ const StudentAttendanceHistory = () => {
           </div>
 
           <div className="students-list">
-            {filteredStudents.map(student => (
+            {filteredStudents.map((student) => (
               <div
                 key={student.id}
-                className={`student-card ${selectedStudent?.id === student.id ? 'selected' : ''}`}
+                className={`student-card ${
+                  selectedStudent?.id === student.id ? "selected" : ""
+                }`}
                 onClick={() => handleStudentSelect(student)}
               >
                 <div className="student-info">
                   <h4>{student.name}</h4>
                   <p className="student-email">{student.email}</p>
                   {student.registerNumber && (
-                    <p className="student-register">ID: {student.registerNumber}</p>
+                    <p className="student-register">
+                      ID: {student.registerNumber}
+                    </p>
                   )}
                 </div>
                 <div className="student-arrow">
-                  {selectedStudent?.id === student.id ? '📋' : '👁️'}
+                  {selectedStudent?.id === student.id ? "📋" : "👁️"}
                 </div>
               </div>
             ))}
@@ -198,14 +224,20 @@ const StudentAttendanceHistory = () => {
             <div className="no-selection">
               <div className="no-selection-icon">📋</div>
               <h3>No Student Selected</h3>
-              <p>Please select a student from the left to view their attendance history.</p>
+              <p>
+                Please select a student from the left to view their attendance
+                history.
+              </p>
             </div>
           ) : (
             <>
               {/* Student Info Header */}
               <div className="selected-student-info">
                 <h3>📊 Attendance History: {selectedStudent.name}</h3>
-                <p>Student ID: {selectedStudent.registerNumber || selectedStudent.id}</p>
+                <p>
+                  Student ID:{" "}
+                  {selectedStudent.registerNumber || selectedStudent.id}
+                </p>
                 <p>Email: {selectedStudent.email}</p>
               </div>
 
@@ -266,11 +298,11 @@ const StudentAttendanceHistory = () => {
                   />
                 </div>
 
-                {(statusFilter !== 'all' || dateFilter) && (
+                {(statusFilter !== "all" || dateFilter) && (
                   <button
                     onClick={() => {
-                      setStatusFilter('all');
-                      setDateFilter('');
+                      setStatusFilter("all");
+                      setDateFilter("");
                     }}
                     className="clear-filters-btn"
                   >
@@ -306,45 +338,59 @@ const StudentAttendanceHistory = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {filteredHistory.map(record => (
+                          {filteredHistory.map((record) => (
                             <tr key={record.id}>
                               <td className="date-cell">
-                                {new Date(record.date).toLocaleDateString('en-US', {
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric'
-                                })}
+                                {new Date(record.date).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  }
+                                )}
                               </td>
                               <td className="class-name">
-                                {record.className || 'Unknown Class'}
+                                {record.className || "Unknown Class"}
                               </td>
                               <td className="subject">
-                                {record.classSubject || 'N/A'}
+                                {record.classSubject || "N/A"}
                               </td>
                               <td>
-                                <span className={`status-badge ${getStatusBadgeClass(record.status)}`}>
-                                  {getStatusIcon(record.status)} {record.status.toUpperCase()}
+                                <span
+                                  className={`status-badge ${getStatusBadgeClass(
+                                    record.status
+                                  )}`}
+                                >
+                                  {getStatusIcon(record.status)}{" "}
+                                  {record.status.toUpperCase()}
                                 </span>
                               </td>
                               <td className="timestamp">
-                                {record.timestamp ? 
-                                  new Date(record.timestamp).toLocaleString('en-US', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: true
-                                  }) : 
-                                  'N/A'
-                                }
+                                {record.timestamp
+                                  ? new Date(record.timestamp).toLocaleString(
+                                      "en-US",
+                                      {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true,
+                                      }
+                                    )
+                                  : "N/A"}
                               </td>
                               <td className="method">
                                 {record.method ? (
-                                  <span className={`method-badge ${record.method}`}>
+                                  <span
+                                    className={`method-badge ${record.method}`}
+                                  >
                                     {record.method.toUpperCase()}
                                   </span>
-                                ) : 'N/A'}
+                                ) : (
+                                  "N/A"
+                                )}
                               </td>
                               <td className="marked-by">
-                                {record.markedByName || 'System'}
+                                {record.markedByName || "System"}
                               </td>
                             </tr>
                           ))}
@@ -354,7 +400,10 @@ const StudentAttendanceHistory = () => {
 
                     {filteredHistory.length > 0 && (
                       <div className="table-footer">
-                        <p>Showing {filteredHistory.length} of {attendanceHistory.length} records</p>
+                        <p>
+                          Showing {filteredHistory.length} of{" "}
+                          {attendanceHistory.length} records
+                        </p>
                       </div>
                     )}
                   </>

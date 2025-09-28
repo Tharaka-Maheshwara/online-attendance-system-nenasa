@@ -1,9 +1,9 @@
 // Authentication utility functions
-import { msalInstance } from '../App';
+import { msalInstance } from "../App";
 
 export const getAccessToken = async () => {
   const accounts = msalInstance.getAllAccounts();
-  
+
   if (!accounts || accounts.length === 0) {
     throw new Error("No account found");
   }

@@ -97,7 +97,7 @@ export class AttendanceService {
           's.registerNumber as studentRegisterNumber',
           'c.name as className',
           'c.subject as classSubject',
-          'u.display_name as markedByName'
+          'u.display_name as markedByName',
         ])
         .orderBy('a.date', 'DESC')
         .addOrderBy('a.createdAt', 'DESC')
@@ -110,14 +110,16 @@ export class AttendanceService {
     }
   }
 
-  async getAttendanceByStudentWithClassDetails(studentId: number): Promise<any[]> {
+  async getAttendanceByStudentWithClassDetails(
+    studentId: number,
+  ): Promise<any[]> {
     try {
       console.log(`Fetching attendance for student ID: ${studentId}`);
-      
+
       // First, let's get just the attendance records for the student
       const attendanceRecords = await this.attendanceRepository.find({
         where: { studentId },
-        order: { date: 'DESC', createdAt: 'DESC' }
+        order: { date: 'DESC', createdAt: 'DESC' },
       });
 
       console.log(`Found ${attendanceRecords.length} attendance records`);
@@ -137,25 +139,29 @@ export class AttendanceService {
             // Get student info
             if (record.studentId) {
               studentInfo = await this.studentRepository.findOne({
-                where: { id: record.studentId }
+                where: { id: record.studentId },
               });
             }
 
             // Get class info
             if (record.classId) {
               classInfo = await this.classRepository.findOne({
-                where: { id: record.classId }
+                where: { id: record.classId },
               });
             }
 
-            // Get marked by info  
+            // Get marked by info
             if (record.markedBy) {
               markedByInfo = await this.userRepository.findOne({
-                where: { id: record.markedBy }
+                where: { id: record.markedBy },
               });
             }
           } catch (fetchError) {
-            console.error('Error fetching related data for record:', record.id, fetchError);
+            console.error(
+              'Error fetching related data for record:',
+              record.id,
+              fetchError,
+            );
             // Don't throw, continue with null values
           }
 
@@ -174,9 +180,9 @@ export class AttendanceService {
             studentRegisterNumber: studentInfo?.registerNumber || '',
             className: classInfo?.name || 'Unknown Class',
             classSubject: classInfo?.subject || '',
-            markedByName: markedByInfo?.display_name || 'System'
+            markedByName: markedByInfo?.display_name || 'System',
           };
-        })
+        }),
       );
 
       console.log(`Returning ${enrichedRecords.length} enriched records`);

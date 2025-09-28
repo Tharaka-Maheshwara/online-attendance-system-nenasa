@@ -135,8 +135,13 @@ export class AttendanceController {
     @Param('studentId') studentId: number,
   ): Promise<any[]> {
     try {
-      console.log(`Controller: Getting attendance history for student ${studentId}`);
-      const result = await this.attendanceService.getAttendanceByStudentWithClassDetails(Number(studentId));
+      console.log(
+        `Controller: Getting attendance history for student ${studentId}`,
+      );
+      const result =
+        await this.attendanceService.getAttendanceByStudentWithClassDetails(
+          Number(studentId),
+        );
       console.log(`Controller: Returning ${result.length} records`);
       return result;
     } catch (error) {

@@ -126,7 +126,9 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/attendance-history"
-                  className={`nav-link ${isActive("/attendance-history") ? "active" : ""}`}
+                  className={`nav-link ${
+                    isActive("/attendance-history") ? "active" : ""
+                  }`}
                 >
                   📋 Attendance History
                 </Link>

@@ -14,7 +14,8 @@ const AdminDashboard = () => {
   const [notification, setNotification] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("student"); // New state for tab selection
-  const [showAttendanceHistory, setShowAttendanceHistory] = React.useState(false);
+  const [showAttendanceHistory, setShowAttendanceHistory] =
+    React.useState(false);
 
   // Class Management States
   const [classes, setClasses] = React.useState([]);
