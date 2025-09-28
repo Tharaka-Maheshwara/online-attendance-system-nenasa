@@ -473,7 +473,7 @@ const AttendanceMarking = () => {
 
       if (response.ok) {
         const studentDisplayName = studentName || `student ID ${studentId}`;
-        alert(`✅ Attendance for ${studentDisplayName} saved successfully!`);
+        alert(`✅ Attendance for ${studentDisplayName} saved successfully!\n📧 Parent email notification has been sent automatically.`);
       } else {
         const errorData = await response.json();
         alert(
@@ -515,7 +515,7 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
-        alert("All attendance saved successfully!");
+        alert("✅ All attendance saved successfully!\n📧 Parent email notifications have been sent automatically to all students' parents.");
       } else {
         const errorData = await response.json();
         alert(

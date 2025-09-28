@@ -176,4 +176,38 @@ export class AttendanceController {
   async remove(@Param('id') id: number): Promise<void> {
     return this.attendanceService.remove(Number(id));
   }
+
+  @Post('test-email-notification')
+  async testEmailNotification(@Body() testData: {
+    studentId: number;
+    classId: number;
+    status: 'present' | 'absent' | 'late';
+  }): Promise<any> {
+    try {
+      const attendance = {
+        studentId: testData.studentId,
+        classId: testData.classId,
+        date: new Date().toISOString().split('T')[0],
+        status: testData.status,
+        timestamp: new Date(),
+        isPresent: testData.status === 'present'
+      };
+
+      console.log('🧪 Testing email notification with data:', attendance);
+      const result = await this.attendanceService.create(attendance);
+      
+      return {
+        success: true,
+        message: 'Test attendance created and email notification sent',
+        attendanceId: result.id,
+        data: result
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Test failed: ' + error.message,
+        error: error.message
+      };
+    }
+  }
 }

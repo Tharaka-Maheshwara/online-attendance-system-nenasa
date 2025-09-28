@@ -22,9 +22,12 @@ export class AttendanceService {
   ) {}
 
   async create(att: Partial<Attendance>): Promise<Attendance> {
+    console.log('📝 Creating attendance record:', att);
     const attendance = await this.attendanceRepository.save(att);
+    console.log('✅ Attendance saved with ID:', attendance.id);
 
     // Send notification after attendance is marked
+    console.log('📧 Attempting to send notification for attendance ID:', attendance.id);
     await this.sendAttendanceNotification(attendance);
 
     return attendance;
@@ -198,27 +201,50 @@ export class AttendanceService {
     attendance: Attendance,
   ): Promise<void> {
     try {
-      // Get student information
-      const student = await this.userRepository.findOne({
+      let studentName: string = 'Student';
+      let parentEmail: string = '';
+
+      // First try to get student information from User entity
+      const user = await this.userRepository.findOne({
         where: { id: attendance.studentId },
       });
 
-      if (!student || !student.parentEmail) {
+      if (user && user.parentEmail) {
+        studentName = user.display_name || 'Student';
+        parentEmail = user.parentEmail;
+      } else {
+        // If not found in User entity, try Student entity
+        const student = await this.studentRepository.findOne({
+          where: { id: attendance.studentId },
+        });
+
+        if (student && student.parentEmail) {
+          studentName = student.name || 'Student';
+          parentEmail = student.parentEmail;
+        }
+      }
+
+      if (!parentEmail) {
         console.log(
-          `No parent email found for student ID: ${attendance.studentId}`,
+          `No parent email found for student ID: ${attendance.studentId} in both User and Student entities`,
         );
         return;
       }
 
+      console.log(`📨 Sending attendance notification to ${parentEmail} for student ${studentName}`);
+      console.log(`📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${attendance.classId}`);
+
       // Send notification
       await this.notificationService.sendAttendanceNotification(
-        student.display_name || 'Student',
-        student.parentEmail,
+        studentName,
+        parentEmail,
         attendance.classId,
         attendance.studentId,
         attendance.status === 'present',
         attendance.date,
       );
+      
+      console.log('✅ Email notification sent successfully!');
     } catch (error) {
       console.error('Error sending attendance notification:', error);
     }
