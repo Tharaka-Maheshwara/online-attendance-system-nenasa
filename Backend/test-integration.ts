@@ -22,7 +22,7 @@ async function testAttendanceEmailIntegration() {
       date: new Date().toISOString().split('T')[0],
       status: 'present' as AttendanceStatus,
       timestamp: new Date(),
-      isPresent: true
+      isPresent: true,
     };
 
     console.log('📝 Creating attendance record:', testAttendance);
@@ -40,18 +40,18 @@ async function testAttendanceEmailIntegration() {
       date: new Date().toISOString().split('T')[0],
       status: 'absent' as AttendanceStatus,
       timestamp: new Date(),
-      isPresent: false
+      isPresent: false,
     };
 
     console.log('📝 Creating absent attendance record:', testAbsentAttendance);
-    const createdAbsentAttendance = await attendanceService.create(testAbsentAttendance);
+    const createdAbsentAttendance =
+      await attendanceService.create(testAbsentAttendance);
     console.log('✅ Absent attendance created:', createdAbsentAttendance.id);
 
     console.log('📧 Absent notification should have been sent automatically!');
 
     await app.close();
     console.log('\n🎯 Integration test completed successfully!');
-
   } catch (error) {
     console.error('❌ Integration test failed:', error.message);
     console.error('📝 Stack trace:', error.stack);

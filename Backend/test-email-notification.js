@@ -12,8 +12,8 @@ async function testEmailNotification() {
     secure: false,
     auth: {
       user: 'tharakamahesh806@gmail.com',
-      pass: 'ezbd nete bizh uznf'
-    }
+      pass: 'ezbd nete bizh uznf',
+    },
   });
 
   try {
@@ -71,14 +71,13 @@ async function testEmailNotification() {
           </div>
         </body>
         </html>
-      `
+      `,
     };
 
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ Test email sent successfully!');
     console.log('📋 Message ID:', info.messageId);
     console.log('📧 Email sent to:', testEmail);
-
   } catch (error) {
     console.error('❌ Email test failed:', error.message);
     console.error('📝 Details:', error);
@@ -86,8 +85,10 @@ async function testEmailNotification() {
 }
 
 // Run the test
-testEmailNotification().then(() => {
-  console.log('\n🎯 Email notification test completed!');
-}).catch(error => {
-  console.error('💥 Test execution failed:', error);
-});
+testEmailNotification()
+  .then(() => {
+    console.log('\n🎯 Email notification test completed!');
+  })
+  .catch((error) => {
+    console.error('💥 Test execution failed:', error);
+  });
