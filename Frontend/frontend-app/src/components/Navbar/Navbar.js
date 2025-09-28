@@ -133,13 +133,14 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/admin/mark-attendance"
-                  className={`nav-link ${isActive("/admin/mark-attendance") ? "active" : ""}`}
+                  className={`nav-link ${
+                    isActive("/admin/mark-attendance") ? "active" : ""
+                  }`}
                 >
                   📝 Mark Attendance (Admin)
                 </Link>
               </>
             )}
-          
           </div>
 
           <div className="navbar-user">
