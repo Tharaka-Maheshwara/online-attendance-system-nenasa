@@ -139,7 +139,7 @@ const Navbar = () => {
                 </Link>
               </>
             )}
-            )}
+          
           </div>
 
           <div className="navbar-user">
