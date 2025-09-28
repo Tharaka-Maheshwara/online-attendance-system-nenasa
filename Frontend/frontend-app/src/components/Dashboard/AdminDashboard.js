@@ -299,7 +299,6 @@ const AdminDashboard = () => {
                     <th>ID</th>
                     <th>Email</th>
                     <th>Role</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -308,14 +307,6 @@ const AdminDashboard = () => {
                       <td>{user.id}</td>
                       <td>{user.email}</td>
                       <td>{user.role}</td>
-                      <td>
-                        <button
-                          onClick={() => openRoleModal(user)}
-                          disabled={updating}
-                        >
-                          Edit Role
-                        </button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
