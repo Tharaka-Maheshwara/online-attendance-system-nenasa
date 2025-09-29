@@ -22,7 +22,7 @@ import { TeacherModule } from './teacher/teacher.module';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'Thara@PSQL',
+      password: 'Nemika123#',
       database: 'attendance_db',
       autoLoadEntities: true,
       synchronize: true,
