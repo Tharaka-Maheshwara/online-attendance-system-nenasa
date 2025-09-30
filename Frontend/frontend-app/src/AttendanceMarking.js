@@ -5,7 +5,7 @@ import { useMsal } from "@azure/msal-react";
 import "./AttendanceMarking.css";
 
 const AttendanceMarking = () => {
-  const { accounts } = useMsal();
+  const { instance, accounts } = useMsal();
   const [userRole, setUserRole] = useState("student");
   const [markingMode, setMarkingMode] = useState("manual"); // 'manual' or 'qr'
   const [classes, setClasses] = useState([]);
@@ -32,6 +32,28 @@ const AttendanceMarking = () => {
       stopQRScanning();
     };
   }, []);
+
+  // Get MSAL access token
+  const getAccessToken = async () => {
+    if (!accounts || accounts.length === 0) {
+      throw new Error("No account found");
+    }
+
+    const request = {
+      scopes: ["openid", "profile", "User.Read"],
+      account: accounts[0],
+    };
+
+    try {
+      const response = await instance.acquireTokenSilent(request);
+      return response.accessToken;
+    } catch (error) {
+      console.error("Silent token acquisition failed:", error);
+      // Fallback to popup
+      const response = await instance.acquireTokenPopup(request);
+      return response.accessToken;
+    }
+  };
 
   const fetchUserRole = async () => {
     try {
@@ -97,15 +119,11 @@ const AttendanceMarking = () => {
       if (response.ok) {
         const classData = await response.json();
         setClasses(classData);
+      } else {
+        throw new Error("Failed to fetch classes");
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
-      // Mock data for demo
-      setClasses([
-        { id: 1, name: "Grade 12 - Physics", code: "PHY12" },
-        { id: 2, name: "Grade 11 - Chemistry", code: "CHE11" },
-        { id: 3, name: "Grade 10 - Biology", code: "BIO10" },
-      ]);
     }
   };
 
@@ -117,7 +135,6 @@ const AttendanceMarking = () => {
         return;
       }
 
-      // Get the selected class information
       const selectedClassInfo = classes.find((c) => c.id === parseInt(classId));
       if (!selectedClassInfo) {
         console.error("Selected class not found");
@@ -126,22 +143,18 @@ const AttendanceMarking = () => {
         return;
       }
 
-      // Fetch students from the student endpoint instead of users
       const studentsResponse = await fetch("http://localhost:8000/student");
       if (studentsResponse.ok) {
         const allStudents = await studentsResponse.json();
 
-        // Filter students who are enrolled in the selected class
-        // Check if any of their subjects (sub_1, sub_2, sub_3, sub_4) match the class name
         const enrolledStudents = allStudents.filter((student) => {
           const studentSubjects = [
             student.sub_1,
             student.sub_2,
             student.sub_3,
             student.sub_4,
-          ].filter(Boolean); // Remove null/undefined values
+          ].filter(Boolean);
 
-          // Check if any of the student's subjects match the selected class name
           return studentSubjects.some(
             (subject) =>
               subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
@@ -153,7 +166,6 @@ const AttendanceMarking = () => {
         );
         setStudents(enrolledStudents);
 
-        // Initialize attendance state
         const initialAttendance = {};
         enrolledStudents.forEach((student) => {
           initialAttendance[student.id] = "absent";
@@ -196,22 +208,19 @@ const AttendanceMarking = () => {
       setScanResult("");
       setCameraError("");
 
-      // Check if camera is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("Camera not supported on this device");
       }
 
-      // Request camera permission explicitly
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: "environment", // Prefer back camera for QR scanning
+          facingMode: "environment",
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
       });
 
       if (videoRef.current) {
-        // Set the video source
         videoRef.current.srcObject = stream;
 
         const qrScanner = new QrScanner(
@@ -238,7 +247,6 @@ const AttendanceMarking = () => {
       console.error("Error starting QR scanner:", error);
       setScanning(false);
 
-      // Set specific error messages based on error type
       if (error.name === "NotAllowedError") {
         setCameraError(
           "Camera access denied. Please click on the camera icon in your browser's address bar and allow camera access."
@@ -255,7 +263,6 @@ const AttendanceMarking = () => {
         setCameraError(
           "Camera settings are not supported. Trying with default settings..."
         );
-        // Retry with basic camera settings
         retryWithBasicCamera();
       } else {
         setCameraError("Failed to start camera: " + error.message);
@@ -296,7 +303,6 @@ const AttendanceMarking = () => {
       qrScannerRef.current = null;
     }
 
-    // Stop the camera stream
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach((track) => track.stop());
@@ -312,20 +318,72 @@ const AttendanceMarking = () => {
       const data = JSON.parse(qrData);
       console.log("QR Data received:", data);
 
-      if (data.classId && userRole === "student") {
-        // Get current user info
+      if (
+        data.type === "student_attendance" &&
+        (userRole === "teacher" || userRole === "admin")
+      ) {
+        if (!selectedClass) {
+          alert(
+            "Please select a class first before scanning student QR codes."
+          );
+          return;
+        }
+
+        const studentId = data.studentId;
+        const studentName = data.name;
+
+        const selectedClassInfo = classes.find(
+          (c) => c.id === parseInt(selectedClass)
+        );
+        if (!selectedClassInfo) {
+          alert("Selected class not found.");
+          return;
+        }
+
+        const studentResponse = await fetch(
+          `http://localhost:8000/student/${studentId}`
+        );
+        if (!studentResponse.ok) {
+          alert("Student not found in the system.");
+          return;
+        }
+
+        const studentData = await studentResponse.json();
+        const studentSubjects = [
+          studentData.sub_1,
+          studentData.sub_2,
+          studentData.sub_3,
+          studentData.sub_4,
+        ].filter(Boolean);
+
+        const isEnrolled = studentSubjects.some(
+          (subject) =>
+            subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+        );
+
+        if (!isEnrolled) {
+          alert(
+            `${studentName} is not enrolled in ${selectedClassInfo.name} class.`
+          );
+          return;
+        }
+
+        const newAttendance = { ...attendance };
+        newAttendance[studentId] = "present";
+        setAttendance(newAttendance);
+
+        // Save attendance to the backend
+        await saveStudentAttendance(studentId, "present", studentName);
+      } else if (data.classId && userRole === "student") {
         const currentUser = accounts[0];
         const userEmail = currentUser.username || currentUser.name;
 
-        // Find the current user in the backend to get their ID
         const response = await fetch(
           `http://localhost:8000/users/profile/${userEmail}`
         );
         if (response.ok) {
           const userData = await response.json();
-          console.log("Current user data:", userData);
 
-          // Mark attendance for this student
           const attendanceData = {
             classId: parseInt(data.classId),
             date: new Date().toISOString().split("T")[0],
@@ -337,8 +395,6 @@ const AttendanceMarking = () => {
               },
             ],
           };
-
-          console.log("Submitting attendance:", attendanceData);
 
           const attendanceResponse = await fetch(
             "http://localhost:8000/attendance",
@@ -353,10 +409,8 @@ const AttendanceMarking = () => {
 
           if (attendanceResponse.ok) {
             alert("Attendance marked successfully!");
-            console.log("Attendance saved successfully");
           } else {
             const errorData = await attendanceResponse.json();
-            console.error("Failed to save attendance:", errorData);
             alert(
               "Failed to save attendance: " +
                 (errorData.message || "Unknown error")
@@ -388,34 +442,95 @@ const AttendanceMarking = () => {
     }
   };
 
-  const saveAttendance = async () => {
+  const saveStudentAttendance = async (studentId, status, studentName) => {
     try {
+      if (!status) {
+        alert("Please select an attendance status.");
+        return;
+      }
+
       const attendanceData = {
         classId: selectedClass,
         date: new Date().toISOString().split("T")[0],
-        attendance: Object.entries(attendance).map(([studentId, status]) => ({
-          studentId: parseInt(studentId),
-          status,
-          timestamp: new Date().toISOString(),
-        })),
+        attendance: [
+          {
+            studentId: parseInt(studentId),
+            status,
+            timestamp: new Date().toISOString(),
+          },
+        ],
       };
 
+      const token = await getAccessToken();
       const response = await fetch("http://localhost:8000/attendance", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(attendanceData),
       });
 
       if (response.ok) {
-        alert("Attendance saved successfully!");
+        const studentDisplayName = studentName || `student ID ${studentId}`;
+        alert(
+          `✅ Attendance for ${studentDisplayName} saved successfully!\n📧 Parent email notification has been sent automatically.`
+        );
       } else {
-        alert("Failed to save attendance!");
+        const errorData = await response.json();
+        alert(
+          `Failed to save attendance: ${errorData.message || "Unknown error"}`
+        );
       }
     } catch (error) {
-      console.error("Error saving attendance:", error);
-      alert("Error saving attendance!");
+      console.error("Error saving student attendance:", error);
+      alert("Error saving student attendance!");
+    }
+  };
+
+  // Bulk save all students' attendance
+  const saveAllAttendance = async () => {
+    if (!selectedClass || students.length === 0) {
+      alert("Please select a class and ensure students are loaded.");
+      return;
+    }
+
+    const attendanceData = {
+      classId: selectedClass,
+      date: new Date().toISOString().split("T")[0],
+      attendance: students.map((student) => ({
+        studentId: student.id,
+        status: attendance[student.id] || "absent",
+        timestamp: new Date().toISOString(),
+      })),
+    };
+
+    try {
+      const token = await getAccessToken();
+      const response = await fetch("http://localhost:8000/attendance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(attendanceData),
+      });
+
+      if (response.ok) {
+        alert(
+          "✅ All attendance saved successfully!\n📧 Parent email notifications have been sent automatically to all students' parents."
+        );
+      } else {
+        const errorData = await response.json();
+        alert(
+          `Failed to save all attendance: ${
+            errorData.message || response.statusText
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Error saving all attendance:", error);
+      alert("Error saving all attendance!");
     }
   };
 
@@ -460,15 +575,72 @@ const AttendanceMarking = () => {
           </div>
 
           {markingMode === "qr" && selectedClass && (
-            <div className="qr-generation">
-              <h3>QR Code for Attendance</h3>
-              <button onClick={generateQRCode} className="generate-qr-btn">
-                Generate QR Code
-              </button>
-              {qrCode && (
-                <div className="qr-display">
-                  <QRCode value={qrCode} size={200} />
-                  <p>Students can scan this QR code to mark attendance</p>
+            <div className="qr-scanning">
+              <h3>Scan Student QR Codes</h3>
+              <p>
+                Scan each student's QR code to mark their attendance in{" "}
+                {classes.find((c) => c.id === parseInt(selectedClass))?.name}{" "}
+                class
+              </p>
+
+              {!scanning ? (
+                <button onClick={startQRScanning} className="start-scan-btn">
+                  📱 Start Scanning
+                </button>
+              ) : (
+                <div className="scanner-container">
+                  <div className="camera-container">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="qr-camera"
+                    />
+                    <div className="scan-overlay">
+                      <div className="scan-frame"></div>
+                    </div>
+                  </div>
+                  <button onClick={stopQRScanning} className="stop-scan-btn">
+                    ⏹️ Stop Scanning
+                  </button>
+                  {scanResult && (
+                    <div className="scan-result">
+                      <p>Last scanned: {scanResult}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {cameraError && (
+                <div className="camera-error">
+                  <p>❌ {cameraError}</p>
+                </div>
+              )}
+
+              {students.length > 0 && (
+                <div className="scanned-attendance">
+                  <h4>Attendance Status:</h4>
+                  <div className="attendance-summary">
+                    {students.map((student) => (
+                      <div
+                        key={student.id}
+                        className={`student-status ${
+                          attendance[student.id] || "absent"
+                        }`}
+                      >
+                        <span className="status-icon">
+                          {attendance[student.id] === "present" ? "✅" : "⭕"}
+                        </span>
+                        <span className="student-name">{student.name}</span>
+                        <span className="status-text">
+                          {attendance[student.id] === "present"
+                            ? "Present"
+                            : "Not Scanned"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -479,13 +651,30 @@ const AttendanceMarking = () => {
               <h3>Mark Attendance Manually</h3>
               {students.length > 0 ? (
                 <div className="student-list">
+                  {/* Save All Attendance button */}
+                  <button
+                    className="save-all-attendance-btn"
+                    onClick={saveAllAttendance}
+                    style={{
+                      marginBottom: "16px",
+                      backgroundColor: "#28a745",
+                      color: "white",
+                      padding: "10px 20px",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    💾 Save All Attendance
+                  </button>
                   {students.map((student) => (
                     <div key={student.id} className="student-row">
                       <div className="student-info">
                         <span className="student-name">
                           {student.name || student.email}
                         </span>
-                        <span className="student-email">{student.email}</span>
                       </div>
                       <div className="attendance-options">
                         <label>
@@ -525,6 +714,17 @@ const AttendanceMarking = () => {
                           Late
                         </label>
                       </div>
+                      <button
+                        onClick={() =>
+                          saveStudentAttendance(
+                            student.id,
+                            attendance[student.id]
+                          )
+                        }
+                        className="save-student-attendance-btn"
+                      >
+                        Save
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -536,14 +736,6 @@ const AttendanceMarking = () => {
                     properly enrolled.
                   </p>
                 </div>
-              )}
-              {students.length > 0 && (
-                <button
-                  onClick={saveAttendance}
-                  className="save-attendance-btn"
-                >
-                  Save Attendance
-                </button>
               )}
             </div>
           )}

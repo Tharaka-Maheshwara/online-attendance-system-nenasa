@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import "./AdminDashboard.css";
+import StudentAttendanceHistory from "../StudentAttendanceHistory/StudentAttendanceHistory";
 
 const AdminDashboard = () => {
   const { pathname } = useLocation();
@@ -13,6 +14,8 @@ const AdminDashboard = () => {
   const [notification, setNotification] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("student"); // New state for tab selection
+  const [showAttendanceHistory, setShowAttendanceHistory] =
+    React.useState(false);
 
   // Class Management States
   const [classes, setClasses] = React.useState([]);
@@ -299,7 +302,6 @@ const AdminDashboard = () => {
                     <th>ID</th>
                     <th>Email</th>
                     <th>Role</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -308,14 +310,6 @@ const AdminDashboard = () => {
                       <td>{user.id}</td>
                       <td>{user.email}</td>
                       <td>{user.role}</td>
-                      <td>
-                        <button
-                          onClick={() => openRoleModal(user)}
-                          disabled={updating}
-                        >
-                          Edit Role
-                        </button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -400,6 +394,13 @@ const AdminDashboard = () => {
                 )}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Student Attendance History Section */}
+        {pathname === "/attendance-history" && (
+          <div className="attendance-history-section">
+            <StudentAttendanceHistory />
           </div>
         )}
 

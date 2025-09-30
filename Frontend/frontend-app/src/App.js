@@ -17,6 +17,7 @@ import TeacherManagement from "./components/TeacherManagement/TeacherManagement"
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
+import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -43,7 +44,7 @@ function PrivateRoute({ element, allowedRoles }) {
   return <Navigate to="/dashboard" replace />;
 }
 
-const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = new PublicClientApplication(msalConfig);
 
 function AppContent() {
   const { accounts } = useMsal();
@@ -163,6 +164,28 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["admin"]}
                   element={<Dashboard />}
+                />
+              }
+            />
+
+            {/* Student Attendance History: admin only */}
+            <Route
+              path="/attendance-history"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<Dashboard />}
+                />
+              }
+            />
+
+            {/* Admin attendance marking: admin only */}
+            <Route
+              path="/admin/mark-attendance"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<AdminAttendanceMarking />}
                 />
               }
             />
