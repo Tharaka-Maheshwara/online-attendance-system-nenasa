@@ -105,8 +105,6 @@ export class StudentService {
       // But you might want to handle this differently based on your requirements
     }
 
-    
-
     const result = await this.findOne(savedStudent.id);
     return result || savedStudent;
   }
@@ -169,6 +167,4 @@ export class StudentService {
       return null;
     }
   }
-
-  
 }
