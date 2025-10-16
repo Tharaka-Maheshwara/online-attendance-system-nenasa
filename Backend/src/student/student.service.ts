@@ -107,7 +107,8 @@ export class StudentService {
 
     
 
-    return savedStudent;
+    const result = await this.findOne(savedStudent.id);
+    return result || savedStudent;
   }
 
   async findAll(): Promise<Student[]> {

@@ -198,8 +198,12 @@ const StudentManagement = () => {
       };
 
       // Create student record using studentService
-      await createStudent(studentData);
+      const createdStudent = await createStudent(studentData);
+      console.log("Created Student:", createdStudent); // <-- Add this line
       alert("Student created successfully!");
+
+      // Add the new student to the list
+      setStudents((prevStudents) => [createdStudent, ...prevStudents]);
 
       // Reset form after successful creation
       setNewStudent({
@@ -217,7 +221,6 @@ const StudentManagement = () => {
       });
       setImagePreview(null);
       setShowAddForm(false);
-      await fetchStudents();
     } catch (error) {
       console.error("Error creating student:", error);
       setError("Error creating student: " + error.message);
@@ -740,20 +743,10 @@ const StudentManagement = () => {
                             src={`http://localhost:8000${student.profileImage}`}
                             alt={student.name}
                             className="student-image"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                              e.target.nextSibling.style.display = "flex";
-                            }}
                           />
                         ) : (
                           <div className="student-image-placeholder">👤</div>
                         )}
-                        <div
-                          className="student-image-placeholder"
-                          style={{ display: "none" }}
-                        >
-                          👤
-                        </div>
                       </td>
                       <td>{student.name}</td>
                       <td>{student.email}</td>
