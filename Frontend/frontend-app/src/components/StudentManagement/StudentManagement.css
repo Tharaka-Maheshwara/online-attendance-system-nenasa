@@ -513,3 +513,112 @@
     width: 100%;
   }
 }
+
+/* Image Upload Styles */
+.image-upload-group {
+  grid-column: 1 / -1; /* Span full width */
+}
+
+.image-upload-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-input {
+  padding: 8px;
+  border: 2px dashed #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.image-input:hover {
+  border-color: #007bff;
+}
+
+.image-upload-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.image-upload-info span {
+  color: #666;
+  font-size: 14px;
+}
+
+.image-upload-info small {
+  color: #999;
+  font-size: 12px;
+}
+
+.image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+}
+
+.preview-image {
+  max-width: 200px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.remove-image-btn:hover {
+  background-color: #c82333;
+}
+
+/* Student Card Image Display */
+.student-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  margin-right: 15px;
+}
+
+.student-image-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: #6c757d;
+  font-size: 24px;
+}
+
+.student-info-with-image {
+  display: flex;
+  align-items: center;
+}
+
+.student-details {
+  flex: 1;
+}

@@ -23,4 +23,8 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   sub_4?: string;
+
+  @IsOptional()
+  @IsString()
+  profileImage?: string;
 }

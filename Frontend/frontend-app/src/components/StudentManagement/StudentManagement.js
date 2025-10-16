@@ -24,6 +24,7 @@ const StudentManagement = () => {
     sub_2: "",
     sub_3: "",
     sub_4: "",
+    profileImage: null, // For storing the selected file
   });
   const [editingStudent, setEditingStudent] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -34,6 +35,7 @@ const StudentManagement = () => {
   const [error, setError] = useState("");
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedStudentQR, setSelectedStudentQR] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     fetchStudents();
@@ -142,6 +144,36 @@ const StudentManagement = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Please select a valid image file (JPEG, PNG, or GIF)');
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+
+      setNewStudent((prev) => ({
+        ...prev,
+        profileImage: file,
+      }));
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -176,7 +208,9 @@ const StudentManagement = () => {
         sub_2: "",
         sub_3: "",
         sub_4: "",
+        profileImage: null,
       });
+      setImagePreview(null);
       setShowAddForm(false);
       await fetchStudents();
     } catch (error) {
@@ -389,6 +423,44 @@ const StudentManagement = () => {
                   onChange={handleInputChange}
                   placeholder="Parent email for notifications"
                 />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group image-upload-group">
+                <label>Profile Image:</label>
+                <div className="image-upload-container">
+                  <input
+                    type="file"
+                    name="profileImage"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="image-input"
+                  />
+                  <div className="image-upload-info">
+                    <span>📷 Choose student photo (Max 5MB)</span>
+                    <small>Supported formats: JPEG, PNG, GIF</small>
+                  </div>
+                </div>
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="preview-image"
+                    />
+                    <button 
+                      type="button" 
+                      className="remove-image-btn"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setNewStudent(prev => ({...prev, profileImage: null}));
+                      }}
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -630,6 +702,7 @@ const StudentManagement = () => {
             <table>
               <thead>
                 <tr>
+                  <th>Photo</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Register Number</th>
@@ -653,6 +726,26 @@ const StudentManagement = () => {
 
                   return (
                     <tr key={student.id}>
+                      <td>
+                        {student.profileImage ? (
+                          <img 
+                            src={`http://localhost:8000${student.profileImage}`}
+                            alt={student.name}
+                            className="student-image"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : (
+                          <div className="student-image-placeholder">
+                            👤
+                          </div>
+                        )}
+                        <div className="student-image-placeholder" style={{display: 'none'}}>
+                          👤
+                        </div>
+                      </td>
                       <td>{student.name}</td>
                       <td>{student.email}</td>
                       <td>{student.registerNumber || "N/A"}</td>
