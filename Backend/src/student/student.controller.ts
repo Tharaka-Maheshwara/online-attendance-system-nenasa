@@ -27,7 +27,8 @@ export class StudentController {
       storage: diskStorage({
         destination: './uploads/student-images',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           callback(null, `student-${uniqueSuffix}${ext}`);
         },
@@ -48,28 +49,31 @@ export class StudentController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('profileImage', {
-    storage: diskStorage({
-      destination: './uploads/student-images',
-      filename: (req, file, callback) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = extname(file.originalname);
-        callback(null, `student-${uniqueSuffix}${ext}`);
+  @UseInterceptors(
+    FileInterceptor('profileImage', {
+      storage: diskStorage({
+        destination: './uploads/student-images',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `student-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
       },
     }),
-    fileFilter: (req, file, callback) => {
-      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-        return callback(
-          new BadRequestException('Only image files are allowed!'),
-          false,
-        );
-      }
-      callback(null, true);
-    },
-    limits: {
-      fileSize: 5 * 1024 * 1024, // 5MB limit
-    },
-  }))
+  )
   async createStudent(
     @Body() createStudentDto: CreateStudentDto,
     @UploadedFile() file?: any,
@@ -78,33 +82,36 @@ export class StudentController {
     if (file) {
       createStudentDto.profileImage = `/uploads/student-images/${file.filename}`;
     }
-    
+
     return await this.studentService.create(createStudentDto);
   }
 
   @Put(':studentId')
-  @UseInterceptors(FileInterceptor('profileImage', {
-    storage: diskStorage({
-      destination: './uploads/student-images',
-      filename: (req, file, callback) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = extname(file.originalname);
-        callback(null, `student-${uniqueSuffix}${ext}`);
+  @UseInterceptors(
+    FileInterceptor('profileImage', {
+      storage: diskStorage({
+        destination: './uploads/student-images',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `student-${uniqueSuffix}${ext}`);
+        },
+      }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+          return callback(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB limit
       },
     }),
-    fileFilter: (req, file, callback) => {
-      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-        return callback(
-          new BadRequestException('Only image files are allowed!'),
-          false,
-        );
-      }
-      callback(null, true);
-    },
-    limits: {
-      fileSize: 5 * 1024 * 1024, // 5MB limit
-    },
-  }))
+  )
   async updateStudent(
     @Param('studentId') studentId: string,
     @Body() updateStudentDto: UpdateStudentDto,
@@ -114,7 +121,7 @@ export class StudentController {
     if (file) {
       updateStudentDto.profileImage = `/uploads/student-images/${file.filename}`;
     }
-    
+
     return await this.studentService.update(+studentId, updateStudentDto);
   }
 
@@ -148,6 +155,4 @@ export class StudentController {
   async getStudentByQRData(@Body() qrData: any) {
     return await this.studentService.findByQRData(qrData);
   }
-
-  
 }

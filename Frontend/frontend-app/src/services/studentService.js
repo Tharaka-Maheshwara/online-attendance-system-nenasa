@@ -6,13 +6,13 @@ export const createStudent = async (studentData) => {
   try {
     // Create FormData for file upload
     const formData = new FormData();
-    
+
     // Append all student fields to FormData
-    Object.keys(studentData).forEach(key => {
-      if (key === 'profileImage' && studentData[key]) {
+    Object.keys(studentData).forEach((key) => {
+      if (key === "profileImage" && studentData[key]) {
         // Append the file
-        formData.append('profileImage', studentData[key]);
-      } else if (studentData[key] !== null && studentData[key] !== '') {
+        formData.append("profileImage", studentData[key]);
+      } else if (studentData[key] !== null && studentData[key] !== "") {
         // Append other fields
         formData.append(key, studentData[key]);
       }
@@ -83,17 +83,17 @@ export const updateStudent = async (studentId, studentData) => {
   try {
     // Create FormData for file upload (if image is being updated)
     const isFormData = studentData.profileImage instanceof File;
-    
+
     let requestBody;
     let headers = {};
-    
+
     if (isFormData) {
       // Use FormData for image updates
       const formData = new FormData();
-      Object.keys(studentData).forEach(key => {
-        if (key === 'profileImage' && studentData[key]) {
-          formData.append('profileImage', studentData[key]);
-        } else if (studentData[key] !== null && studentData[key] !== '') {
+      Object.keys(studentData).forEach((key) => {
+        if (key === "profileImage" && studentData[key]) {
+          formData.append("profileImage", studentData[key]);
+        } else if (studentData[key] !== null && studentData[key] !== "") {
           formData.append(key, studentData[key]);
         }
       });
@@ -102,7 +102,7 @@ export const updateStudent = async (studentId, studentData) => {
     } else {
       // Use JSON for regular updates
       requestBody = JSON.stringify(studentData);
-      headers['Content-Type'] = 'application/json';
+      headers["Content-Type"] = "application/json";
     }
 
     const response = await fetch(`${API_BASE_URL}/student/${studentId}`, {

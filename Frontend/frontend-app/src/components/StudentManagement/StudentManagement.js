@@ -148,15 +148,20 @@ const StudentManagement = () => {
     const file = e.target.files[0];
     if (file) {
       // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+      ];
       if (!allowedTypes.includes(file.type)) {
-        alert('Please select a valid image file (JPEG, PNG, or GIF)');
+        alert("Please select a valid image file (JPEG, PNG, or GIF)");
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+        alert("Image size should be less than 5MB");
         return;
       }
 
@@ -444,17 +449,20 @@ const StudentManagement = () => {
                 </div>
                 {imagePreview && (
                   <div className="image-preview">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
                       className="preview-image"
                     />
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="remove-image-btn"
                       onClick={() => {
                         setImagePreview(null);
-                        setNewStudent(prev => ({...prev, profileImage: null}));
+                        setNewStudent((prev) => ({
+                          ...prev,
+                          profileImage: null,
+                        }));
                       }}
                     >
                       ✕ Remove
@@ -728,21 +736,22 @@ const StudentManagement = () => {
                     <tr key={student.id}>
                       <td>
                         {student.profileImage ? (
-                          <img 
+                          <img
                             src={`http://localhost:8000${student.profileImage}`}
                             alt={student.name}
                             className="student-image"
                             onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextSibling.style.display = 'flex';
+                              e.target.style.display = "none";
+                              e.target.nextSibling.style.display = "flex";
                             }}
                           />
                         ) : (
-                          <div className="student-image-placeholder">
-                            👤
-                          </div>
+                          <div className="student-image-placeholder">👤</div>
                         )}
-                        <div className="student-image-placeholder" style={{display: 'none'}}>
+                        <div
+                          className="student-image-placeholder"
+                          style={{ display: "none" }}
+                        >
                           👤
                         </div>
                       </td>

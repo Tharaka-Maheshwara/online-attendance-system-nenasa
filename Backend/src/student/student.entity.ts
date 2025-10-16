@@ -39,6 +39,4 @@ export class Student {
   // Student profile image path
   @Column({ nullable: true })
   profileImage: string;
-
-  
 }

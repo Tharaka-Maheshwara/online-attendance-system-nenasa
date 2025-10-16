@@ -8,7 +8,7 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student]), 
+    TypeOrmModule.forFeature([Student]),
     UserModule,
     MulterModule.register({
       dest: './uploads/student-images',

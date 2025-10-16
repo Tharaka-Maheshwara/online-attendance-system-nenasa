@@ -1,14 +1,16 @@
 # Student Image Upload Feature
 
 ## 📸 Overview
+
 New feature added to Student Management system allowing teachers/admins to upload profile photos when adding new students.
 
 ## ✨ Features Implemented
 
 ### Frontend (React)
+
 - **Image Upload Field**: File input with validation
 - **Image Preview**: Shows selected image before submission
-- **File Validation**: 
+- **File Validation**:
   - Accepted formats: JPEG, PNG, GIF
   - Maximum size: 5MB
   - Real-time validation with user feedback
@@ -16,6 +18,7 @@ New feature added to Student Management system allowing teachers/admins to uploa
 - **Responsive Design**: Works on desktop and mobile
 
 ### Backend (NestJS)
+
 - **File Upload Handling**: Multer integration for multipart/form-data
 - **Image Storage**: Files saved to `/uploads/student-images/` directory
 - **Static File Serving**: Images accessible via HTTP URLs
@@ -30,7 +33,7 @@ New feature added to Student Management system allowing teachers/admins to uploa
 2. **Click "Add New Student"** button
 3. **Fill in student details** (name, email, etc.)
 4. **Upload Profile Image**:
-   - Click "Choose student photo" 
+   - Click "Choose student photo"
    - Select image file (JPEG/PNG/GIF)
    - Preview appears instantly
    - Optional: Click "✕ Remove" to change image
@@ -45,12 +48,14 @@ New feature added to Student Management system allowing teachers/admins to uploa
 ## 🔧 Technical Implementation
 
 ### Database Schema
+
 ```sql
 -- Student entity updated with new field
 ALTER TABLE student ADD COLUMN profileImage VARCHAR NULL;
 ```
 
 ### File Storage Structure
+
 ```
 Backend/
 ├── uploads/
@@ -63,6 +68,7 @@ Backend/
 ### API Endpoints
 
 #### POST /student (Create Student with Image)
+
 ```bash
 # Form Data Request
 Content-Type: multipart/form-data
@@ -78,6 +84,7 @@ profileImage: [FILE] # Image file
 ```
 
 #### Static File Access
+
 ```bash
 # Access uploaded images
 GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456.jpg
@@ -86,6 +93,7 @@ GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456
 ### Frontend Components
 
 #### Image Upload Component
+
 ```jsx
 <div className="image-upload-container">
   <input
@@ -104,10 +112,11 @@ GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456
 ```
 
 #### Student Table Display
+
 ```jsx
 <td>
   {student.profileImage ? (
-    <img 
+    <img
       src={`http://localhost:8000${student.profileImage}`}
       alt={student.name}
       className="student-image"
@@ -121,11 +130,13 @@ GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456
 ## 📱 User Experience
 
 ### Before (Original)
+
 - Text-only student management
 - No visual identification
 - Basic form fields only
 
 ### After (With Images)
+
 - **Visual Student Identification**: Easy to recognize students
 - **Professional Appearance**: School management system looks more complete
 - **User-Friendly Interface**: Drag-and-drop file upload
@@ -147,12 +158,14 @@ GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456
 ## 🔐 Security & Validation
 
 ### File Upload Security
+
 - **File Type Validation**: Only images allowed (JPEG, PNG, GIF)
 - **File Size Limits**: Maximum 5MB per image
 - **Safe File Names**: Auto-generated unique names prevent conflicts
 - **Directory Security**: Files stored outside web root initially
 
 ### Input Validation
+
 - **Frontend Validation**: Immediate user feedback
 - **Backend Validation**: Server-side security checks
 - **Error Handling**: Graceful degradation if upload fails
@@ -160,6 +173,7 @@ GET http://localhost:8000/uploads/student-images/student-1635789123456-789123456
 ## 📂 File Structure Changes
 
 ### Backend Files Modified/Added
+
 ```
 src/
 ├── student/
@@ -174,6 +188,7 @@ src/
 ```
 
 ### Frontend Files Modified
+
 ```
 src/
 ├── components/
@@ -187,12 +202,14 @@ src/
 ## 🎨 CSS Styling
 
 ### Image Upload Styles
+
 - **Upload Area**: Dashed border with hover effects
 - **Preview Container**: Clean layout with remove button
 - **Student Images**: Circular thumbnails in table
 - **Responsive Design**: Works on all screen sizes
 
 ### Color Scheme
+
 - **Upload Border**: #ddd (normal) → #007bff (hover)
 - **Preview Background**: #f8f9fa
 - **Remove Button**: #dc3545 (red)
@@ -212,6 +229,7 @@ src/
 ## ✅ Testing
 
 ### Test Cases
+
 1. ✅ Upload valid image (JPEG/PNG/GIF)
 2. ✅ Reject invalid file types (PDF, TXT, etc.)
 3. ✅ Reject oversized files (>5MB)
@@ -224,6 +242,7 @@ src/
 10. ✅ Database stores image path correctly
 
 ### Manual Testing Steps
+
 1. Open Student Management
 2. Click "Add New Student"
 3. Fill required fields
@@ -238,20 +257,24 @@ src/
 ### Common Issues
 
 **Image not displaying?**
+
 - Check backend server is running on port 8000
 - Verify uploads directory exists and has write permissions
 - Check browser console for 404 errors
 
 **Upload fails?**
+
 - Ensure file is under 5MB
 - Use supported formats (JPEG, PNG, GIF)
 - Check backend logs for detailed error messages
 
 **Preview not showing?**
+
 - Modern browser required for FileReader API
 - Check JavaScript console for errors
 
 ### Development Notes
+
 - Images stored locally for development
 - Production deployment should use cloud storage
 - Consider image optimization for better performance
@@ -259,5 +282,6 @@ src/
 
 ---
 
-## ✨ Success! 
+## ✨ Success!
+
 Student management system now supports profile photos, making it more professional and user-friendly! 📸🎓
