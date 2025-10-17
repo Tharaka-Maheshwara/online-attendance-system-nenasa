@@ -41,9 +41,9 @@ const CourseManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -69,7 +69,7 @@ const CourseManagement = () => {
     setFormData({
       courseName: course.courseName,
       duration: course.duration,
-      startDate: course.startDate.split('T')[0], // Format date for input
+      startDate: course.startDate.split("T")[0], // Format date for input
       maxStudents: course.maxStudents.toString(),
       price: course.price.toString(),
       description: course.description || "",
@@ -89,7 +89,7 @@ const CourseManagement = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      
+
       const courseData = {
         ...formData,
         maxStudents: parseInt(formData.maxStudents),
@@ -131,9 +131,9 @@ const CourseManagement = () => {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-LK', {
-      style: 'currency',
-      currency: 'LKR'
+    return new Intl.NumberFormat("en-LK", {
+      style: "currency",
+      currency: "LKR",
     }).format(price);
   };
 
@@ -173,7 +173,9 @@ const CourseManagement = () => {
                   <div className="course-name">
                     <strong>{course.courseName}</strong>
                     {course.description && (
-                      <div className="course-description">{course.description}</div>
+                      <div className="course-description">
+                        {course.description}
+                      </div>
                     )}
                   </div>
                 </td>
@@ -187,8 +189,12 @@ const CourseManagement = () => {
                 </td>
                 <td>{formatPrice(course.price)}</td>
                 <td>
-                  <span className={`status ${course.isActive ? 'active' : 'inactive'}`}>
-                    {course.isActive ? 'Active' : 'Inactive'}
+                  <span
+                    className={`status ${
+                      course.isActive ? "active" : "inactive"
+                    }`}
+                  >
+                    {course.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
                 <td>
@@ -218,7 +224,9 @@ const CourseManagement = () => {
           <div className="modal">
             <div className="modal-header">
               <h3>{modalType === "add" ? "Add New Course" : "Edit Course"}</h3>
-              <button className="close-btn" onClick={closeModal}>×</button>
+              <button className="close-btn" onClick={closeModal}>
+                ×
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="course-form">
               <div className="form-row">
@@ -302,11 +310,23 @@ const CourseManagement = () => {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={closeModal}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={closeModal}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary" disabled={loading}>
-                  {loading ? "Saving..." : modalType === "add" ? "Add Course" : "Update Course"}
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={loading}
+                >
+                  {loading
+                    ? "Saving..."
+                    : modalType === "add"
+                    ? "Add Course"
+                    : "Update Course"}
                 </button>
               </div>
             </form>

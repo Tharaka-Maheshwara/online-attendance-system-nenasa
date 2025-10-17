@@ -150,14 +150,14 @@ function AppContent() {
 
             {/* Classes: admin only */}
             <Route
-                path="/classes"
-                element={
-                  <PrivateRoute
-                    allowedRoles={["admin"]}
-                    element={<ClassManagement />}
-                  />
-                }
-              />
+              path="/classes"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<ClassManagement />}
+                />
+              }
+            />
 
             {/* Courses: admin only */}
             <Route

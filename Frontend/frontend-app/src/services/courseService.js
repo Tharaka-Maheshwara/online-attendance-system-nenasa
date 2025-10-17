@@ -134,12 +134,15 @@ export const deleteCourse = async (courseId) => {
 // Update enrollment count
 export const updateEnrollmentCount = async (courseId, count) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/course/${courseId}/enrollment/${count}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/course/${courseId}/enrollment/${count}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Failed to update enrollment count");
