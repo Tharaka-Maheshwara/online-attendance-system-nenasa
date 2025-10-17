@@ -432,3 +432,104 @@
     text-align: left;
   }
 }
+
+/* Editable Enrollment Styles */
+.enrollment-count.editable {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+  border: 1px solid transparent;
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+}
+
+.enrollment-count.editable:hover {
+  background-color: #e9ecef;
+  border-color: #2196f3;
+  transform: scale(1.05);
+}
+
+.enrollment-edit {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.enrollment-input {
+  width: 60px;
+  padding: 4px 6px;
+  border: 2px solid #2196f3;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.enrollment-input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.enrollment-actions {
+  display: flex;
+  gap: 3px;
+}
+
+.btn-save,
+.btn-cancel {
+  border: none;
+  padding: 4px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  min-width: 20px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-save {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #45a049;
+}
+
+.btn-save:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #da190b;
+}
+
+/* Mobile responsiveness for enrollment editing */
+@media (max-width: 768px) {
+  .enrollment-edit {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .enrollment-input {
+    width: 80px;
+  }
+  
+  .enrollment-actions {
+    margin-top: 5px;
+  }
+}

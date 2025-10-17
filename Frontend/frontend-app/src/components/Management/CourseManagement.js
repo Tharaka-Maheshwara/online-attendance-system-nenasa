@@ -4,6 +4,7 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
+  updateEnrollmentCount,
 } from "../../services/courseService";
 import "./CourseManagement.css";
 
@@ -11,6 +12,8 @@ const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [editingEnrollment, setEditingEnrollment] = useState(null);
+  const [tempEnrollmentValue, setTempEnrollmentValue] = useState("");
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -96,6 +99,47 @@ const CourseManagement = () => {
     setSelectedCourse(null);
   };
 
+  const startEditingEnrollment = (courseId, currentValue) => {
+    setEditingEnrollment(courseId);
+    setTempEnrollmentValue(currentValue.toString());
+  };
+
+  const cancelEditingEnrollment = () => {
+    setEditingEnrollment(null);
+    setTempEnrollmentValue("");
+  };
+
+  const saveEnrollmentCount = async (courseId) => {
+    try {
+      const newCount = parseInt(tempEnrollmentValue);
+      if (isNaN(newCount) || newCount < 0) {
+        alert("Please enter a valid number greater than or equal to 0");
+        return;
+      }
+
+      setLoading(true);
+      await updateEnrollmentCount(courseId, newCount);
+      
+      // Update local state
+      setCourses(prevCourses => 
+        prevCourses.map(course => 
+          course.id === courseId 
+            ? { ...course, enrolledStudents: newCount }
+            : course
+        )
+      );
+      
+      setEditingEnrollment(null);
+      setTempEnrollmentValue("");
+      alert("Enrollment count updated successfully!");
+    } catch (error) {
+      console.error("Error updating enrollment count:", error);
+      alert("Failed to update enrollment count");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -171,7 +215,7 @@ const CourseManagement = () => {
               <th>Duration</th>
               <th>Start Date</th>
               <th>Max Students</th>
-              <th>Enrolled</th>
+              <th>Enrolled ✏️</th>
               <th>Price</th>
               <th>Status</th>
               <th>Actions</th>
@@ -189,9 +233,48 @@ const CourseManagement = () => {
                 <td>{formatDate(course.startDate)}</td>
                 <td>{course.maxStudents}</td>
                 <td>
-                  <span className="enrollment-count">
-                    {course.enrolledStudents || 0}
-                  </span>
+                  {editingEnrollment === course.id ? (
+                    <div className="enrollment-edit">
+                      <input
+                        type="number"
+                        value={tempEnrollmentValue}
+                        onChange={(e) => setTempEnrollmentValue(e.target.value)}
+                        min="0"
+                        className="enrollment-input"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            saveEnrollmentCount(course.id);
+                          } else if (e.key === 'Escape') {
+                            cancelEditingEnrollment();
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <div className="enrollment-actions">
+                        <button
+                          className="btn-save"
+                          onClick={() => saveEnrollmentCount(course.id)}
+                          disabled={loading}
+                        >
+                          ✓
+                        </button>
+                        <button
+                          className="btn-cancel"
+                          onClick={cancelEditingEnrollment}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span 
+                      className="enrollment-count editable" 
+                      onClick={() => startEditingEnrollment(course.id, course.enrolledStudents || 0)}
+                      title="Click to edit enrollment count"
+                    >
+                      {course.enrolledStudents || 0}
+                    </span>
+                  )}
                 </td>
                 <td>{formatPrice(course.price)}</td>
                 <td>
