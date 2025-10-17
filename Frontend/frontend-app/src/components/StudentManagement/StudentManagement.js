@@ -505,7 +505,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -520,7 +520,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -537,7 +537,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -552,7 +552,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -669,7 +669,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -684,7 +684,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -701,7 +701,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -716,7 +716,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>

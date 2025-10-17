@@ -13,6 +13,13 @@ const ClassManagement = () => {
     startTime: '',
     endTime: '',
   });
+  
+  // Subject details modal state
+  const [showSubjectDetails, setShowSubjectDetails] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [subjectTeacher, setSubjectTeacher] = useState(null);
+  const [subjectStudents, setSubjectStudents] = useState([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     loadClasses();
@@ -82,6 +89,78 @@ const ClassManagement = () => {
     setFormData({ subject: '', dayOfWeek: '', startTime: '', endTime: '' });
   };
 
+  // Function to fetch teacher who teaches the subject
+  const fetchTeacherForSubject = async (subjectName) => {
+    try {
+      const response = await fetch('http://localhost:8000/teacher');
+      const teachers = await response.json();
+      
+      // Find teacher who teaches this subject
+      const teacher = teachers.find(t => 
+        t.sub_01 === subjectName || 
+        t.sub_02 === subjectName || 
+        t.sub_03 === subjectName || 
+        t.sub_04 === subjectName
+      );
+      
+      return teacher || null;
+    } catch (error) {
+      console.error('Error fetching teacher for subject:', error);
+      return null;
+    }
+  };
+
+  // Function to fetch students enrolled in the subject
+  const fetchStudentsForSubject = async (subjectName) => {
+    try {
+      const response = await fetch('http://localhost:8000/student');
+      const students = await response.json();
+      
+      // Filter students who are enrolled in this subject
+      const enrolledStudents = students.filter(s => 
+        s.sub_1 === subjectName || 
+        s.sub_2 === subjectName || 
+        s.sub_3 === subjectName || 
+        s.sub_4 === subjectName
+      );
+      
+      return enrolledStudents;
+    } catch (error) {
+      console.error('Error fetching students for subject:', error);
+      return [];
+    }
+  };
+
+  // Handle subject click
+  const handleSubjectClick = async (subjectName) => {
+    setLoadingDetails(true);
+    setSelectedSubject(subjectName);
+    setShowSubjectDetails(true);
+    
+    try {
+      // Fetch teacher and students concurrently
+      const [teacher, students] = await Promise.all([
+        fetchTeacherForSubject(subjectName),
+        fetchStudentsForSubject(subjectName)
+      ]);
+      
+      setSubjectTeacher(teacher);
+      setSubjectStudents(students);
+    } catch (error) {
+      console.error('Error fetching subject details:', error);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  // Close subject details modal
+  const closeSubjectDetails = () => {
+    setShowSubjectDetails(false);
+    setSelectedSubject(null);
+    setSubjectTeacher(null);
+    setSubjectStudents([]);
+  };
+
   return (
     <div className="class-management">
       <div className="header">
@@ -132,6 +211,72 @@ const ClassManagement = () => {
         </div>
       )}
 
+      {/* Subject Details Modal */}
+      {showSubjectDetails && (
+        <div className="modal-overlay" onClick={closeSubjectDetails}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Subject Details: {selectedSubject}</h3>
+              <button className="close-btn" onClick={closeSubjectDetails}>×</button>
+            </div>
+            
+            <div className="modal-body">
+              {loadingDetails ? (
+                <div className="loading">Loading subject details...</div>
+              ) : (
+                <>
+                  {/* Teacher Information */}
+                  <div className="detail-section">
+                    <h4>👨‍🏫 Teacher</h4>
+                    {subjectTeacher ? (
+                      <div className="teacher-info">
+                        <p><strong>Name:</strong> {subjectTeacher.name}</p>
+                        <p><strong>Register Number:</strong> {subjectTeacher.registerNumber}</p>
+                      </div>
+                    ) : (
+                      <p className="no-data">No teacher assigned to this subject</p>
+                    )}
+                  </div>
+
+                  {/* Student Information */}
+                  <div className="detail-section">
+                    <h4>👥 Students ({subjectStudents.length})</h4>
+                    {subjectStudents.length > 0 ? (
+                      <div className="students-list">
+                        <div className="students-table">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Register No.</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {subjectStudents.map((student) => (
+                                <tr key={student.id}>
+                                  <td>{student.name}</td>
+                                  <td>{student.registerNumber}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="no-data">No students enrolled in this subject</p>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            <div className="modal-footer">
+              <button className="close-modal-btn" onClick={closeSubjectDetails}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="classes-list">
         <h3>Available Classes</h3>
         <div className="classes-table">
@@ -148,7 +293,15 @@ const ClassManagement = () => {
             <tbody>
                 {classes.map((cls) => (
                 <tr key={cls.id}>
-                    <td>{cls.subject}</td>
+                    <td>
+                      <span 
+                        className="clickable-subject" 
+                        onClick={() => handleSubjectClick(cls.subject)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {cls.subject}
+                      </span>
+                    </td>
                     <td>{cls.dayOfWeek || '-'}</td>
                     <td>{cls.startTime || '-'}</td>
                     <td>{cls.endTime || '-'}</td>
