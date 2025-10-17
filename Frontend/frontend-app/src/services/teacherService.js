@@ -133,11 +133,19 @@ export const deleteTeacher = async (teacherId) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to delete teacher");
+      // Try to get error message if response has content
+      let errorMessage = "Failed to delete teacher";
+      try {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } catch {
+        // If no JSON content, use default message
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // For successful DELETE, don't try to parse JSON as backend returns void
+    return { success: true, message: "Teacher deleted successfully" };
   } catch (error) {
     console.error("Error deleting teacher:", error);
     throw error;

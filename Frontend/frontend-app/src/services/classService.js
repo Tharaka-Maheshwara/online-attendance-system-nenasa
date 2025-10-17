@@ -97,11 +97,19 @@ export const deleteClass = async (classId) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to delete class");
+      // Try to get error message if response has content
+      let errorMessage = "Failed to delete class";
+      try {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } catch {
+        // If no JSON content, use default message
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // For successful DELETE, don't try to parse JSON as backend returns void
+    return { success: true, message: "Class deleted successfully" };
   } catch (error) {
     console.error("Error deleting class:", error);
     throw error;
