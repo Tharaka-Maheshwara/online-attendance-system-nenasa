@@ -113,7 +113,15 @@ export class TeacherService {
   async getTodayClasses(teacherId: number): Promise<Class[]> {
     // Get current day of week (0 = Sunday, 1 = Monday, etc.)
     const today = new Date();
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayNames = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
     const todayName = dayNames[today.getDay()];
 
     // Find all classes for this teacher on today's day
