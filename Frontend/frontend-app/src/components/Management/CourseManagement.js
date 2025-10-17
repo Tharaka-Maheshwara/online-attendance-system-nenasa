@@ -185,6 +185,30 @@ const CourseManagement = () => {
     }
   };
 
+  // Function to determine if course should be available or unavailable
+  const getCourseAvailabilityStatus = (course) => {
+    const currentDate = new Date();
+    const startDate = new Date(course.startDate);
+    const enrolledStudents = course.enrolledStudents || 0;
+    const maxStudents = course.maxStudents;
+
+    // Course is unavailable if:
+    // 1. Enrolled students equals max students (course is full)
+    // 2. Start date has passed
+    if (enrolledStudents >= maxStudents || startDate < currentDate) {
+      return {
+        isAvailable: false,
+        reason: enrolledStudents >= maxStudents ? 'Course is full' : 'Course has already started'
+      };
+    }
+
+    // Course is available if manually set to active and above conditions are not met
+    return {
+      isAvailable: course.isActive,
+      reason: course.isActive ? 'Available for enrollment' : 'Manually set as unavailable'
+    };
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-LK", {
       style: "currency",
@@ -230,7 +254,22 @@ const CourseManagement = () => {
                   </div>
                 </td>
                 <td>{course.duration}</td>
-                <td>{formatDate(course.startDate)}</td>
+                <td>
+                  {(() => {
+                    const currentDate = new Date();
+                    const startDate = new Date(course.startDate);
+                    const hasStarted = startDate < currentDate;
+                    return (
+                      <span
+                        className={hasStarted ? "date-passed" : ""}
+                        title={hasStarted ? "Course has already started" : ""}
+                      >
+                        {formatDate(course.startDate)}
+                        {hasStarted && " ⏰"}
+                      </span>
+                    );
+                  })()}
+                </td>
                 <td>{course.maxStudents}</td>
                 <td>
                   {editingEnrollment === course.id ? (
@@ -268,28 +307,41 @@ const CourseManagement = () => {
                     </div>
                   ) : (
                     <span
-                      className="enrollment-count editable"
+                      className={`enrollment-count editable ${
+                        (course.enrolledStudents || 0) >= course.maxStudents ? "full" : ""
+                      }`}
                       onClick={() =>
                         startEditingEnrollment(
                           course.id,
                           course.enrolledStudents || 0
                         )
                       }
-                      title="Click to edit enrollment count"
+                      title={
+                        (course.enrolledStudents || 0) >= course.maxStudents
+                          ? "Course is full - Click to edit enrollment count"
+                          : "Click to edit enrollment count"
+                      }
                     >
                       {course.enrolledStudents || 0}
+                      {(course.enrolledStudents || 0) >= course.maxStudents && " 🔴"}
                     </span>
                   )}
                 </td>
                 <td>{formatPrice(course.price)}</td>
                 <td>
-                  <span
-                    className={`status ${
-                      course.isActive ? "active" : "inactive"
-                    }`}
-                  >
-                    {course.isActive ? "Active" : "Inactive"}
-                  </span>
+                  {(() => {
+                    const availability = getCourseAvailabilityStatus(course);
+                    return (
+                      <span
+                        className={`status ${
+                          availability.isAvailable ? "active" : "inactive"
+                        }`}
+                        title={availability.reason}
+                      >
+                        {availability.isAvailable ? "AVAILABLE" : "UNAVAILABLE"}
+                      </span>
+                    );
+                  })()}
                 </td>
                 <td>
                   <div className="action-buttons">
@@ -470,13 +522,24 @@ const CourseManagement = () => {
               </div>
               <div className="detail-item">
                 <strong>Status:</strong>
-                <span
-                  className={`status ${
-                    selectedCourse.isActive ? "active" : "inactive"
-                  }`}
-                >
-                  {selectedCourse.isActive ? "Active" : "Inactive"}
-                </span>
+                {(() => {
+                  const availability = getCourseAvailabilityStatus(selectedCourse);
+                  return (
+                    <div className="status-container">
+                      <span
+                        className={`status ${
+                          availability.isAvailable ? "active" : "inactive"
+                        }`}
+                        title={availability.reason}
+                      >
+                        {availability.isAvailable ? "AVAILABLE" : "UNAVAILABLE"}
+                      </span>
+                      <div className="status-reason">
+                        {availability.reason}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               {selectedCourse.description && (
                 <div className="detail-item description-item">
