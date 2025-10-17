@@ -5,8 +5,8 @@ const API_BASE_URL = "http://localhost:8000";
 export const createTeacher = async (teacherData) => {
   try {
     const formData = new FormData();
-    Object.keys(teacherData).forEach(key => {
-      if (key === 'profileImage' && teacherData[key]) {
+    Object.keys(teacherData).forEach((key) => {
+      if (key === "profileImage" && teacherData[key]) {
         formData.append(key, teacherData[key]);
       } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
         formData.append(key, teacherData[key]);
@@ -97,9 +97,9 @@ export const getTeacherByEmail = async (email) => {
 export const updateTeacher = async (teacherId, teacherData) => {
   try {
     const formData = new FormData();
-    Object.keys(teacherData).forEach(key => {
-      if (key === 'profileImage' && teacherData[key] instanceof File) {
-        formData.append('profileImage', teacherData[key]);
+    Object.keys(teacherData).forEach((key) => {
+      if (key === "profileImage" && teacherData[key] instanceof File) {
+        formData.append("profileImage", teacherData[key]);
       } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
         formData.append(key, teacherData[key]);
       }
