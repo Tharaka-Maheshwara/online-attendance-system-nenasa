@@ -72,6 +72,27 @@ export const getTeacherById = async (teacherId) => {
   }
 };
 
+// Get teacher by email
+export const getTeacherByEmail = async (email) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/teacher/by-email/${email}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch teacher by email");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching teacher by email:", error);
+    throw error;
+  }
+};
+
 // Update teacher
 export const updateTeacher = async (teacherId, teacherData) => {
   try {

@@ -105,8 +105,18 @@ export class TeacherController {
     return await this.teacherService.findOne(+teacherId);
   }
 
+  @Get('by-email/:email')
+  async getTeacherByEmail(@Param('email') email: string) {
+    return await this.teacherService.findByEmail(email);
+  }
+
   @Get()
   async getAllTeachers() {
     return await this.teacherService.findAll();
+  }
+
+  @Get(':teacherId/classes/today')
+  async getTodayClasses(@Param('teacherId') teacherId: string) {
+    return await this.teacherService.getTodayClasses(+teacherId);
   }
 }
