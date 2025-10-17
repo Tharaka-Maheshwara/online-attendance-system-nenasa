@@ -422,11 +422,6 @@ const TeacherManagement = () => {
                             readOnly
                           />
                           <span className="class-name">{classItem.name}</span>
-                          {classItem.subject && (
-                            <span className="class-subject">
-                              ({classItem.subject})
-                            </span>
-                          )}
                         </div>
                       ))}
                     </div>
