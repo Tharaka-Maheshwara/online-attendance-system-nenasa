@@ -198,14 +198,19 @@ const CourseManagement = () => {
     if (enrolledStudents >= maxStudents || startDate < currentDate) {
       return {
         isAvailable: false,
-        reason: enrolledStudents >= maxStudents ? 'Course is full' : 'Course has already started'
+        reason:
+          enrolledStudents >= maxStudents
+            ? "Course is full"
+            : "Course has already started",
       };
     }
 
     // Course is available if manually set to active and above conditions are not met
     return {
       isAvailable: course.isActive,
-      reason: course.isActive ? 'Available for enrollment' : 'Manually set as unavailable'
+      reason: course.isActive
+        ? "Available for enrollment"
+        : "Manually set as unavailable",
     };
   };
 
@@ -308,7 +313,9 @@ const CourseManagement = () => {
                   ) : (
                     <span
                       className={`enrollment-count editable ${
-                        (course.enrolledStudents || 0) >= course.maxStudents ? "full" : ""
+                        (course.enrolledStudents || 0) >= course.maxStudents
+                          ? "full"
+                          : ""
                       }`}
                       onClick={() =>
                         startEditingEnrollment(
@@ -323,7 +330,8 @@ const CourseManagement = () => {
                       }
                     >
                       {course.enrolledStudents || 0}
-                      {(course.enrolledStudents || 0) >= course.maxStudents && " 🔴"}
+                      {(course.enrolledStudents || 0) >= course.maxStudents &&
+                        " 🔴"}
                     </span>
                   )}
                 </td>
@@ -523,7 +531,8 @@ const CourseManagement = () => {
               <div className="detail-item">
                 <strong>Status:</strong>
                 {(() => {
-                  const availability = getCourseAvailabilityStatus(selectedCourse);
+                  const availability =
+                    getCourseAvailabilityStatus(selectedCourse);
                   return (
                     <div className="status-container">
                       <span
@@ -534,9 +543,7 @@ const CourseManagement = () => {
                       >
                         {availability.isAvailable ? "AVAILABLE" : "UNAVAILABLE"}
                       </span>
-                      <div className="status-reason">
-                        {availability.reason}
-                      </div>
+                      <div className="status-reason">{availability.reason}</div>
                     </div>
                   );
                 })()}
