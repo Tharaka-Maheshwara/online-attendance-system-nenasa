@@ -260,13 +260,12 @@
   border-radius: 5px;
   padding: 10px;
   background: white;
-  max-height: 200px;
-  overflow-y: auto;
+  overflow-x: auto; /* Allow horizontal scrolling */
 }
 
 .class-options {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Prevent wrapping */
   gap: 10px;
 }
 
