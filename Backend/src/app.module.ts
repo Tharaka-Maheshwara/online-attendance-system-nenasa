@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { NotificationModule } from './notification/notification.module';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { TeacherModule } from './teacher/teacher.module';
     NotificationModule,
     StudentModule,
     TeacherModule,
+    CourseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,320 @@
+import React, { useState, useEffect } from "react";
+import {
+  getAllCourses,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+} from "../../services/courseService";
+import "./CourseManagement.css";
+
+const CourseManagement = () => {
+  const [courses, setCourses] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    courseName: "",
+    duration: "",
+    startDate: "",
+    maxStudents: "",
+    price: "",
+    description: "",
+  });
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllCourses();
+      setCourses(data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      alert("Failed to fetch courses");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      courseName: "",
+      duration: "",
+      startDate: "",
+      maxStudents: "",
+      price: "",
+      description: "",
+    });
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setModalType("add");
+    setSelectedCourse(null);
+    setShowModal(true);
+  };
+
+  const openEditModal = (course) => {
+    setFormData({
+      courseName: course.courseName,
+      duration: course.duration,
+      startDate: course.startDate.split('T')[0], // Format date for input
+      maxStudents: course.maxStudents.toString(),
+      price: course.price.toString(),
+      description: course.description || "",
+    });
+    setModalType("edit");
+    setSelectedCourse(course);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedCourse(null);
+    resetForm();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      
+      const courseData = {
+        ...formData,
+        maxStudents: parseInt(formData.maxStudents),
+        price: parseFloat(formData.price),
+      };
+
+      if (modalType === "add") {
+        await createCourse(courseData);
+        alert("Course created successfully!");
+      } else {
+        await updateCourse(selectedCourse.id, courseData);
+        alert("Course updated successfully!");
+      }
+
+      closeModal();
+      fetchCourses();
+    } catch (error) {
+      console.error("Error saving course:", error);
+      alert("Failed to save course");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (courseId) => {
+    if (window.confirm("Are you sure you want to delete this course?")) {
+      try {
+        setLoading(true);
+        await deleteCourse(courseId);
+        alert("Course deleted successfully!");
+        fetchCourses();
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        alert("Failed to delete course");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-LK', {
+      style: 'currency',
+      currency: 'LKR'
+    }).format(price);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  return (
+    <div className="course-management">
+      <div className="course-header">
+        <h2>Course Management</h2>
+        <button className="btn-primary" onClick={openAddModal}>
+          Add New Course
+        </button>
+      </div>
+
+      {loading && <div className="loading">Loading...</div>}
+
+      <div className="course-table-container">
+        <table className="course-table">
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Duration</th>
+              <th>Start Date</th>
+              <th>Max Students</th>
+              <th>Enrolled</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {courses.map((course) => (
+              <tr key={course.id}>
+                <td>
+                  <div className="course-name">
+                    <strong>{course.courseName}</strong>
+                    {course.description && (
+                      <div className="course-description">{course.description}</div>
+                    )}
+                  </div>
+                </td>
+                <td>{course.duration}</td>
+                <td>{formatDate(course.startDate)}</td>
+                <td>{course.maxStudents}</td>
+                <td>
+                  <span className="enrollment-count">
+                    {course.enrolledStudents || 0}
+                  </span>
+                </td>
+                <td>{formatPrice(course.price)}</td>
+                <td>
+                  <span className={`status ${course.isActive ? 'active' : 'inactive'}`}>
+                    {course.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      className="btn-edit"
+                      onClick={() => openEditModal(course)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(course.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3>{modalType === "add" ? "Add New Course" : "Edit Course"}</h3>
+              <button className="close-btn" onClick={closeModal}>×</button>
+            </div>
+            <form onSubmit={handleSubmit} className="course-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="courseName">Course Name *</label>
+                  <input
+                    type="text"
+                    id="courseName"
+                    name="courseName"
+                    value={formData.courseName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="duration">Duration *</label>
+                  <input
+                    type="text"
+                    id="duration"
+                    name="duration"
+                    value={formData.duration}
+                    onChange={handleInputChange}
+                    placeholder="e.g., 6 months, 1 year"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="startDate">Start Date *</label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="maxStudents">Max Students *</label>
+                  <input
+                    type="number"
+                    id="maxStudents"
+                    name="maxStudents"
+                    value={formData.maxStudents}
+                    onChange={handleInputChange}
+                    min="1"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="price">Price (LKR) *</label>
+                  <input
+                    type="number"
+                    id="price"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="description">Description</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                  placeholder="Course description (optional)"
+                />
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-secondary" onClick={closeModal}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? "Saving..." : modalType === "add" ? "Add Course" : "Update Course"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CourseManagement;

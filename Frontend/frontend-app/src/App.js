@@ -15,6 +15,7 @@ import Navbar from "./components/Navbar/Navbar";
 import StudentManagement from "./components/StudentManagement/StudentManagement";
 import TeacherManagement from "./components/TeacherManagement/TeacherManagement";
 import ClassManagement from "./components/ClassManagement/ClassManagement";
+import CourseManagement from "./components/Management/CourseManagement";
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
@@ -157,6 +158,17 @@ function AppContent() {
                   />
                 }
               />
+
+            {/* Courses: admin only */}
+            <Route
+              path="/courses"
+              element={
+                <PrivateRoute
+                  allowedRoles={["admin"]}
+                  element={<CourseManagement />}
+                />
+              }
+            />
 
             {/* Reports: admin only */}
             <Route
