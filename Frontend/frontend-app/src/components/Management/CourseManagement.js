@@ -119,16 +119,16 @@ const CourseManagement = () => {
 
       setLoading(true);
       await updateEnrollmentCount(courseId, newCount);
-      
+
       // Update local state
-      setCourses(prevCourses => 
-        prevCourses.map(course => 
-          course.id === courseId 
+      setCourses((prevCourses) =>
+        prevCourses.map((course) =>
+          course.id === courseId
             ? { ...course, enrolledStudents: newCount }
             : course
         )
       );
-      
+
       setEditingEnrollment(null);
       setTempEnrollmentValue("");
       alert("Enrollment count updated successfully!");
@@ -242,9 +242,9 @@ const CourseManagement = () => {
                         min="0"
                         className="enrollment-input"
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             saveEnrollmentCount(course.id);
-                          } else if (e.key === 'Escape') {
+                          } else if (e.key === "Escape") {
                             cancelEditingEnrollment();
                           }
                         }}
@@ -267,9 +267,14 @@ const CourseManagement = () => {
                       </div>
                     </div>
                   ) : (
-                    <span 
-                      className="enrollment-count editable" 
-                      onClick={() => startEditingEnrollment(course.id, course.enrolledStudents || 0)}
+                    <span
+                      className="enrollment-count editable"
+                      onClick={() =>
+                        startEditingEnrollment(
+                          course.id,
+                          course.enrolledStudents || 0
+                        )
+                      }
                       title="Click to edit enrollment count"
                     >
                       {course.enrolledStudents || 0}
