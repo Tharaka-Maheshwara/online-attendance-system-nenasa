@@ -65,3 +65,45 @@ export const createClass = async (classData) => {
     throw error;
   }
 };
+
+// Update a class
+export const updateClass = async (classId, classData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/class/${classId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(classData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update class");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating class:", error);
+    throw error;
+  }
+};
+
+// Delete a class
+export const deleteClass = async (classId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/class/${classId}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to delete class");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting class:", error);
+    throw error;
+  }
+};
