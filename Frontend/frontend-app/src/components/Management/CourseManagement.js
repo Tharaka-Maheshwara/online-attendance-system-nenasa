@@ -351,7 +351,9 @@ const CourseManagement = () => {
           <div className="modal details-modal">
             <div className="modal-header">
               <h3>Course Details</h3>
-              <button className="close-btn" onClick={closeDetailsModal}>×</button>
+              <button className="close-btn" onClick={closeDetailsModal}>
+                ×
+              </button>
             </div>
             <div className="details-content">
               <div className="detail-item">
@@ -380,14 +382,20 @@ const CourseManagement = () => {
               </div>
               <div className="detail-item">
                 <strong>Status:</strong>
-                <span className={`status ${selectedCourse.isActive ? 'active' : 'inactive'}`}>
-                  {selectedCourse.isActive ? 'Active' : 'Inactive'}
+                <span
+                  className={`status ${
+                    selectedCourse.isActive ? "active" : "inactive"
+                  }`}
+                >
+                  {selectedCourse.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
               {selectedCourse.description && (
                 <div className="detail-item description-item">
                   <strong>Description:</strong>
-                  <p className="description-text">{selectedCourse.description}</p>
+                  <p className="description-text">
+                    {selectedCourse.description}
+                  </p>
                 </div>
               )}
               <div className="detail-item">
