@@ -65,7 +65,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
-            🎓 NENASA Attendance
+            🎓 NENASALA Attendance
           </Link>
         </div>
 

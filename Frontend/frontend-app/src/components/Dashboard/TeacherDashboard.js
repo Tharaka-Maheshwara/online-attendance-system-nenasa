@@ -90,47 +90,6 @@ const TeacherDashboard = () => {
             )}
           </div>
         </div>
-
-        {/* Quick Stats */}
-        <div className="teacher-stats">
-          <h2>Quick Statistics</h2>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-number">{todayClasses.length}</div>
-              <div className="stat-label">Classes Today</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">120</div>
-              <div className="stat-label">Total Students</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">92%</div>
-              <div className="stat-label">Avg Attendance</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">3</div>
-              <div className="stat-label">Pending Reports</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Attendance */}
-        <div className="recent-attendance">
-          <h2>Recent Attendance</h2>
-          {/* This part can be implemented similarly if needed */}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="teacher-actions">
-          <h2>Quick Actions</h2>
-          {/* ... */}
-        </div>
-
-        {/* Notifications */}
-        <div className="notifications">
-          <h2>Notifications</h2>
-          {/* ... */}
-        </div>
       </div>
     </div>
   );
