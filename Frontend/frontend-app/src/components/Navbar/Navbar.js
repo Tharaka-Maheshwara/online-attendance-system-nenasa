@@ -80,6 +80,16 @@ const Navbar = () => {
               🏠 Dashboard
             </Link>
 
+            {/* Course Catalog - available for all roles */}
+            <Link
+              to="/course-catalog"
+              className={`nav-link ${
+                isActive("/course-catalog") ? "active" : ""
+              }`}
+            >
+              📖 Course Catalog
+            </Link>
+
             {(userRole === "teacher" || userRole === "admin") && (
               <Link
                 to="/attendance"

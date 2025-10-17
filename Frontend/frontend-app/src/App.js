@@ -16,6 +16,7 @@ import StudentManagement from "./components/StudentManagement/StudentManagement"
 import TeacherManagement from "./components/TeacherManagement/TeacherManagement";
 import ClassManagement from "./components/ClassManagement/ClassManagement";
 import CourseManagement from "./components/Management/CourseManagement";
+import StudentCourseView from "./components/Student/StudentCourseView";
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
@@ -166,6 +167,17 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["admin"]}
                   element={<CourseManagement />}
+                />
+              }
+            />
+
+            {/* Student Course View: students, teachers, and admin can view */}
+            <Route
+              path="/course-catalog"
+              element={
+                <PrivateRoute
+                  allowedRoles={["student", "teacher", "admin"]}
+                  element={<StudentCourseView />}
                 />
               }
             />
