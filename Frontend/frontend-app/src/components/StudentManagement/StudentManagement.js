@@ -20,6 +20,7 @@ const StudentManagement = () => {
     contactNumber: "",
     parentName: "",
     parentEmail: "",
+    gender: "",
     sub_1: "",
     sub_2: "",
     sub_3: "",
@@ -213,6 +214,7 @@ const StudentManagement = () => {
         contactNumber: "",
         parentName: "",
         parentEmail: "",
+        gender: "",
         sub_1: "",
         sub_2: "",
         sub_3: "",
@@ -413,6 +415,21 @@ const StudentManagement = () => {
 
             <div className="form-row">
               <div className="form-group">
+                <label>Gender:</label>
+                <select
+                  name="gender"
+                  value={newStudent.gender}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
                 <label>Parent Name:</label>
                 <input
                   type="text"
@@ -598,6 +615,21 @@ const StudentManagement = () => {
                   value={editingStudent.contactNumber || ""}
                   onChange={handleEditInputChange}
                 />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label>Gender:</label>
+                <select
+                  name="gender"
+                  value={editingStudent.gender || ""}
+                  onChange={handleEditInputChange}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
               </div>
             </div>
 

@@ -7,6 +7,7 @@ export class CreateStudentDto {
   contactNumber?: string;
   parentName?: string;
   parentEmail?: string;
+  gender?: string;
 
   @IsOptional()
   @IsString()
