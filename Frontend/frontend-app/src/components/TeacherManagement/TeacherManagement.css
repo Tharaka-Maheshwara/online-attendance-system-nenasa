@@ -278,6 +278,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   background: #f9f9f9;
+  white-space: nowrap;
 }
 
 .class-option:hover {

@@ -129,7 +129,7 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
   const selectedClassNames = formData.selectedClasses
     .map((classId) => {
       const classItem = classes.find((c) => c.id === classId);
-      return classItem ? classItem.name : null;
+      return classItem ? classItem.subject : null;
     })
     .filter(Boolean)
     .slice(0, 4); // Limit to 4 classes
@@ -161,7 +161,7 @@ export const mapTeacherToFormData = (teacher, classes = []) => {
 
   const selectedClasses = subjectNames
     .map((subjectName) => {
-      const classItem = classes.find((c) => c.name === subjectName);
+      const classItem = classes.find((c) => c.subject === subjectName);
       return classItem ? classItem.id : null;
     })
     .filter(Boolean);

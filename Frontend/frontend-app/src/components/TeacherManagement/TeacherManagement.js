@@ -421,7 +421,7 @@ const TeacherManagement = () => {
                             onChange={() => {}} // Handled by div onClick
                             readOnly
                           />
-                          <span className="class-name">{classItem.name}</span>
+                          <span className="class-name">{classItem.subject}</span>
                         </div>
                       ))}
                     </div>
