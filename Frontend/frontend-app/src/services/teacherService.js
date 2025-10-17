@@ -4,12 +4,18 @@ const API_BASE_URL = "http://localhost:8000";
 // Create a new teacher
 export const createTeacher = async (teacherData) => {
   try {
+    const formData = new FormData();
+    Object.keys(teacherData).forEach(key => {
+      if (key === 'profileImage' && teacherData[key]) {
+        formData.append(key, teacherData[key]);
+      } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
+        formData.append(key, teacherData[key]);
+      }
+    });
+
     const response = await fetch(`${API_BASE_URL}/teacher`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(teacherData),
+      body: formData, // No 'Content-Type' header, browser sets it for FormData
     });
 
     if (!response.ok) {
@@ -69,12 +75,18 @@ export const getTeacherById = async (teacherId) => {
 // Update teacher
 export const updateTeacher = async (teacherId, teacherData) => {
   try {
+    const formData = new FormData();
+    Object.keys(teacherData).forEach(key => {
+      if (key === 'profileImage' && teacherData[key] instanceof File) {
+        formData.append('profileImage', teacherData[key]);
+      } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
+        formData.append(key, teacherData[key]);
+      }
+    });
+
     const response = await fetch(`${API_BASE_URL}/teacher/${teacherId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(teacherData),
+      body: formData, // No 'Content-Type' header, browser sets it for FormData
     });
 
     if (!response.ok) {
@@ -131,6 +143,7 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
     sub_02: selectedClassNames[1] || null,
     sub_03: selectedClassNames[2] || null,
     sub_04: selectedClassNames[3] || null,
+    profileImage: formData.profileImage, // Pass the file object
   };
 
   return teacherDto;
@@ -159,5 +172,6 @@ export const mapTeacherToFormData = (teacher, classes = []) => {
     registrationNumber: teacher.registerNumber || "",
     contact: teacher.contactNumber || "",
     selectedClasses: selectedClasses,
+    profileImage: teacher.profileImage || null,
   };
 };
