@@ -16,7 +16,10 @@ const StudentCourseView = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const data = filter === "available" ? await getActiveCourses() : await getAllCourses();
+      const data =
+        filter === "available"
+          ? await getActiveCourses()
+          : await getAllCourses();
       setCourses(data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -49,14 +52,19 @@ const StudentCourseView = () => {
     if (enrolledStudents >= maxStudents || startDate < currentDate) {
       return {
         isAvailable: false,
-        reason: enrolledStudents >= maxStudents ? 'Course is full' : 'Course has already started'
+        reason:
+          enrolledStudents >= maxStudents
+            ? "Course is full"
+            : "Course has already started",
       };
     }
 
     // Course is available if manually set to active and above conditions are not met
     return {
       isAvailable: course.isActive,
-      reason: course.isActive ? 'Available for enrollment' : 'Currently unavailable'
+      reason: course.isActive
+        ? "Available for enrollment"
+        : "Currently unavailable",
     };
   };
 
@@ -81,8 +89,8 @@ const StudentCourseView = () => {
         <h2>Available Courses</h2>
         <div className="filter-container">
           <label>Filter: </label>
-          <select 
-            value={filter} 
+          <select
+            value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="filter-select"
           >
@@ -129,11 +137,17 @@ const StudentCourseView = () => {
                 </div>
                 <div className="info-row">
                   <span className="label">Price:</span>
-                  <span className="value price">{formatPrice(course.price)}</span>
+                  <span className="value price">
+                    {formatPrice(course.price)}
+                  </span>
                 </div>
                 <div className="info-row">
                   <span className="label">Available Spots:</span>
-                  <span className={`value ${availableSpots === 0 ? "spots-full" : ""}`}>
+                  <span
+                    className={`value ${
+                      availableSpots === 0 ? "spots-full" : ""
+                    }`}
+                  >
                     {availableSpots} / {course.maxStudents}
                     {availableSpots === 0 && " 🔴"}
                   </span>
@@ -178,7 +192,9 @@ const StudentCourseView = () => {
           <div className="modal details-modal">
             <div className="modal-header">
               <h3>Course Details</h3>
-              <button className="close-btn" onClick={closeDetailsModal}>×</button>
+              <button className="close-btn" onClick={closeDetailsModal}>
+                ×
+              </button>
             </div>
             <div className="details-content">
               <div className="detail-item">
@@ -195,7 +211,10 @@ const StudentCourseView = () => {
               </div>
               <div className="detail-item">
                 <strong>Available Spots:</strong>
-                <span>{getAvailableSpots(selectedCourse)} out of {selectedCourse.maxStudents}</span>
+                <span>
+                  {getAvailableSpots(selectedCourse)} out of{" "}
+                  {selectedCourse.maxStudents}
+                </span>
               </div>
               <div className="detail-item">
                 <strong>Currently Enrolled:</strong>
@@ -208,7 +227,8 @@ const StudentCourseView = () => {
               <div className="detail-item">
                 <strong>Status:</strong>
                 {(() => {
-                  const availability = getCourseAvailabilityStatus(selectedCourse);
+                  const availability =
+                    getCourseAvailabilityStatus(selectedCourse);
                   return (
                     <div className="status-container">
                       <span
@@ -218,9 +238,7 @@ const StudentCourseView = () => {
                       >
                         {availability.isAvailable ? "AVAILABLE" : "UNAVAILABLE"}
                       </span>
-                      <div className="status-reason">
-                        {availability.reason}
-                      </div>
+                      <div className="status-reason">{availability.reason}</div>
                     </div>
                   );
                 })()}
@@ -228,7 +246,9 @@ const StudentCourseView = () => {
               {selectedCourse.description && (
                 <div className="detail-item description-item">
                   <strong>Course Description:</strong>
-                  <p className="description-text">{selectedCourse.description}</p>
+                  <p className="description-text">
+                    {selectedCourse.description}
+                  </p>
                 </div>
               )}
               <div className="detail-item">
@@ -241,7 +261,8 @@ const StudentCourseView = () => {
                 Close
               </button>
               {(() => {
-                const availability = getCourseAvailabilityStatus(selectedCourse);
+                const availability =
+                  getCourseAvailabilityStatus(selectedCourse);
                 return availability.isAvailable ? (
                   <button className="btn-primary" disabled>
                     Contact Admin to Enroll
