@@ -10,6 +10,7 @@ import "./CourseManagement.css";
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -83,6 +84,16 @@ const CourseManagement = () => {
     setShowModal(false);
     setSelectedCourse(null);
     resetForm();
+  };
+
+  const openDetailsModal = (course) => {
+    setSelectedCourse(course);
+    setShowDetailsModal(true);
+  };
+
+  const closeDetailsModal = () => {
+    setShowDetailsModal(false);
+    setSelectedCourse(null);
   };
 
   const handleSubmit = async (e) => {
@@ -172,11 +183,6 @@ const CourseManagement = () => {
                 <td>
                   <div className="course-name">
                     <strong>{course.courseName}</strong>
-                    {course.description && (
-                      <div className="course-description">
-                        {course.description}
-                      </div>
-                    )}
                   </div>
                 </td>
                 <td>{course.duration}</td>
@@ -199,6 +205,12 @@ const CourseManagement = () => {
                 </td>
                 <td>
                   <div className="action-buttons">
+                    <button
+                      className="btn-details"
+                      onClick={() => openDetailsModal(course)}
+                    >
+                      More Details
+                    </button>
                     <button
                       className="btn-edit"
                       onClick={() => openEditModal(course)}
@@ -330,6 +342,70 @@ const CourseManagement = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showDetailsModal && selectedCourse && (
+        <div className="modal-overlay">
+          <div className="modal details-modal">
+            <div className="modal-header">
+              <h3>Course Details</h3>
+              <button className="close-btn" onClick={closeDetailsModal}>×</button>
+            </div>
+            <div className="details-content">
+              <div className="detail-item">
+                <strong>Course Name:</strong>
+                <span>{selectedCourse.courseName}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Duration:</strong>
+                <span>{selectedCourse.duration}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Start Date:</strong>
+                <span>{formatDate(selectedCourse.startDate)}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Maximum Students:</strong>
+                <span>{selectedCourse.maxStudents}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Currently Enrolled:</strong>
+                <span>{selectedCourse.enrolledStudents || 0}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Price:</strong>
+                <span>{formatPrice(selectedCourse.price)}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Status:</strong>
+                <span className={`status ${selectedCourse.isActive ? 'active' : 'inactive'}`}>
+                  {selectedCourse.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              {selectedCourse.description && (
+                <div className="detail-item description-item">
+                  <strong>Description:</strong>
+                  <p className="description-text">{selectedCourse.description}</p>
+                </div>
+              )}
+              <div className="detail-item">
+                <strong>Created:</strong>
+                <span>{formatDate(selectedCourse.createdAt)}</span>
+              </div>
+              {selectedCourse.updatedAt && (
+                <div className="detail-item">
+                  <strong>Last Updated:</strong>
+                  <span>{formatDate(selectedCourse.updatedAt)}</span>
+                </div>
+              )}
+            </div>
+            <div className="modal-actions">
+              <button className="btn-secondary" onClick={closeDetailsModal}>
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
