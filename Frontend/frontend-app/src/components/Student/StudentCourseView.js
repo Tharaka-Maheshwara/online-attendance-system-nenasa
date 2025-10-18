@@ -130,12 +130,12 @@ const StudentCourseView = () => {
                     {course.teacher ? (
                       <div className="teacher-info">
                         {course.teacher.profileImage && (
-                          <img 
+                          <img
                             src={`http://localhost:8000${course.teacher.profileImage}`}
                             alt={course.teacher.name}
                             className="teacher-avatar"
                             onError={(e) => {
-                              e.target.style.display = 'none';
+                              e.target.style.display = "none";
                             }}
                           />
                         )}
@@ -228,12 +228,12 @@ const StudentCourseView = () => {
                 {selectedCourse.teacher ? (
                   <div className="teacher-detail">
                     {selectedCourse.teacher.profileImage && (
-                      <img 
+                      <img
                         src={`http://localhost:8000${selectedCourse.teacher.profileImage}`}
                         alt={selectedCourse.teacher.name}
                         className="teacher-detail-avatar"
                         onError={(e) => {
-                          e.target.style.display = 'none';
+                          e.target.style.display = "none";
                         }}
                       />
                     )}

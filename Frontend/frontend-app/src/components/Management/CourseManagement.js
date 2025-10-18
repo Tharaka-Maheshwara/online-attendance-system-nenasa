@@ -281,12 +281,12 @@ const CourseManagement = () => {
                     <div className="teacher-info">
                       <div className="teacher-profile">
                         {course.teacher.profileImage && (
-                          <img 
+                          <img
                             src={`http://localhost:8000${course.teacher.profileImage}`}
                             alt={course.teacher.name}
                             className="teacher-avatar"
                             onError={(e) => {
-                              e.target.style.display = 'none';
+                              e.target.style.display = "none";
                             }}
                           />
                         )}
@@ -450,7 +450,7 @@ const CourseManagement = () => {
                     required
                   >
                     <option value="">Select a teacher</option>
-                    {teachers.map(teacher => (
+                    {teachers.map((teacher) => (
                       <option key={teacher.id} value={teacher.id}>
                         {teacher.name}
                       </option>
@@ -572,12 +572,12 @@ const CourseManagement = () => {
                 {selectedCourse.teacher ? (
                   <div className="teacher-detail">
                     {selectedCourse.teacher.profileImage && (
-                      <img 
+                      <img
                         src={`http://localhost:8000${selectedCourse.teacher.profileImage}`}
                         alt={selectedCourse.teacher.name}
                         className="teacher-detail-avatar"
                         onError={(e) => {
-                          e.target.style.display = 'none';
+                          e.target.style.display = "none";
                         }}
                       />
                     )}
