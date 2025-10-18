@@ -25,6 +25,8 @@ const StudentManagement = () => {
     sub_2: "",
     sub_3: "",
     sub_4: "",
+    sub_5: "",
+    sub_6: "",
     profileImage: null, // For storing the selected file
   });
   const [editingStudent, setEditingStudent] = useState(null);
@@ -129,6 +131,8 @@ const StudentManagement = () => {
       studentData.sub_2,
       studentData.sub_3,
       studentData.sub_4,
+      studentData.sub_5,
+      studentData.sub_6,
     ].filter((subject) => subject && subject !== "");
 
     const uniqueSubjects = [...new Set(subjects)];
@@ -196,6 +200,8 @@ const StudentManagement = () => {
         sub_2: newStudent.sub_2 || null,
         sub_3: newStudent.sub_3 || null,
         sub_4: newStudent.sub_4 || null,
+        sub_5: newStudent.sub_5 || null,
+        sub_6: newStudent.sub_6 || null,
       };
 
       // Create student record using studentService
@@ -219,6 +225,8 @@ const StudentManagement = () => {
         sub_2: "",
         sub_3: "",
         sub_4: "",
+        sub_5: "",
+        sub_6: "",
         profileImage: null,
       });
       setImagePreview(null);
@@ -274,6 +282,8 @@ const StudentManagement = () => {
         sub_2: editingStudent.sub_2 || null,
         sub_3: editingStudent.sub_3 || null,
         sub_4: editingStudent.sub_4 || null,
+        sub_5: editingStudent.sub_5 || null,
+        sub_6: editingStudent.sub_6 || null,
       };
 
       await updateStudent(editingStudent.id, studentData);
@@ -557,6 +567,36 @@ const StudentManagement = () => {
                     ))}
                   </select>
                 </div>
+                <div className="form-group">
+                  <label>Subject 5:</label>
+                  <select
+                    name="sub_5"
+                    value={newStudent.sub_5}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 6:</label>
+                  <select
+                    name="sub_6"
+                    value={newStudent.sub_6}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -722,6 +762,38 @@ const StudentManagement = () => {
                   </select>
                 </div>
               </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 5:</label>
+                  <select
+                    name="sub_5"
+                    value={editingStudent.sub_5 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 6:</label>
+                  <select
+                    name="sub_6"
+                    value={editingStudent.sub_6 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
             <div className="form-actions">
@@ -763,6 +835,8 @@ const StudentManagement = () => {
                     student.sub_2,
                     student.sub_3,
                     student.sub_4,
+                    student.sub_5,
+                    student.sub_6,
                   ]
                     .filter(Boolean)
                     .join(", ");

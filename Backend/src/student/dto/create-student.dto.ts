@@ -27,5 +27,13 @@ export class CreateStudentDto {
 
   @IsOptional()
   @IsString()
+  sub_5?: string;
+
+  @IsOptional()
+  @IsString()
+  sub_6?: string;
+
+  @IsOptional()
+  @IsString()
   profileImage?: string;
 }
