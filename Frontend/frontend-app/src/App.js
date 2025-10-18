@@ -171,12 +171,12 @@ function AppContent() {
               }
             />
 
-            {/* Student Course View: students, teachers, and admin can view */}
+            {/* Student Course View: students and teachers only */}
             <Route
               path="/course-catalog"
               element={
                 <PrivateRoute
-                  allowedRoles={["student", "teacher", "admin"]}
+                  allowedRoles={["student", "teacher"]}
                   element={<StudentCourseView />}
                 />
               }
