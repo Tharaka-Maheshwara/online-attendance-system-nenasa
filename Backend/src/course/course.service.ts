@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Course } from './course.entity';
+import { Teacher } from '../teacher/teacher.entity';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 
@@ -10,6 +11,8 @@ export class CourseService {
   constructor(
     @InjectRepository(Course)
     private courseRepository: Repository<Course>,
+    @InjectRepository(Teacher)
+    private teacherRepository: Repository<Teacher>,
   ) {}
 
   async create(createCourseDto: CreateCourseDto): Promise<Course> {
@@ -19,12 +22,16 @@ export class CourseService {
 
   async findAll(): Promise<Course[]> {
     return await this.courseRepository.find({
+      relations: ['teacher'],
       order: { createdAt: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<Course> {
-    const course = await this.courseRepository.findOne({ where: { id } });
+    const course = await this.courseRepository.findOne({ 
+      where: { id },
+      relations: ['teacher'],
+    });
     if (!course) {
       throw new NotFoundException(`Course with ID ${id} not found`);
     }
@@ -45,7 +52,14 @@ export class CourseService {
   async getActiveCourses(): Promise<Course[]> {
     return await this.courseRepository.find({
       where: { isActive: true },
+      relations: ['teacher'],
       order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getAllTeachers(): Promise<Teacher[]> {
+    return await this.teacherRepository.find({
+      order: { name: 'ASC' },
     });
   }
 

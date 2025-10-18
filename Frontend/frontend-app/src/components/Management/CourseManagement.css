@@ -64,6 +64,46 @@
   font-size: 1rem;
 }
 
+.teacher-info {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.teacher-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.teacher-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-detail-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.no-teacher {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
 .course-description {
   color: #666;
   font-size: 0.8rem;

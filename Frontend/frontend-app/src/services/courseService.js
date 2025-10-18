@@ -154,3 +154,24 @@ export const updateEnrollmentCount = async (courseId, count) => {
     throw error;
   }
 };
+
+// Get all teachers
+export const getAllTeachers = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/course/teachers/all`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch teachers");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching teachers:", error);
+    throw error;
+  }
+};

@@ -5,11 +5,13 @@ import {
   updateCourse,
   deleteCourse,
   updateEnrollmentCount,
+  getAllTeachers,
 } from "../../services/courseService";
 import "./CourseManagement.css";
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingEnrollment, setEditingEnrollment] = useState(null);
@@ -23,11 +25,13 @@ const CourseManagement = () => {
     startDate: "",
     maxStudents: "",
     price: "",
+    teacherId: "",
     description: "",
   });
 
   useEffect(() => {
     fetchCourses();
+    fetchTeachers();
   }, []);
 
   const fetchCourses = async () => {
@@ -40,6 +44,16 @@ const CourseManagement = () => {
       alert("Failed to fetch courses");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTeachers = async () => {
+    try {
+      const data = await getAllTeachers();
+      setTeachers(data);
+    } catch (error) {
+      console.error("Error fetching teachers:", error);
+      alert("Failed to fetch teachers");
     }
   };
 
@@ -58,6 +72,7 @@ const CourseManagement = () => {
       startDate: "",
       maxStudents: "",
       price: "",
+      teacherId: "",
       description: "",
     });
   };
@@ -76,6 +91,7 @@ const CourseManagement = () => {
       startDate: course.startDate.split("T")[0], // Format date for input
       maxStudents: course.maxStudents.toString(),
       price: course.price.toString(),
+      teacherId: course.teacherId ? course.teacherId.toString() : "",
       description: course.description || "",
     });
     setModalType("edit");
@@ -149,6 +165,7 @@ const CourseManagement = () => {
         ...formData,
         maxStudents: parseInt(formData.maxStudents),
         price: parseFloat(formData.price),
+        teacherId: formData.teacherId ? parseInt(formData.teacherId) : null,
       };
 
       if (modalType === "add") {
@@ -241,6 +258,7 @@ const CourseManagement = () => {
           <thead>
             <tr>
               <th>Course Name</th>
+              <th>Teacher</th>
               <th>Duration</th>
               <th>Start Date</th>
               <th>Max Students</th>
@@ -257,6 +275,27 @@ const CourseManagement = () => {
                   <div className="course-name">
                     <strong>{course.courseName}</strong>
                   </div>
+                </td>
+                <td>
+                  {course.teacher ? (
+                    <div className="teacher-info">
+                      <div className="teacher-profile">
+                        {course.teacher.profileImage && (
+                          <img 
+                            src={`http://localhost:8000${course.teacher.profileImage}`}
+                            alt={course.teacher.name}
+                            className="teacher-avatar"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        )}
+                        <span>{course.teacher.name}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="no-teacher">No teacher assigned</span>
+                  )}
                 </td>
                 <td>{course.duration}</td>
                 <td>
@@ -402,6 +441,26 @@ const CourseManagement = () => {
                   />
                 </div>
                 <div className="form-group">
+                  <label htmlFor="teacher">Teacher *</label>
+                  <select
+                    id="teacher"
+                    name="teacherId"
+                    value={formData.teacherId}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select a teacher</option>
+                    {teachers.map(teacher => (
+                      <option key={teacher.id} value={teacher.id}>
+                        {teacher.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
                   <label htmlFor="duration">Duration *</label>
                   <input
                     type="text"
@@ -507,6 +566,26 @@ const CourseManagement = () => {
               <div className="detail-item">
                 <strong>Course Name:</strong>
                 <span>{selectedCourse.courseName}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Teacher:</strong>
+                {selectedCourse.teacher ? (
+                  <div className="teacher-detail">
+                    {selectedCourse.teacher.profileImage && (
+                      <img 
+                        src={`http://localhost:8000${selectedCourse.teacher.profileImage}`}
+                        alt={selectedCourse.teacher.name}
+                        className="teacher-detail-avatar"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <span>{selectedCourse.teacher.name}</span>
+                  </div>
+                ) : (
+                  <span className="no-teacher">No teacher assigned</span>
+                )}
               </div>
               <div className="detail-item">
                 <strong>Duration:</strong>

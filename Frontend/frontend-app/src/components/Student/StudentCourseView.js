@@ -125,6 +125,28 @@ const StudentCourseView = () => {
 
               <div className="course-info">
                 <div className="info-row">
+                  <span className="label">Teacher:</span>
+                  <span className="value">
+                    {course.teacher ? (
+                      <div className="teacher-info">
+                        {course.teacher.profileImage && (
+                          <img 
+                            src={`http://localhost:8000${course.teacher.profileImage}`}
+                            alt={course.teacher.name}
+                            className="teacher-avatar"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        )}
+                        <span>{course.teacher.name}</span>
+                      </div>
+                    ) : (
+                      <span className="no-teacher">Not assigned</span>
+                    )}
+                  </span>
+                </div>
+                <div className="info-row">
                   <span className="label">Duration:</span>
                   <span className="value">{course.duration}</span>
                 </div>
@@ -200,6 +222,26 @@ const StudentCourseView = () => {
               <div className="detail-item">
                 <strong>Course Name:</strong>
                 <span>{selectedCourse.courseName}</span>
+              </div>
+              <div className="detail-item">
+                <strong>Teacher:</strong>
+                {selectedCourse.teacher ? (
+                  <div className="teacher-detail">
+                    {selectedCourse.teacher.profileImage && (
+                      <img 
+                        src={`http://localhost:8000${selectedCourse.teacher.profileImage}`}
+                        alt={selectedCourse.teacher.name}
+                        className="teacher-detail-avatar"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <span>{selectedCourse.teacher.name}</span>
+                  </div>
+                ) : (
+                  <span className="no-teacher">No teacher assigned</span>
+                )}
               </div>
               <div className="detail-item">
                 <strong>Duration:</strong>

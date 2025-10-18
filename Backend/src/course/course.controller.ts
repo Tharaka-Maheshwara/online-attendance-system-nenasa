@@ -31,6 +31,11 @@ export class CourseController {
     return this.courseService.getActiveCourses();
   }
 
+  @Get('teachers/all')
+  getAllTeachers() {
+    return this.courseService.getAllTeachers();
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.courseService.findOne(id);

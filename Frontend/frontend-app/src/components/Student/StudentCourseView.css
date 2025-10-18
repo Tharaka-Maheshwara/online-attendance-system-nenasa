@@ -149,6 +149,41 @@
   text-align: right;
 }
 
+.info-row .value .teacher-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.info-row .value .teacher-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.teacher-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teacher-detail-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.info-row .value .no-teacher {
+  color: #999;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
 .info-row .value.price {
   font-weight: 600;
   color: #1976d2;

@@ -27,6 +27,10 @@ export class CreateCourseDto {
   @Min(0)
   price: number;
 
+  @IsNumber()
+  @IsOptional()
+  teacherId?: number;
+
   @IsString()
   @IsOptional()
   description?: string;
