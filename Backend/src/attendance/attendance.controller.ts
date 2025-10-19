@@ -73,7 +73,7 @@ export class AttendanceController {
       );
     }
   }
-
+  //Get Function
   @Get()
   @Roles('teacher', 'admin')
   async findAll(): Promise<Attendance[]> {
