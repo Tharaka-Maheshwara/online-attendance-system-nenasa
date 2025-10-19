@@ -101,6 +101,18 @@ export class UserService {
         return savedUser;
       }
     } catch (error) {
+      // Handle duplicate key errors gracefully
+      if (error.code === 'ER_DUP_ENTRY' || error.message.includes('Duplicate entry')) {
+        this.logger.warn(`Duplicate user detected for ${azureUserDto.email}, attempting to find existing user`);
+        
+        // Try to find existing user by email as fallback
+        const existingUser = await this.findByEmail(azureUserDto.email);
+        if (existingUser) {
+          this.logger.log(`Returning existing user: ${azureUserDto.email}`);
+          return existingUser;
+        }
+      }
+      
       this.logger.error(
         `Failed to create/update user from Azure: ${azureUserDto.email}`,
         error,

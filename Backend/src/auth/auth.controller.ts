@@ -83,6 +83,16 @@ export class AuthController {
       };
     } catch (error) {
       this.logger.error('Auto-provision failed:', error);
+      
+      // If user already exists, that's actually success - just log it
+      if (error.message && error.message.includes('Duplicate entry')) {
+        this.logger.log(`User ${body.email} already exists - this is expected behavior`);
+        return {
+          success: true,
+          message: 'User already exists',
+        };
+      }
+      
       throw new UnauthorizedException('Failed to provision user');
     }
   }
