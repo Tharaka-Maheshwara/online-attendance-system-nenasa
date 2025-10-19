@@ -184,7 +184,7 @@ export class AttendanceService {
             studentName: studentInfo?.name || 'Unknown Student',
             studentEmail: studentInfo?.email || '',
             studentRegisterNumber: studentInfo?.registerNumber || '',
-            className: classInfo?.name || 'Unknown Class',
+            className: classInfo?.subject || 'Unknown Class',
             classSubject: classInfo?.subject || '',
             markedByName: markedByInfo?.display_name || 'System',
           };

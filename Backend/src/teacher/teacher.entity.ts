@@ -28,4 +28,7 @@ export class Teacher {
 
   @Column({ nullable: true })
   sub_04: string;
+
+  @Column({ nullable: true })
+  profileImage: string;
 }

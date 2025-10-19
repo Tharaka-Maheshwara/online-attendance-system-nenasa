@@ -105,9 +105,8 @@ export class StudentService {
       // But you might want to handle this differently based on your requirements
     }
 
-    
-
-    return savedStudent;
+    const result = await this.findOne(savedStudent.id);
+    return result || savedStudent;
   }
 
   async findAll(): Promise<Student[]> {
@@ -168,6 +167,4 @@ export class StudentService {
       return null;
     }
   }
-
-  
 }

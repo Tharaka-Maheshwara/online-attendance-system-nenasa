@@ -4,12 +4,24 @@ const API_BASE_URL = "http://localhost:8000";
 // Create a new student
 export const createStudent = async (studentData) => {
   try {
+    // Create FormData for file upload
+    const formData = new FormData();
+
+    // Append all student fields to FormData
+    Object.keys(studentData).forEach((key) => {
+      if (key === "profileImage" && studentData[key]) {
+        // Append the file
+        formData.append("profileImage", studentData[key]);
+      } else if (studentData[key] !== null && studentData[key] !== "") {
+        // Append other fields
+        formData.append(key, studentData[key]);
+      }
+    });
+
     const response = await fetch(`${API_BASE_URL}/student`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studentData),
+      body: formData, // Use FormData instead of JSON
+      // Don't set Content-Type header - let browser set it with boundary
     });
 
     if (!response.ok) {
@@ -69,12 +81,34 @@ export const getStudentById = async (studentId) => {
 // Update student
 export const updateStudent = async (studentId, studentData) => {
   try {
+    // Create FormData for file upload (if image is being updated)
+    const isFormData = studentData.profileImage instanceof File;
+
+    let requestBody;
+    let headers = {};
+
+    if (isFormData) {
+      // Use FormData for image updates
+      const formData = new FormData();
+      Object.keys(studentData).forEach((key) => {
+        if (key === "profileImage" && studentData[key]) {
+          formData.append("profileImage", studentData[key]);
+        } else if (studentData[key] !== null && studentData[key] !== "") {
+          formData.append(key, studentData[key]);
+        }
+      });
+      requestBody = formData;
+      // Don't set Content-Type header for FormData
+    } else {
+      // Use JSON for regular updates
+      requestBody = JSON.stringify(studentData);
+      headers["Content-Type"] = "application/json";
+    }
+
     const response = await fetch(`${API_BASE_URL}/student/${studentId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(studentData),
+      headers: headers,
+      body: requestBody,
     });
 
     if (!response.ok) {

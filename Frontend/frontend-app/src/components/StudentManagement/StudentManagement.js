@@ -20,10 +20,14 @@ const StudentManagement = () => {
     contactNumber: "",
     parentName: "",
     parentEmail: "",
+    gender: "",
     sub_1: "",
     sub_2: "",
     sub_3: "",
     sub_4: "",
+    sub_5: "",
+    sub_6: "",
+    profileImage: null, // For storing the selected file
   });
   const [editingStudent, setEditingStudent] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -34,6 +38,7 @@ const StudentManagement = () => {
   const [error, setError] = useState("");
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedStudentQR, setSelectedStudentQR] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
     fetchStudents();
@@ -126,6 +131,8 @@ const StudentManagement = () => {
       studentData.sub_2,
       studentData.sub_3,
       studentData.sub_4,
+      studentData.sub_5,
+      studentData.sub_6,
     ].filter((subject) => subject && subject !== "");
 
     const uniqueSubjects = [...new Set(subjects)];
@@ -140,6 +147,41 @@ const StudentManagement = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Please select a valid image file (JPEG, PNG, or GIF)");
+        return;
+      }
+
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB");
+        return;
+      }
+
+      setNewStudent((prev) => ({
+        ...prev,
+        profileImage: file,
+      }));
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -158,11 +200,17 @@ const StudentManagement = () => {
         sub_2: newStudent.sub_2 || null,
         sub_3: newStudent.sub_3 || null,
         sub_4: newStudent.sub_4 || null,
+        sub_5: newStudent.sub_5 || null,
+        sub_6: newStudent.sub_6 || null,
       };
 
       // Create student record using studentService
-      await createStudent(studentData);
+      const createdStudent = await createStudent(studentData);
+      console.log("Created Student:", createdStudent); // <-- Add this line
       alert("Student created successfully!");
+
+      // Add the new student to the list
+      setStudents((prevStudents) => [createdStudent, ...prevStudents]);
 
       // Reset form after successful creation
       setNewStudent({
@@ -172,13 +220,17 @@ const StudentManagement = () => {
         contactNumber: "",
         parentName: "",
         parentEmail: "",
+        gender: "",
         sub_1: "",
         sub_2: "",
         sub_3: "",
         sub_4: "",
+        sub_5: "",
+        sub_6: "",
+        profileImage: null,
       });
+      setImagePreview(null);
       setShowAddForm(false);
-      await fetchStudents();
     } catch (error) {
       console.error("Error creating student:", error);
       setError("Error creating student: " + error.message);
@@ -230,6 +282,8 @@ const StudentManagement = () => {
         sub_2: editingStudent.sub_2 || null,
         sub_3: editingStudent.sub_3 || null,
         sub_4: editingStudent.sub_4 || null,
+        sub_5: editingStudent.sub_5 || null,
+        sub_6: editingStudent.sub_6 || null,
       };
 
       await updateStudent(editingStudent.id, studentData);
@@ -371,6 +425,21 @@ const StudentManagement = () => {
 
             <div className="form-row">
               <div className="form-group">
+                <label>Gender:</label>
+                <select
+                  name="gender"
+                  value={newStudent.gender}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
                 <label>Parent Name:</label>
                 <input
                   type="text"
@@ -392,6 +461,47 @@ const StudentManagement = () => {
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group image-upload-group">
+                <label>Profile Image:</label>
+                <div className="image-upload-container">
+                  <input
+                    type="file"
+                    name="profileImage"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="image-input"
+                  />
+                  <div className="image-upload-info">
+                    <span>📷 Choose student photo (Max 5MB)</span>
+                    <small>Supported formats: JPEG, PNG, GIF</small>
+                  </div>
+                </div>
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="preview-image"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setNewStudent((prev) => ({
+                          ...prev,
+                          profileImage: null,
+                        }));
+                      }}
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="subjects-section">
               <h4>Subject Assignment (Maximum 4 subjects)</h4>
               <div className="form-row">
@@ -405,7 +515,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -420,7 +530,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -437,7 +547,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -452,7 +562,37 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 5:</label>
+                  <select
+                    name="sub_5"
+                    value={newStudent.sub_5}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 6:</label>
+                  <select
+                    name="sub_6"
+                    value={newStudent.sub_6}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -520,6 +660,21 @@ const StudentManagement = () => {
 
             <div className="form-row">
               <div className="form-group">
+                <label>Gender:</label>
+                <select
+                  name="gender"
+                  value={editingStudent.gender || ""}
+                  onChange={handleEditInputChange}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
                 <label>Parent Name:</label>
                 <input
                   type="text"
@@ -554,7 +709,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -569,7 +724,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -586,7 +741,7 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -601,7 +756,39 @@ const StudentManagement = () => {
                     <option value="">Select Subject</option>
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `- ${cls.subject}` : ""}
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Subject 5:</label>
+                  <select
+                    name="sub_5"
+                    value={editingStudent.sub_5 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Subject 6:</label>
+                  <select
+                    name="sub_6"
+                    value={editingStudent.sub_6 || ""}
+                    onChange={handleEditInputChange}
+                  >
+                    <option value="">Select Subject</option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.name}>
+                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
                       </option>
                     ))}
                   </select>
@@ -630,6 +817,7 @@ const StudentManagement = () => {
             <table>
               <thead>
                 <tr>
+                  <th>Photo</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Register Number</th>
@@ -647,12 +835,25 @@ const StudentManagement = () => {
                     student.sub_2,
                     student.sub_3,
                     student.sub_4,
+                    student.sub_5,
+                    student.sub_6,
                   ]
                     .filter(Boolean)
                     .join(", ");
 
                   return (
                     <tr key={student.id}>
+                      <td>
+                        {student.profileImage ? (
+                          <img
+                            src={`http://localhost:8000${student.profileImage}`}
+                            alt={student.name}
+                            className="student-image"
+                          />
+                        ) : (
+                          <div className="student-image-placeholder">👤</div>
+                        )}
+                      </td>
                       <td>{student.name}</td>
                       <td>{student.email}</td>
                       <td>{student.registerNumber || "N/A"}</td>

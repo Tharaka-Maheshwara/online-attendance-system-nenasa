@@ -65,7 +65,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
-            🎓 NENASA Attendance
+            🎓 NENASALA Attendance
           </Link>
         </div>
 
@@ -79,6 +79,18 @@ const Navbar = () => {
             >
               🏠 Dashboard
             </Link>
+
+            {/* Course Catalog - available for students and teachers only */}
+            {(userRole === "student" || userRole === "teacher") && (
+              <Link
+                to="/course-catalog"
+                className={`nav-link ${
+                  isActive("/course-catalog") ? "active" : ""
+                }`}
+              >
+                📖 Course Catalog
+              </Link>
+            )}
 
             {(userRole === "teacher" || userRole === "admin") && (
               <Link
@@ -100,6 +112,12 @@ const Navbar = () => {
                   className={`nav-link ${isActive("/classes") ? "active" : ""}`}
                 >
                   📚 Classes
+                </Link>
+                <Link
+                  to="/courses"
+                  className={`nav-link ${isActive("/courses") ? "active" : ""}`}
+                >
+                  🎯 Courses
                 </Link>
                 <Link
                   to="/students"

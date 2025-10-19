@@ -120,6 +120,7 @@ const AttendanceMarking = () => {
         const classData = await response.json();
         setClasses(classData);
       } else {
+        console.error("Failed to fetch classes - Status:", response.status);
         throw new Error("Failed to fetch classes");
       }
     } catch (error) {
@@ -157,12 +158,12 @@ const AttendanceMarking = () => {
 
           return studentSubjects.some(
             (subject) =>
-              subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+              subject.toLowerCase() === selectedClassInfo.subject.toLowerCase()
           );
         });
 
         console.log(
-          `Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.name}`
+          `Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.subject}`
         );
         setStudents(enrolledStudents);
 
@@ -191,7 +192,7 @@ const AttendanceMarking = () => {
 
     const qrData = {
       classId: selectedClass,
-      className: classData?.name,
+      className: classData?.subject,
       timestamp: Date.now(),
       teacherId: teacherInfo?.username || teacherInfo?.name,
       action: "mark_attendance",
@@ -358,12 +359,12 @@ const AttendanceMarking = () => {
 
         const isEnrolled = studentSubjects.some(
           (subject) =>
-            subject.toLowerCase() === selectedClassInfo.name.toLowerCase()
+            subject.toLowerCase() === selectedClassInfo.subject.toLowerCase()
         );
 
         if (!isEnrolled) {
           alert(
-            `${studentName} is not enrolled in ${selectedClassInfo.name} class.`
+            `${studentName} is not enrolled in ${selectedClassInfo.subject} class.`
           );
           return;
         }
@@ -567,7 +568,7 @@ const AttendanceMarking = () => {
               <option value="">-- Select a Class --</option>
               {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>
-                  {cls.name}
+                  {cls.subject}
                   {cls.code ? ` (${cls.code})` : ""}
                 </option>
               ))}
@@ -579,7 +580,7 @@ const AttendanceMarking = () => {
               <h3>Scan Student QR Codes</h3>
               <p>
                 Scan each student's QR code to mark their attendance in{" "}
-                {classes.find((c) => c.id === parseInt(selectedClass))?.name}{" "}
+                {classes.find((c) => c.id === parseInt(selectedClass))?.subject}{" "}
                 class
               </p>
 

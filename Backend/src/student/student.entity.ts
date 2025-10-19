@@ -23,7 +23,10 @@ export class Student {
   @Column({ nullable: true })
   parentEmail: string;
 
-  // Subject names (maximum 4 subjects per student)
+  @Column({ nullable: true })
+  gender: string;
+
+  // Subject names (maximum 6 subjects per student)
   @Column({ nullable: true })
   sub_1: string;
 
@@ -36,5 +39,13 @@ export class Student {
   @Column({ nullable: true })
   sub_4: string;
 
-  
+  @Column({ nullable: true })
+  sub_5: string;
+
+  @Column({ nullable: true })
+  sub_6: string;
+
+  // Student profile image path
+  @Column({ nullable: true })
+  profileImage: string;
 }

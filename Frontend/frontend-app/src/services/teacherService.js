@@ -4,12 +4,18 @@ const API_BASE_URL = "http://localhost:8000";
 // Create a new teacher
 export const createTeacher = async (teacherData) => {
   try {
+    const formData = new FormData();
+    Object.keys(teacherData).forEach((key) => {
+      if (key === "profileImage" && teacherData[key]) {
+        formData.append(key, teacherData[key]);
+      } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
+        formData.append(key, teacherData[key]);
+      }
+    });
+
     const response = await fetch(`${API_BASE_URL}/teacher`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(teacherData),
+      body: formData, // No 'Content-Type' header, browser sets it for FormData
     });
 
     if (!response.ok) {
@@ -66,15 +72,42 @@ export const getTeacherById = async (teacherId) => {
   }
 };
 
-// Update teacher
-export const updateTeacher = async (teacherId, teacherData) => {
+// Get teacher by email
+export const getTeacherByEmail = async (email) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/teacher/${teacherId}`, {
-      method: "PUT",
+    const response = await fetch(`${API_BASE_URL}/teacher/by-email/${email}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(teacherData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch teacher by email");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching teacher by email:", error);
+    throw error;
+  }
+};
+
+// Update teacher
+export const updateTeacher = async (teacherId, teacherData) => {
+  try {
+    const formData = new FormData();
+    Object.keys(teacherData).forEach((key) => {
+      if (key === "profileImage" && teacherData[key] instanceof File) {
+        formData.append("profileImage", teacherData[key]);
+      } else if (teacherData[key] !== null && teacherData[key] !== undefined) {
+        formData.append(key, teacherData[key]);
+      }
+    });
+
+    const response = await fetch(`${API_BASE_URL}/teacher/${teacherId}`, {
+      method: "PUT",
+      body: formData, // No 'Content-Type' header, browser sets it for FormData
     });
 
     if (!response.ok) {
@@ -100,11 +133,19 @@ export const deleteTeacher = async (teacherId) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to delete teacher");
+      // Try to get error message if response has content
+      let errorMessage = "Failed to delete teacher";
+      try {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } catch {
+        // If no JSON content, use default message
+      }
+      throw new Error(errorMessage);
     }
 
-    return await response.json();
+    // For successful DELETE, don't try to parse JSON as backend returns void
+    return { success: true, message: "Teacher deleted successfully" };
   } catch (error) {
     console.error("Error deleting teacher:", error);
     throw error;
@@ -117,7 +158,7 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
   const selectedClassNames = formData.selectedClasses
     .map((classId) => {
       const classItem = classes.find((c) => c.id === classId);
-      return classItem ? classItem.name : null;
+      return classItem ? classItem.subject : null;
     })
     .filter(Boolean)
     .slice(0, 4); // Limit to 4 classes
@@ -131,6 +172,7 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
     sub_02: selectedClassNames[1] || null,
     sub_03: selectedClassNames[2] || null,
     sub_04: selectedClassNames[3] || null,
+    profileImage: formData.profileImage, // Pass the file object
   };
 
   return teacherDto;
@@ -148,7 +190,7 @@ export const mapTeacherToFormData = (teacher, classes = []) => {
 
   const selectedClasses = subjectNames
     .map((subjectName) => {
-      const classItem = classes.find((c) => c.name === subjectName);
+      const classItem = classes.find((c) => c.subject === subjectName);
       return classItem ? classItem.id : null;
     })
     .filter(Boolean);
@@ -159,5 +201,6 @@ export const mapTeacherToFormData = (teacher, classes = []) => {
     registrationNumber: teacher.registerNumber || "",
     contact: teacher.contactNumber || "",
     selectedClasses: selectedClasses,
+    profileImage: teacher.profileImage || null,
   };
 };

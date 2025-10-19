@@ -7,4 +7,5 @@ export class CreateTeacherDto {
   sub_02?: string;
   sub_03?: string;
   sub_04?: string;
+  profileImage?: string;
 }

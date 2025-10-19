@@ -6,14 +6,17 @@ export class Class {
   id: number;
 
   @Column()
-  name: string;
-
-  @Column({ nullable: true })
   subject: string;
 
   @Column({ nullable: true })
-  batch: string;
+  teacherId: number;
 
   @Column({ nullable: true })
-  teacherId: number;
+  dayOfWeek: string;
+
+  @Column({ nullable: true })
+  startTime: string;
+
+  @Column({ nullable: true })
+  endTime: string;
 }

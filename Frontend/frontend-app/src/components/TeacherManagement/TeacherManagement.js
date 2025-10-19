@@ -22,7 +22,9 @@ const TeacherManagement = () => {
     registrationNumber: "",
     contact: "",
     selectedClasses: [],
+    profileImage: null,
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -100,6 +102,29 @@ const TeacherManagement = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Only JPG, PNG, and GIF files are allowed.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must be less than 5MB.");
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, profileImage: file }));
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Function to handle class selection (max 4 classes)
   const handleClassSelection = (classId) => {
     setFormData((prev) => {
@@ -162,16 +187,7 @@ const TeacherManagement = () => {
       }
 
       // Reset form after successful submission
-      setFormData({
-        name: "",
-        email: "",
-        registrationNumber: "",
-        contact: "",
-        selectedClasses: [],
-      });
-      setShowAddForm(false);
-      setIsEditing(false);
-      setEditingId(null);
+      handleCancel();
 
       // Reload teachers list
       await loadTeachers();
@@ -210,7 +226,9 @@ const TeacherManagement = () => {
       registrationNumber: "",
       contact: "",
       selectedClasses: [],
+      profileImage: null,
     });
+    setImagePreview(null);
     setShowAddForm(false);
     setIsLookingUpUser(false);
     setIsEditing(false);
@@ -225,10 +243,13 @@ const TeacherManagement = () => {
       );
       if (teacherToEdit) {
         // Map the teacher data to form data format
-        const formData = mapTeacherToFormData(teacherToEdit);
+        const formData = mapTeacherToFormData(teacherToEdit, classes);
 
         // Populate the form with teacher data
         setFormData(formData);
+        if (teacherToEdit.profileImage) {
+          setImagePreview(`http://localhost:8000${teacherToEdit.profileImage}`);
+        }
         setIsEditing(true);
         setEditingId(teacherId);
         setShowAddForm(true); // Show the form for editing
@@ -334,6 +355,44 @@ const TeacherManagement = () => {
             </div>
 
             <div className="form-row">
+              <div className="form-group image-upload-group">
+                <label>Profile Image:</label>
+                <div className="image-upload-container">
+                  <input
+                    type="file"
+                    name="profileImage"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="image-input"
+                  />
+                  <div className="image-upload-info">
+                    <span>📷 Choose teacher photo (Max 5MB)</span>
+                    <small>Supported formats: JPEG, PNG, GIF</small>
+                  </div>
+                </div>
+                {imagePreview && (
+                  <div className="image-preview">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="preview-image"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setFormData((prev) => ({ ...prev, profileImage: null }));
+                      }}
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group full-width">
                 <label htmlFor="classes">
                   Select Classes (Max 4)
@@ -362,12 +421,7 @@ const TeacherManagement = () => {
                             onChange={() => {}} // Handled by div onClick
                             readOnly
                           />
-                          <span className="class-name">{classItem.name}</span>
-                          {classItem.subject && (
-                            <span className="class-subject">
-                              ({classItem.subject})
-                            </span>
-                          )}
+                          <span className="class-name">{classItem.subject}</span>
                         </div>
                       ))}
                     </div>
@@ -417,6 +471,7 @@ const TeacherManagement = () => {
             <table>
               <thead>
                 <tr>
+                  <th>Photo</th>
                   <th>Teacher ID</th>
                   <th>Name</th>
                   <th>Email</th>
@@ -427,6 +482,17 @@ const TeacherManagement = () => {
               <tbody>
                 {teachers.map((teacher) => (
                   <tr key={teacher.id}>
+                    <td>
+                      {teacher.profileImage ? (
+                        <img
+                          src={`http://localhost:8000${teacher.profileImage}`}
+                          alt={teacher.name}
+                          className="teacher-image"
+                        />
+                      ) : (
+                        <div className="teacher-image-placeholder">👤</div>
+                      )}
+                    </td>
                     <td>{teacher.registerNumber}</td>
                     <td>{teacher.name}</td>
                     <td>{teacher.email}</td>

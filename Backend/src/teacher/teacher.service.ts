@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
+import { Class } from '../class/class.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { UserService } from '../user/user.service';
@@ -11,6 +12,8 @@ export class TeacherService {
   constructor(
     @InjectRepository(Teacher)
     private teacherRepository: Repository<Teacher>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
     private userService: UserService,
   ) {}
 
@@ -72,6 +75,10 @@ export class TeacherService {
     return await this.teacherRepository.findOne({ where: { id } });
   }
 
+  async findByEmail(email: string): Promise<Teacher | null> {
+    return await this.teacherRepository.findOne({ where: { email } });
+  }
+
   async update(
     id: number,
     updateTeacherDto: UpdateTeacherDto,
@@ -101,5 +108,33 @@ export class TeacherService {
 
   async remove(id: number): Promise<void> {
     await this.teacherRepository.delete(id);
+  }
+
+  async getTodayClasses(teacherId: number): Promise<Class[]> {
+    // Get current day of week (0 = Sunday, 1 = Monday, etc.)
+    const today = new Date();
+    const dayNames = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+    const todayName = dayNames[today.getDay()];
+
+    // Find all classes for this teacher on today's day
+    const classes = await this.classRepository.find({
+      where: {
+        teacherId: teacherId,
+        dayOfWeek: todayName,
+      },
+      order: {
+        startTime: 'ASC',
+      },
+    });
+
+    return classes;
   }
 }

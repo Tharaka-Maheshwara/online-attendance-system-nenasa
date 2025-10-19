@@ -7,6 +7,7 @@ export class CreateStudentDto {
   contactNumber?: string;
   parentName?: string;
   parentEmail?: string;
+  gender?: string;
 
   @IsOptional()
   @IsString()
@@ -23,4 +24,16 @@ export class CreateStudentDto {
   @IsOptional()
   @IsString()
   sub_4?: string;
+
+  @IsOptional()
+  @IsString()
+  sub_5?: string;
+
+  @IsOptional()
+  @IsString()
+  sub_6?: string;
+
+  @IsOptional()
+  @IsString()
+  profileImage?: string;
 }
