@@ -503,7 +503,7 @@ const StudentManagement = () => {
             </div>
 
             <div className="subjects-section">
-              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <h4>Subject Assignment</h4>
               <div className="form-row">
                 <div className="form-group">
                   <label>Subject 1:</label>
@@ -697,7 +697,7 @@ const StudentManagement = () => {
             </div>
 
             <div className="subjects-section">
-              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <h4>Subject Assignment</h4>
               <div className="form-row">
                 <div className="form-group">
                   <label>Subject 1:</label>
