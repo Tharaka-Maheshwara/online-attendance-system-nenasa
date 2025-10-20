@@ -108,7 +108,7 @@ export class UserController {
 
     // Extract register_number from email (userPrincipalName)
     const registerNumber = body.email ? body.email.split('@')[0] : '';
-    
+
     console.log('Extracted register_number:', registerNumber); // Debug log
 
     // Try to find user by email
@@ -340,39 +340,47 @@ export class UserController {
   async fixRegisterNumbers() {
     try {
       this.logger.log('Starting to fix NULL register_numbers...');
-      
+
       // Get all users with NULL register_number
       const usersWithoutRegisterNumber = await this.userService.findAll();
-      const nullRegisterUsers = usersWithoutRegisterNumber.filter(user => !user.register_number);
-      
-      this.logger.log(`Found ${nullRegisterUsers.length} users with NULL register_number`);
-      
+      const nullRegisterUsers = usersWithoutRegisterNumber.filter(
+        (user) => !user.register_number,
+      );
+
+      this.logger.log(
+        `Found ${nullRegisterUsers.length} users with NULL register_number`,
+      );
+
       let fixedCount = 0;
-      
+
       for (const user of nullRegisterUsers) {
         if (user.email) {
           // Extract register_number from email
           const registerNumber = user.email.split('@')[0];
-          
+
           if (registerNumber && registerNumber !== user.email) {
             // Update the user
             await this.userService.update(user.id, {
-              register_number: registerNumber
+              register_number: registerNumber,
             });
-            
-            this.logger.log(`Fixed user ${user.email} - set register_number to: ${registerNumber}`);
+
+            this.logger.log(
+              `Fixed user ${user.email} - set register_number to: ${registerNumber}`,
+            );
             fixedCount++;
           } else {
-            this.logger.warn(`Could not extract register_number from email: ${user.email}`);
+            this.logger.warn(
+              `Could not extract register_number from email: ${user.email}`,
+            );
           }
         }
       }
-      
+
       return {
         success: true,
         message: `Fixed ${fixedCount} users with NULL register_numbers`,
         totalProcessed: nullRegisterUsers.length,
-        fixed: fixedCount
+        fixed: fixedCount,
       };
     } catch (error) {
       this.logger.error('Error fixing register numbers:', error);

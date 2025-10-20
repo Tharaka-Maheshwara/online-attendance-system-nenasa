@@ -83,7 +83,9 @@ export class UserService {
       let registerNumber = azureUserDto.register_number;
       if (!registerNumber && azureUserDto.email) {
         registerNumber = azureUserDto.email.split('@')[0];
-        this.logger.log(`Extracted register_number '${registerNumber}' from email '${azureUserDto.email}'`);
+        this.logger.log(
+          `Extracted register_number '${registerNumber}' from email '${azureUserDto.email}'`,
+        );
       }
 
       const userData: Partial<User> = {
@@ -94,7 +96,7 @@ export class UserService {
         // Set default role if creating new user
         role: existingUser?.role || 'user',
       };
-      
+
       if (existingUser) {
         // Update existing user
         await this.userRepository.update(existingUser.id, userData);
@@ -105,7 +107,9 @@ export class UserService {
         // Create new user
         const newUser = this.userRepository.create(userData);
         const savedUser = await this.userRepository.save(newUser);
-        this.logger.log(`Created new user from Azure: ${azureUserDto.email} with register_number: ${registerNumber}`);
+        this.logger.log(
+          `Created new user from Azure: ${azureUserDto.email} with register_number: ${registerNumber}`,
+        );
         return savedUser;
       }
     } catch (error) {
