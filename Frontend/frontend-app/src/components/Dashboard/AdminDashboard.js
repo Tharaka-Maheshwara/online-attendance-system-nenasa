@@ -258,7 +258,7 @@ const AdminDashboard = () => {
           pathname === "/dashboard" ||
           pathname === "/") && (
           <div className="user-management">
-            <h2>User Management</h2>
+            <h2>User List</h2>
 
             {/* Tabs for Students/Teachers */}
             <div className="user-tabs">
@@ -350,10 +350,7 @@ const AdminDashboard = () => {
           pathname === "/") && (
           <div className="class-management">
             <div className="section-header">
-              <h2>Class Management</h2>
-              <button className="add-button" onClick={() => openClassModal()}>
-                Add New Class
-              </button>
+              <h2>Class List</h2>
             </div>
 
             {classLoading ? (
@@ -361,34 +358,39 @@ const AdminDashboard = () => {
             ) : (
               <div className="class-grid">
                 {classes.map((cls) => (
-                  <div key={cls.id} className="class-card">
+                  <div 
+                    key={cls.id} 
+                    className="class-card"
+                    style={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white'
+                    }}
+                  >
                     <div className="class-info">
-                      <h3>{cls.name}</h3>
-                      <p>
+                      <h3 style={{ color: 'white' }}>{cls.name}</h3>
+                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
                         <strong>Subject:</strong>{" "}
                         {cls.subject || "Not specified"}
                       </p>
-                    </div>
-                    <div className="class-actions">
-                      <button
-                        className="edit-btn"
-                        onClick={() => openClassModal(cls)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => deleteClass(cls.id)}
-                      >
-                        Delete
-                      </button>
+                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                        <strong>Day of Week:</strong>{" "}
+                        {cls.dayOfWeek || "Not specified"}
+                      </p>
+                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                        <strong>Start Time:</strong>{" "}
+                        {cls.startTime || "Not specified"}
+                      </p>
+                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                        <strong>End Time:</strong>{" "}
+                        {cls.endTime || "Not specified"}
+                      </p>
                     </div>
                   </div>
                 ))}
                 {classes.length === 0 && (
                   <div className="no-classes">
                     <p>
-                      No classes found. Click "Add New Class" to create one.
+                      No classes found.
                     </p>
                   </div>
                 )}
