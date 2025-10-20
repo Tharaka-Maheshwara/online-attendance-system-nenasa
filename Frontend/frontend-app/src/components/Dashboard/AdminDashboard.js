@@ -358,29 +358,30 @@ const AdminDashboard = () => {
             ) : (
               <div className="class-grid">
                 {classes.map((cls) => (
-                  <div 
-                    key={cls.id} 
+                  <div
+                    key={cls.id}
                     className="class-card"
                     style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      color: 'white'
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      color: "white",
                     }}
                   >
                     <div className="class-info">
-                      <h3 style={{ color: 'white' }}>{cls.name}</h3>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      <h3 style={{ color: "white" }}>{cls.name}</h3>
+                      <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                         <strong>Subject:</strong>{" "}
                         {cls.subject || "Not specified"}
                       </p>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                         <strong>Day of Week:</strong>{" "}
                         {cls.dayOfWeek || "Not specified"}
                       </p>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                         <strong>Start Time:</strong>{" "}
                         {cls.startTime || "Not specified"}
                       </p>
-                      <p style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                      <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                         <strong>End Time:</strong>{" "}
                         {cls.endTime || "Not specified"}
                       </p>
@@ -389,9 +390,7 @@ const AdminDashboard = () => {
                 ))}
                 {classes.length === 0 && (
                   <div className="no-classes">
-                    <p>
-                      No classes found.
-                    </p>
+                    <p>No classes found.</p>
                   </div>
                 )}
               </div>
