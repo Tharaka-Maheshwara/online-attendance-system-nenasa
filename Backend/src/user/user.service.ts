@@ -79,14 +79,22 @@ export class UserService {
         existingUser = await this.findByEmail(azureUserDto.email);
       }
 
+      // Ensure register_number is extracted if not provided or empty
+      let registerNumber = azureUserDto.register_number;
+      if (!registerNumber && azureUserDto.email) {
+        registerNumber = azureUserDto.email.split('@')[0];
+        this.logger.log(`Extracted register_number '${registerNumber}' from email '${azureUserDto.email}'`);
+      }
+
       const userData: Partial<User> = {
         email: azureUserDto.email,
         display_name: azureUserDto.displayName,
         azureId: azureUserDto.azureId,
-        register_number: azureUserDto.register_number,
+        register_number: registerNumber,
         // Set default role if creating new user
         role: existingUser?.role || 'user',
       };
+      
       if (existingUser) {
         // Update existing user
         await this.userRepository.update(existingUser.id, userData);
@@ -97,7 +105,7 @@ export class UserService {
         // Create new user
         const newUser = this.userRepository.create(userData);
         const savedUser = await this.userRepository.save(newUser);
-        this.logger.log(`Created new user from Azure: ${azureUserDto.email}`);
+        this.logger.log(`Created new user from Azure: ${azureUserDto.email} with register_number: ${registerNumber}`);
         return savedUser;
       }
     } catch (error) {
