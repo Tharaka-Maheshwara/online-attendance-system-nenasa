@@ -34,42 +34,44 @@ const TeacherAnnouncements = () => {
     try {
       // Get current teacher's email
       const teacherEmail = accounts[0]?.username || accounts[0]?.name;
-      
+
       // First, get the teacher info to find their subjects
-      const teacherResponse = await fetch(`http://localhost:8000/teacher?email=${teacherEmail}`);
+      const teacherResponse = await fetch(
+        `http://localhost:8000/teacher?email=${teacherEmail}`
+      );
       if (!teacherResponse.ok) {
         console.error("Failed to fetch teacher info");
         return;
       }
-      
+
       const teachers = await teacherResponse.json();
-      const currentTeacher = teachers.find(t => t.email === teacherEmail);
-      
+      const currentTeacher = teachers.find((t) => t.email === teacherEmail);
+
       if (!currentTeacher) {
         console.error("Current teacher not found");
         return;
       }
-      
+
       // Get teacher's subjects
       const teacherSubjects = [
         currentTeacher.sub_01,
         currentTeacher.sub_02,
         currentTeacher.sub_03,
-        currentTeacher.sub_04
+        currentTeacher.sub_04,
       ].filter(Boolean);
-      
+
       // Fetch all classes
       const response = await fetch("http://localhost:8000/class");
       if (response.ok) {
         const allClasses = await response.json();
-        
+
         // Filter classes to show only those taught by current teacher
-        const teacherClasses = allClasses.filter(cls => 
-          teacherSubjects.some(subject => 
-            subject.toLowerCase() === cls.subject?.toLowerCase()
+        const teacherClasses = allClasses.filter((cls) =>
+          teacherSubjects.some(
+            (subject) => subject.toLowerCase() === cls.subject?.toLowerCase()
           )
         );
-        
+
         setClasses(teacherClasses);
       } else {
         console.error("Failed to fetch classes");
