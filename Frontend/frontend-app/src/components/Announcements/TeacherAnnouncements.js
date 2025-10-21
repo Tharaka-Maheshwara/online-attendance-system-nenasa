@@ -15,11 +15,9 @@ const TeacherAnnouncements = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [sentAnnouncements, setSentAnnouncements] = useState([]);
 
   useEffect(() => {
     fetchClasses();
-    fetchSentAnnouncements();
   }, []);
 
   useEffect(() => {
@@ -124,28 +122,6 @@ const TeacherAnnouncements = () => {
     }
   };
 
-  const fetchSentAnnouncements = async () => {
-    try {
-      const token = await getAccessToken();
-      const response = await fetch(
-        "http://localhost:8000/announcements/teacher",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const announcements = await response.json();
-        setSentAnnouncements(announcements);
-      }
-    } catch (error) {
-      console.error("Error fetching announcements:", error);
-    }
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setAnnouncement((prev) => ({
@@ -205,7 +181,6 @@ const TeacherAnnouncements = () => {
         setAnnouncement({ title: "", message: "", priority: "normal" });
         setSelectedClass("");
         setStudents([]);
-        fetchSentAnnouncements(); // Refresh sent announcements
       } else {
         setMessage(
           `❌ Failed to send announcement: ${result.message || "Unknown error"}`
@@ -343,40 +318,6 @@ const TeacherAnnouncements = () => {
               {loading ? "📤 Sending..." : "📢 Send Announcement"}
             </button>
           </form>
-        </div>
-
-        <div className="sent-announcements">
-          <h3>Recent Announcements</h3>
-          {sentAnnouncements.length > 0 ? (
-            <div className="announcements-list">
-              {sentAnnouncements.slice(0, 5).map((announce) => (
-                <div key={announce.id} className="announcement-card">
-                  <div className="announcement-header">
-                    <h4>{announce.title}</h4>
-                    <span className={`priority ${announce.priority}`}>
-                      {announce.priority === "high" && "🔴"}
-                      {announce.priority === "normal" && "🟡"}
-                      {announce.priority === "low" && "🟢"}
-                      {announce.priority.toUpperCase()}
-                    </span>
-                  </div>
-                  <p className="announcement-message">{announce.message}</p>
-                  <div className="announcement-meta">
-                    <span>
-                      📅 {new Date(announce.createdAt).toLocaleDateString()}
-                    </span>
-                    <span>👥 {announce.recipientCount || 0} students</span>
-                    <span>📚 {announce.className}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="no-announcements">
-              <p>No announcements sent yet.</p>
-              <p>Select a class and create your first announcement!</p>
-            </div>
-          )}
         </div>
       </div>
     </div>

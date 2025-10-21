@@ -15,11 +15,9 @@ const TeacherLectureNotes = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [uploadedNotes, setUploadedNotes] = useState([]);
 
   useEffect(() => {
     fetchClasses();
-    fetchUploadedNotes();
   }, []);
 
   useEffect(() => {
@@ -124,28 +122,6 @@ const TeacherLectureNotes = () => {
     }
   };
 
-  const fetchUploadedNotes = async () => {
-    try {
-      const token = await getAccessToken();
-      const response = await fetch(
-        "http://localhost:8000/lecture-notes/teacher",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const notes = await response.json();
-        setUploadedNotes(notes);
-      }
-    } catch (error) {
-      console.error("Error fetching lecture notes:", error);
-    }
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLectureNote((prev) => ({
@@ -231,7 +207,6 @@ const TeacherLectureNotes = () => {
         setStudents([]);
         // Reset file input
         document.getElementById("file-input").value = "";
-        fetchUploadedNotes(); // Refresh uploaded notes
       } else {
         setMessage(
           `❌ Failed to upload lecture note: ${
@@ -244,35 +219,6 @@ const TeacherLectureNotes = () => {
       setMessage("❌ Error uploading lecture note. Please try again.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDeleteNote = async (noteId) => {
-    if (!window.confirm("Are you sure you want to delete this lecture note?")) {
-      return;
-    }
-
-    try {
-      const token = await getAccessToken();
-      const response = await fetch(
-        `http://localhost:8000/lecture-notes/${noteId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        setMessage("✅ Lecture note deleted successfully!");
-        fetchUploadedNotes();
-      } else {
-        setMessage("❌ Failed to delete lecture note.");
-      }
-    } catch (error) {
-      console.error("Error deleting lecture note:", error);
-      setMessage("❌ Error deleting lecture note.");
     }
   };
 
@@ -401,52 +347,6 @@ const TeacherLectureNotes = () => {
           </form>
         </div>
 
-        <div className="uploaded-notes">
-          <h3>Previously Uploaded Notes</h3>
-          {uploadedNotes.length > 0 ? (
-            <div className="notes-list">
-              {uploadedNotes.slice(0, 10).map((note) => (
-                <div key={note.id} className="note-card">
-                  <div className="note-header">
-                    <h4>{note.title}</h4>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteNote(note.id)}
-                      title="Delete Note"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                  {note.description && (
-                    <p className="note-description">{note.description}</p>
-                  )}
-                  <div className="note-meta">
-                    <span>
-                      📅 {new Date(note.createdAt).toLocaleDateString()}
-                    </span>
-                    <span>👥 {note.studentCount || 0} students</span>
-                    <span>📚 {note.className || `Class ${note.classId}`}</span>
-                  </div>
-                  <div className="note-actions">
-                    <a
-                      href={`http://localhost:8000/lecture-notes/download/${note.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="download-btn"
-                    >
-                      📥 Download PDF
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="no-notes">
-              <p>No lecture notes uploaded yet.</p>
-              <p>Select a class and upload your first lecture note!</p>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
