@@ -153,25 +153,16 @@ export const deleteTeacher = async (teacherId) => {
 };
 
 // Helper function to map frontend form data to backend format
-export const mapFormDataToTeacherDto = (formData, classes = []) => {
-  // Map selectedClasses to class names for sub_01, sub_02, etc.
-  const selectedClassNames = formData.selectedClasses
-    .map((classId) => {
-      const classItem = classes.find((c) => c.id === classId);
-      return classItem ? classItem.subject : null;
-    })
-    .filter(Boolean)
-    .slice(0, 4); // Limit to 4 classes
-
+export const mapFormDataToTeacherDto = (formData) => {
   const teacherDto = {
     name: formData.name,
     email: formData.email,
     registerNumber: formData.registrationNumber,
     contactNumber: formData.contact,
-    sub_01: selectedClassNames[0] || null,
-    sub_02: selectedClassNames[1] || null,
-    sub_03: selectedClassNames[2] || null,
-    sub_04: selectedClassNames[3] || null,
+    sub_01: formData.sub_01 || null,
+    sub_02: formData.sub_02 || null,
+    sub_03: formData.sub_03 || null,
+    sub_04: formData.sub_04 || null,
     profileImage: formData.profileImage, // Pass the file object
   };
 
@@ -179,28 +170,16 @@ export const mapFormDataToTeacherDto = (formData, classes = []) => {
 };
 
 // Helper function to map backend teacher data to frontend format
-export const mapTeacherToFormData = (teacher, classes = []) => {
-  // Map sub_01, sub_02, etc. back to selectedClasses IDs
-  const subjectNames = [
-    teacher.sub_01,
-    teacher.sub_02,
-    teacher.sub_03,
-    teacher.sub_04,
-  ].filter(Boolean);
-
-  const selectedClasses = subjectNames
-    .map((subjectName) => {
-      const classItem = classes.find((c) => c.subject === subjectName);
-      return classItem ? classItem.id : null;
-    })
-    .filter(Boolean);
-
+export const mapTeacherToFormData = (teacher) => {
   return {
     name: teacher.name || "",
     email: teacher.email || "",
     registrationNumber: teacher.registerNumber || "",
     contact: teacher.contactNumber || "",
-    selectedClasses: selectedClasses,
+    sub_01: teacher.sub_01 || "",
+    sub_02: teacher.sub_02 || "",
+    sub_03: teacher.sub_03 || "",
+    sub_04: teacher.sub_04 || "",
     profileImage: teacher.profileImage || null,
   };
 };
