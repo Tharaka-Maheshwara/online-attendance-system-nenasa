@@ -102,7 +102,7 @@ const ClassManagement = () => {
       startTime: cls.startTime || "",
       endTime: cls.endTime || "",
     });
-    
+
     // Filter teachers if subject exists
     if (cls.subject) {
       const matchingTeachers = teachers.filter((teacher) =>
@@ -114,7 +114,7 @@ const ClassManagement = () => {
       );
       setFilteredTeachers(matchingTeachers);
     }
-    
+
     setShowForm(true);
   };
 
@@ -135,13 +135,13 @@ const ClassManagement = () => {
     setShowForm(false);
     setIsEditing(false);
     setCurrentClass(null);
-    setFormData({ 
-      subject: "", 
-      teacherId: "", 
-      grade: "", 
-      dayOfWeek: "", 
-      startTime: "", 
-      endTime: "" 
+    setFormData({
+      subject: "",
+      teacherId: "",
+      grade: "",
+      dayOfWeek: "",
+      startTime: "",
+      endTime: "",
     });
     setFilteredTeachers([]);
   };
