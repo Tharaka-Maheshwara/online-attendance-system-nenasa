@@ -346,7 +346,6 @@ const TeacherLectureNotes = () => {
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );
