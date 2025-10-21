@@ -395,69 +395,7 @@ const AdminDashboard = () => {
         </div>
         {/* ...existing dashboard code... */}
 
-        {(pathname === "/user" ||
-          pathname === "/dashboard" ||
-          pathname === "/") && (
-          <div className="user-management">
-            <h2>User List</h2>
 
-            {/* Tabs for Students/Teachers */}
-            <div className="user-tabs">
-              <button
-                className={`tab-button ${
-                  activeTab === "student" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("student")}
-              >
-                Students
-              </button>
-              <button
-                className={`tab-button ${
-                  activeTab === "teacher" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("teacher")}
-              >
-                Teachers
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder={`Search ${
-                  activeTab === "student" ? "users" : "teachers"
-                } by email...`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-            </div>
-
-            {loading ? (
-              <div className="loading">Loading users...</div>
-            ) : (
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>{user.email}</td>
-                      <td>{user.role}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
 
         {/* Role Edit Modal */}
         {roleModalOpen && (
@@ -486,54 +424,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Class Management - Always show on dashboard */}
-        <div className="class-management">
-          <div className="section-header">
-            <h2>Class List</h2>
-          </div>
-
-          {classLoading ? (
-            <div className="loading">Loading classes...</div>
-          ) : (
-            <div className="class-grid">
-              {classes.map((cls) => (
-                <div
-                  key={cls.id}
-                  className="class-card"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
-                  }}
-                >
-                  <div className="class-info">
-                    <h3 style={{ color: "white" }}>{cls.name}</h3>
-                    <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                      <strong>Subject:</strong> {cls.subject || "Not specified"}
-                    </p>
-                    <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                      <strong>Day of Week:</strong>{" "}
-                      {cls.dayOfWeek || "Not specified"}
-                    </p>
-                    <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                      <strong>Start Time:</strong>{" "}
-                      {cls.startTime || "Not specified"}
-                    </p>
-                    <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                      <strong>End Time:</strong>{" "}
-                      {cls.endTime || "Not specified"}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {classes.length === 0 && (
-                <div className="no-classes">
-                  <p>No classes found.</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+       
 
         {/* Student Attendance History Section */}
         {pathname === "/attendance-history" && (
