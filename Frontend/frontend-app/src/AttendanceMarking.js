@@ -750,23 +750,21 @@ const AttendanceMarking = () => {
               <>
                 <p>Students are not allowed to mark their own attendance.</p>
                 <p>
-                  Please contact your teacher or administrator if you need to report
-                  your attendance.
+                  Please contact your teacher or administrator if you need to
+                  report your attendance.
                 </p>
               </>
             ) : userRole === "teacher" ? (
               <>
-                <p>Teachers no longer have access to attendance marking features.</p>
                 <p>
-                  Only administrators can mark attendance in this system.
+                  Teachers no longer have access to attendance marking features.
                 </p>
+                <p>Only administrators can mark attendance in this system.</p>
               </>
             ) : (
               <>
                 <p>You do not have permission to access this feature.</p>
-                <p>
-                  Please contact your administrator for access.
-                </p>
+                <p>Please contact your administrator for access.</p>
               </>
             )}
 
@@ -780,15 +778,17 @@ const AttendanceMarking = () => {
                 <li>
                   👀 You can view your attendance history in your dashboard
                 </li>
-                <li>📞 Contact your administrator for attendance corrections</li>
+                <li>
+                  📞 Contact your administrator for attendance corrections
+                </li>
               </ul>
             </div>
 
             <div className="contact-info">
               <h4>📞 Need Help?</h4>
               <p>
-                Contact your school administration for
-                attendance-related inquiries.
+                Contact your school administration for attendance-related
+                inquiries.
               </p>
             </div>
           </div>
