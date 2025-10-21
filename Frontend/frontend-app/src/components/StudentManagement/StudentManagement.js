@@ -149,10 +149,13 @@ const StudentManagement = () => {
       setFilteredClasses([]);
       return;
     }
-    
+
     const gradeNumber = parseInt(selectedGrade);
-    const matchingClasses = classes.filter((cls) => 
-      cls.grade === gradeNumber || cls.grade === null || cls.grade === undefined
+    const matchingClasses = classes.filter(
+      (cls) =>
+        cls.grade === gradeNumber ||
+        cls.grade === null ||
+        cls.grade === undefined
     );
     setFilteredClasses(matchingClasses);
   };
@@ -162,10 +165,13 @@ const StudentManagement = () => {
       setEditFilteredClasses([]);
       return;
     }
-    
+
     const gradeNumber = parseInt(selectedGrade);
-    const matchingClasses = classes.filter((cls) => 
-      cls.grade === gradeNumber || cls.grade === null || cls.grade === undefined
+    const matchingClasses = classes.filter(
+      (cls) =>
+        cls.grade === gradeNumber ||
+        cls.grade === null ||
+        cls.grade === undefined
     );
     setEditFilteredClasses(matchingClasses);
   };
@@ -302,7 +308,7 @@ const StudentManagement = () => {
   const handleEdit = (student) => {
     setEditingStudent({ ...student });
     setShowAddForm(false);
-    
+
     // Filter classes based on student's grade when editing
     if (student.grade) {
       filterEditClassesByGrade(student.grade.toString());
