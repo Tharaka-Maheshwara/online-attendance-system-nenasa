@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./TeacherManagement.css";
 import { getUserByRegisterNumber } from "../../services/userService";
-import { getAllClasses } from "../../services/classService";
 import {
   getAllTeachers,
   createTeacher,
@@ -13,7 +12,6 @@ import {
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
-  const [classes, setClasses] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
   const [formData, setFormData] = useState({
@@ -21,7 +19,10 @@ const TeacherManagement = () => {
     email: "",
     registrationNumber: "",
     contact: "",
-    selectedClasses: [],
+    sub_01: "",
+    sub_02: "",
+    sub_03: "",
+    sub_04: "",
     profileImage: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -31,7 +32,6 @@ const TeacherManagement = () => {
 
   useEffect(() => {
     loadTeachers();
-    loadClasses();
 
     // Cleanup function to clear timeout when component unmounts
     return () => {
@@ -49,17 +49,6 @@ const TeacherManagement = () => {
       console.error("Error loading teachers:", error);
       // Set empty array on error so component doesn't break
       setTeachers([]);
-    }
-  };
-
-  const loadClasses = async () => {
-    try {
-      const classesData = await getAllClasses();
-      setClasses(classesData);
-    } catch (error) {
-      console.error("Error loading classes:", error);
-      // Set empty array on error so component doesn't break
-      setClasses([]);
     }
   };
 
@@ -125,32 +114,6 @@ const TeacherManagement = () => {
     }
   };
 
-  // Function to handle class selection (max 4 classes)
-  const handleClassSelection = (classId) => {
-    setFormData((prev) => {
-      const currentSelected = prev.selectedClasses;
-      const isAlreadySelected = currentSelected.includes(classId);
-
-      if (isAlreadySelected) {
-        // Remove class if already selected
-        return {
-          ...prev,
-          selectedClasses: currentSelected.filter((id) => id !== classId),
-        };
-      } else if (currentSelected.length < 4) {
-        // Add class if less than 4 selected
-        return {
-          ...prev,
-          selectedClasses: [...currentSelected, classId],
-        };
-      } else {
-        // Show message if trying to select more than 4
-        alert("You can only select up to 4 classes");
-        return prev;
-      }
-    });
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -173,8 +136,21 @@ const TeacherManagement = () => {
     setIsSubmitting(true);
 
     try {
+      // Validate that at least one subject is provided
+      const hasAtLeastOneSubject =
+        formData.sub_01 ||
+        formData.sub_02 ||
+        formData.sub_03 ||
+        formData.sub_04;
+
+      if (!hasAtLeastOneSubject) {
+        alert("Please provide at least one subject.");
+        setIsSubmitting(false);
+        return;
+      }
+
       // Convert form data to backend format
-      const teacherDto = mapFormDataToTeacherDto(formData, classes);
+      const teacherDto = mapFormDataToTeacherDto(formData);
 
       if (isEditing && editingId) {
         // Update existing teacher
@@ -225,7 +201,10 @@ const TeacherManagement = () => {
       email: "",
       registrationNumber: "",
       contact: "",
-      selectedClasses: [],
+      sub_01: "",
+      sub_02: "",
+      sub_03: "",
+      sub_04: "",
       profileImage: null,
     });
     setImagePreview(null);
@@ -243,7 +222,7 @@ const TeacherManagement = () => {
       );
       if (teacherToEdit) {
         // Map the teacher data to form data format
-        const formData = mapTeacherToFormData(teacherToEdit, classes);
+        const formData = mapTeacherToFormData(teacherToEdit);
 
         // Populate the form with teacher data
         setFormData(formData);
@@ -382,7 +361,10 @@ const TeacherManagement = () => {
                       className="remove-image-btn"
                       onClick={() => {
                         setImagePreview(null);
-                        setFormData((prev) => ({ ...prev, profileImage: null }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          profileImage: null,
+                        }));
                       }}
                     >
                       ✕ Remove
@@ -393,44 +375,53 @@ const TeacherManagement = () => {
             </div>
 
             <div className="form-row">
-              <div className="form-group full-width">
-                <label htmlFor="classes">
-                  Select Classes (Max 4)
-                  <span className="selected-count">
-                    ({formData.selectedClasses.length}/4 selected)
-                  </span>
-                </label>
-                <div className="class-selection-container">
-                  {classes.length > 0 ? (
-                    <div className="class-options">
-                      {classes.map((classItem) => (
-                        <div
-                          key={classItem.id}
-                          className={`class-option ${
-                            formData.selectedClasses.includes(classItem.id)
-                              ? "selected"
-                              : ""
-                          }`}
-                          onClick={() => handleClassSelection(classItem.id)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.selectedClasses.includes(
-                              classItem.id
-                            )}
-                            onChange={() => {}} // Handled by div onClick
-                            readOnly
-                          />
-                          <span className="class-name">{classItem.subject}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="no-classes">
-                      <p>No classes available. Please contact administrator.</p>
-                    </div>
-                  )}
-                </div>
+              <div className="form-group">
+                <label htmlFor="sub_01">Subject 1 *</label>
+                <input
+                  type="text"
+                  id="sub_01"
+                  name="sub_01"
+                  value={formData.sub_01}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Mathematics"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="sub_02">Subject 2</label>
+                <input
+                  type="text"
+                  id="sub_02"
+                  name="sub_02"
+                  value={formData.sub_02}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Science"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="sub_03">Subject 3</label>
+                <input
+                  type="text"
+                  id="sub_03"
+                  name="sub_03"
+                  value={formData.sub_03}
+                  onChange={handleInputChange}
+                  placeholder="e.g., English"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="sub_04">Subject 4</label>
+                <input
+                  type="text"
+                  id="sub_04"
+                  name="sub_04"
+                  value={formData.sub_04}
+                  onChange={handleInputChange}
+                  placeholder="e.g., History"
+                />
               </div>
             </div>
 
@@ -506,7 +497,7 @@ const TeacherManagement = () => {
                           Edit
                         </button>
                         <button
-                          className="delete-btn"
+                          className="delete-btn1"
                           onClick={() => handleDelete(teacher.id)}
                         >
                           Delete

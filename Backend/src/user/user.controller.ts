@@ -106,6 +106,11 @@ export class UserController {
   ): Promise<User> {
     console.log('Azure login data received:', body); // Debug log
 
+    // Extract register_number from email (userPrincipalName)
+    const registerNumber = body.email ? body.email.split('@')[0] : '';
+
+    console.log('Extracted register_number:', registerNumber); // Debug log
+
     // Try to find user by email
     let user = await this.userService.findByEmail(body.email);
     if (!user) {
@@ -114,6 +119,7 @@ export class UserController {
         email: body.email,
         display_name: body.displayName || undefined,
         azureId: body.azureId || undefined,
+        register_number: registerNumber,
         role: 'user',
         contactNumber: undefined,
       });
@@ -125,6 +131,10 @@ export class UserController {
       }
       if (!user.display_name && body.displayName) {
         user.display_name = body.displayName;
+      }
+      // Update register_number if not set
+      if (!user.register_number && registerNumber) {
+        user.register_number = registerNumber;
       }
       user = await this.userService.update(user.id, user);
       console.log('User updated:', user);
@@ -318,6 +328,66 @@ export class UserController {
         {
           success: false,
           message: 'Failed to handle role assignment',
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // Fix NULL register_numbers for existing users
+  @Post('fix-register-numbers')
+  async fixRegisterNumbers() {
+    try {
+      this.logger.log('Starting to fix NULL register_numbers...');
+
+      // Get all users with NULL register_number
+      const usersWithoutRegisterNumber = await this.userService.findAll();
+      const nullRegisterUsers = usersWithoutRegisterNumber.filter(
+        (user) => !user.register_number,
+      );
+
+      this.logger.log(
+        `Found ${nullRegisterUsers.length} users with NULL register_number`,
+      );
+
+      let fixedCount = 0;
+
+      for (const user of nullRegisterUsers) {
+        if (user.email) {
+          // Extract register_number from email
+          const registerNumber = user.email.split('@')[0];
+
+          if (registerNumber && registerNumber !== user.email) {
+            // Update the user
+            await this.userService.update(user.id, {
+              register_number: registerNumber,
+            });
+
+            this.logger.log(
+              `Fixed user ${user.email} - set register_number to: ${registerNumber}`,
+            );
+            fixedCount++;
+          } else {
+            this.logger.warn(
+              `Could not extract register_number from email: ${user.email}`,
+            );
+          }
+        }
+      }
+
+      return {
+        success: true,
+        message: `Fixed ${fixedCount} users with NULL register_numbers`,
+        totalProcessed: nullRegisterUsers.length,
+        fixed: fixedCount,
+      };
+    } catch (error) {
+      this.logger.error('Error fixing register numbers:', error);
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to fix register numbers',
           error: error.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,

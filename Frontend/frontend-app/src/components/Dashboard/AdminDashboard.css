@@ -561,7 +561,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
-  background: #f8f9fa;
+  background: white;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 

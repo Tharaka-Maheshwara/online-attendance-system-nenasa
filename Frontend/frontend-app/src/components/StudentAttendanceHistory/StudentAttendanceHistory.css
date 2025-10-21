@@ -179,8 +179,8 @@
 /* Selected Student Info */
 .selected-student-info {
   padding: 20px;
-  background: #2c3e50;
-  color: white;
+  background: white;
+  color: #2c3e50;
 }
 
 .selected-student-info h3 {
@@ -191,7 +191,7 @@
 
 .selected-student-info p {
   margin: 0 0 5px 0;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 /* Attendance Statistics */

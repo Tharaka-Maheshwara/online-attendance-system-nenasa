@@ -13,6 +13,8 @@ import QRCode from "react-qr-code";
 const StudentManagement = () => {
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [filteredClasses, setFilteredClasses] = useState([]);
+  const [editFilteredClasses, setEditFilteredClasses] = useState([]);
   const [newStudent, setNewStudent] = useState({
     name: "",
     email: "",
@@ -21,6 +23,7 @@ const StudentManagement = () => {
     parentName: "",
     parentEmail: "",
     gender: "",
+    grade: "",
     sub_1: "",
     sub_2: "",
     sub_3: "",
@@ -141,12 +144,86 @@ const StudentManagement = () => {
     }
   };
 
+  const filterClassesByGrade = (selectedGrade) => {
+    if (!selectedGrade) {
+      setFilteredClasses([]);
+      return;
+    }
+
+    const gradeNumber = parseInt(selectedGrade);
+    const matchingClasses = classes.filter(
+      (cls) =>
+        cls.grade === gradeNumber ||
+        cls.grade === null ||
+        cls.grade === undefined
+    );
+    setFilteredClasses(matchingClasses);
+  };
+
+  const filterEditClassesByGrade = (selectedGrade) => {
+    if (!selectedGrade) {
+      setEditFilteredClasses([]);
+      return;
+    }
+
+    const gradeNumber = parseInt(selectedGrade);
+    const matchingClasses = classes.filter(
+      (cls) =>
+        cls.grade === gradeNumber ||
+        cls.grade === null ||
+        cls.grade === undefined
+    );
+    setEditFilteredClasses(matchingClasses);
+  };
+
+  // Function to get available subjects for a specific dropdown (excluding already selected)
+  const getAvailableSubjects = (currentSubjectField, isEditMode = false) => {
+    const sourceClasses = isEditMode ? editFilteredClasses : filteredClasses;
+    const studentData = isEditMode ? editingStudent : newStudent;
+
+    // Get all currently selected subjects except the current field
+    const selectedSubjects = [
+      studentData.sub_1,
+      studentData.sub_2,
+      studentData.sub_3,
+      studentData.sub_4,
+      studentData.sub_5,
+      studentData.sub_6,
+    ].filter((subject, index) => {
+      const fieldNames = ["sub_1", "sub_2", "sub_3", "sub_4", "sub_5", "sub_6"];
+      return (
+        subject && subject !== "" && fieldNames[index] !== currentSubjectField
+      );
+    });
+
+    // Filter out already selected subjects
+    return sourceClasses.filter(
+      (cls) => !selectedSubjects.includes(cls.subject)
+    );
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewStudent((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Filter classes when grade changes
+    if (name === "grade") {
+      filterClassesByGrade(value);
+      // Clear existing subject selections when grade changes
+      setNewStudent((prev) => ({
+        ...prev,
+        grade: value,
+        sub_1: "",
+        sub_2: "",
+        sub_3: "",
+        sub_4: "",
+        sub_5: "",
+        sub_6: "",
+      }));
+    }
   };
 
   const handleImageChange = (e) => {
@@ -221,6 +298,7 @@ const StudentManagement = () => {
         parentName: "",
         parentEmail: "",
         gender: "",
+        grade: "",
         sub_1: "",
         sub_2: "",
         sub_3: "",
@@ -256,6 +334,11 @@ const StudentManagement = () => {
   const handleEdit = (student) => {
     setEditingStudent({ ...student });
     setShowAddForm(false);
+
+    // Filter classes based on student's grade when editing
+    if (student.grade) {
+      filterEditClassesByGrade(student.grade.toString());
+    }
   };
 
   const handleEditInputChange = (e) => {
@@ -264,6 +347,22 @@ const StudentManagement = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Filter classes when grade changes in edit mode
+    if (name === "grade") {
+      filterEditClassesByGrade(value);
+      // Clear existing subject selections when grade changes
+      setEditingStudent((prev) => ({
+        ...prev,
+        grade: value,
+        sub_1: "",
+        sub_2: "",
+        sub_3: "",
+        sub_4: "",
+        sub_5: "",
+        sub_6: "",
+      }));
+    }
   };
 
   const handleUpdateSubmit = async (e) => {
@@ -436,6 +535,25 @@ const StudentManagement = () => {
                   <option value="Female">Female</option>
                 </select>
               </div>
+              <div className="form-group">
+                <label>Grade:</label>
+                <select
+                  name="grade"
+                  value={newStudent.grade}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Grade</option>
+                  <option value="6">Grade 6</option>
+                  <option value="7">Grade 7</option>
+                  <option value="8">Grade 8</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="13">Grade 13</option>
+                </select>
+              </div>
             </div>
 
             <div className="form-row">
@@ -503,7 +621,7 @@ const StudentManagement = () => {
             </div>
 
             <div className="subjects-section">
-              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <h4>Subject Assignment</h4>
               <div className="form-row">
                 <div className="form-group">
                   <label>Subject 1:</label>
@@ -513,11 +631,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_1", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -528,11 +649,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_2", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -545,11 +669,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_3", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -560,11 +687,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_4", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -575,11 +705,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_5", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -590,11 +723,14 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_6", false).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!newStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -671,6 +807,25 @@ const StudentManagement = () => {
                   <option value="Female">Female</option>
                 </select>
               </div>
+              <div className="form-group">
+                <label>Grade:</label>
+                <select
+                  name="grade"
+                  value={editingStudent.grade || ""}
+                  onChange={handleEditInputChange}
+                  required
+                >
+                  <option value="">Select Grade</option>
+                  <option value="6">Grade 6</option>
+                  <option value="7">Grade 7</option>
+                  <option value="8">Grade 8</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="13">Grade 13</option>
+                </select>
+              </div>
             </div>
 
             <div className="form-row">
@@ -697,7 +852,7 @@ const StudentManagement = () => {
             </div>
 
             <div className="subjects-section">
-              <h4>Subject Assignment (Maximum 4 subjects)</h4>
+              <h4>Subject Assignment</h4>
               <div className="form-row">
                 <div className="form-group">
                   <label>Subject 1:</label>
@@ -707,11 +862,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_1", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -722,11 +880,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_2", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -739,11 +900,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_3", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -754,11 +918,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_4", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -771,11 +938,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_5", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">
@@ -786,11 +956,14 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.name}>
-                        {cls.name} {cls.subject ? `${cls.subject}` : ""}
+                    {getAvailableSubjects("sub_6", true).map((cls) => (
+                      <option key={cls.id} value={cls.subject}>
+                        {cls.subject}
                       </option>
                     ))}
+                    {!editingStudent.grade && (
+                      <option disabled>Please select grade first</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -822,6 +995,7 @@ const StudentManagement = () => {
                   <th>Email</th>
                   <th>Register Number</th>
                   <th>Contact</th>
+                  <th>Grade</th>
                   <th>Parent Name</th>
                   <th>Parent Email</th>
                   <th>Subjects</th>
@@ -858,6 +1032,9 @@ const StudentManagement = () => {
                       <td>{student.email}</td>
                       <td>{student.registerNumber || "N/A"}</td>
                       <td>{student.contactNumber || "N/A"}</td>
+                      <td>
+                        {student.grade ? `Grade ${student.grade}` : "N/A"}
+                      </td>
                       <td>{student.parentName || "N/A"}</td>
                       <td>{student.parentEmail || "N/A"}</td>
                       <td>{subjects || "No subjects assigned"}</td>
@@ -876,7 +1053,7 @@ const StudentManagement = () => {
                             QR Code
                           </button>
                           <button
-                            className="delete-btn"
+                            className="delete-btn2"
                             onClick={() => handleDelete(student.id)}
                           >
                             Delete

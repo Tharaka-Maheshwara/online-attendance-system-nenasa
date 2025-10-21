@@ -539,7 +539,7 @@ const AttendanceMarking = () => {
     <div className="attendance-marking">
       <div className="attendance-header">
         <h2>Attendance Marking</h2>
-        {(userRole === "teacher" || userRole === "admin") && (
+        {userRole === "admin" && (
           <div className="mode-selector">
             <button
               className={markingMode === "manual" ? "active" : ""}
@@ -557,7 +557,7 @@ const AttendanceMarking = () => {
         )}
       </div>
 
-      {userRole === "teacher" || userRole === "admin" ? (
+      {userRole === "admin" ? (
         <div className="teacher-interface">
           <div className="class-selector">
             <label>Select Class:</label>
@@ -746,31 +746,49 @@ const AttendanceMarking = () => {
           <div className="access-denied">
             <div className="restriction-icon">🚫</div>
             <h2>Access Restricted</h2>
-            <p>Students are not allowed to mark their own attendance.</p>
-            <p>
-              Please contact your teacher or administrator if you need to report
-              your attendance.
-            </p>
+            {userRole === "student" ? (
+              <>
+                <p>Students are not allowed to mark their own attendance.</p>
+                <p>
+                  Please contact your teacher or administrator if you need to
+                  report your attendance.
+                </p>
+              </>
+            ) : userRole === "teacher" ? (
+              <>
+                <p>
+                  Teachers no longer have access to attendance marking features.
+                </p>
+                <p>Only administrators can mark attendance in this system.</p>
+              </>
+            ) : (
+              <>
+                <p>You do not have permission to access this feature.</p>
+                <p>Please contact your administrator for access.</p>
+              </>
+            )}
 
             <div className="info-box">
               <h4>📋 How Attendance Works:</h4>
               <ul>
-                <li>✅ Teachers mark attendance using this system</li>
+                <li>✅ Administrators mark attendance using this system</li>
                 <li>
                   📧 You'll receive email notifications about your attendance
                 </li>
                 <li>
                   👀 You can view your attendance history in your dashboard
                 </li>
-                <li>📞 Contact your teacher for attendance corrections</li>
+                <li>
+                  📞 Contact your administrator for attendance corrections
+                </li>
               </ul>
             </div>
 
             <div className="contact-info">
               <h4>📞 Need Help?</h4>
               <p>
-                Contact your class teacher or school administration for
-                attendance-related inquiries.
+                Contact your school administration for attendance-related
+                inquiries.
               </p>
             </div>
           </div>

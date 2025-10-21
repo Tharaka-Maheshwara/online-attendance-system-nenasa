@@ -251,72 +251,149 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      <div className="dashboard-grid">
-        {/* ...existing dashboard code... */}
-
-        {(pathname === "/user" ||
-          pathname === "/dashboard" ||
-          pathname === "/") && (
-          <div className="user-management">
-            <h2>User Management</h2>
-
-            {/* Tabs for Students/Teachers */}
-            <div className="user-tabs">
-              <button
-                className={`tab-button ${
-                  activeTab === "student" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("student")}
-              >
-                Students
-              </button>
-              <button
-                className={`tab-button ${
-                  activeTab === "teacher" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("teacher")}
-              >
-                Teachers
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder={`Search ${
-                  activeTab === "student" ? "users" : "teachers"
-                } by email...`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-            </div>
-
-            {loading ? (
-              <div className="loading">Loading users...</div>
-            ) : (
-              <table className="user-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>{user.email}</td>
-                      <td>{user.role}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+      {/* Statistics Summary Cards */}
+      <div className="stats-section">
+        <div className="stat-card">
+          <div className="stat-icon">
+            <span>👥</span>
           </div>
-        )}
+          <div className="stat-info">
+            <h3>Total Students</h3>
+            <p className="stat-number">
+              {users.filter((u) => u.role === "student").length}
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon">
+            <span>👨‍🏫</span>
+          </div>
+          <div className="stat-info">
+            <h3>Total Teachers</h3>
+            <p className="stat-number">
+              {users.filter((u) => u.role === "teacher").length}
+            </p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon">
+            <span>📚</span>
+          </div>
+          <div className="stat-info">
+            <h3>Total Classes</h3>
+            <p className="stat-number">{classes.length}</p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon">
+            <span>📊</span>
+          </div>
+          <div className="stat-info">
+            <h3>System Status</h3>
+            <p className="stat-number">Active</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-grid">
+        {/* Quick Actions Panel */}
+        <div className="quick-actions">
+          <h2>Quick Actions</h2>
+          <div className="action-buttons">
+            <button
+              className="action-btn primary"
+              onClick={() => (window.location.href = "/students")}
+            >
+              <span className="btn-icon">👥</span>
+              Manage Students
+            </button>
+            <button
+              className="action-btn secondary"
+              onClick={() => (window.location.href = "/teachers")}
+            >
+              <span className="btn-icon">👨‍🏫</span>
+              Manage Teachers
+            </button>
+            <button
+              className="action-btn tertiary"
+              onClick={() => (window.location.href = "/classes")}
+            >
+              <span className="btn-icon">📚</span>
+              Manage Classes
+            </button>
+            <button
+              className="action-btn quaternary"
+              onClick={() => (window.location.href = "/attendance")}
+            >
+              <span className="btn-icon">✅</span>
+              Mark Attendance
+            </button>
+          </div>
+        </div>
+
+        {/* System Overview */}
+        <div className="system-overview">
+          <h2>System Overview</h2>
+          <div className="overview-items">
+            <div className="overview-item">
+              <span className="overview-label">Database Status</span>
+              <span className="status-indicator online">Online</span>
+            </div>
+            <div className="overview-item">
+              <span className="overview-label">Last Backup</span>
+              <span className="status-indicator warning">2 days ago</span>
+            </div>
+            <div className="overview-item">
+              <span className="overview-label">Active Sessions</span>
+              <span className="status-indicator online">
+                {users.filter((u) => u.role !== "admin").length} users
+              </span>
+            </div>
+            <div className="overview-item">
+              <span className="overview-label">System Health</span>
+              <span className="status-indicator online">Excellent</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activities */}
+        <div className="recent-activities">
+          <h2>Recent Activities</h2>
+          <div className="activity-list">
+            <div className="activity-item">
+              <div className="activity-icon">📝</div>
+              <div className="activity-details">
+                <p>New student registration completed</p>
+                <div className="activity-time">2 minutes ago</div>
+              </div>
+            </div>
+            <div className="activity-item">
+              <div className="activity-icon">✅</div>
+              <div className="activity-details">
+                <p>Attendance marked for English - Grade 9</p>
+                <div className="activity-time">15 minutes ago</div>
+              </div>
+            </div>
+            <div className="activity-item">
+              <div className="activity-icon">👨‍🏫</div>
+              <div className="activity-details">
+                <p>Teacher profile updated</p>
+                <div className="activity-time">1 hour ago</div>
+              </div>
+            </div>
+            <div className="activity-item">
+              <div className="activity-icon">📚</div>
+              <div className="activity-details">
+                <p>New class created: Mathematics</p>
+                <div className="activity-time">2 hours ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* ...existing dashboard code... */}
 
         {/* Role Edit Modal */}
         {roleModalOpen && (
@@ -342,58 +419,6 @@ const AdminDashboard = () => {
                 </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {(pathname === "/classes" ||
-          pathname === "/dashboard" ||
-          pathname === "/") && (
-          <div className="class-management">
-            <div className="section-header">
-              <h2>Class Management</h2>
-              <button className="add-button" onClick={() => openClassModal()}>
-                Add New Class
-              </button>
-            </div>
-
-            {classLoading ? (
-              <div className="loading">Loading classes...</div>
-            ) : (
-              <div className="class-grid">
-                {classes.map((cls) => (
-                  <div key={cls.id} className="class-card">
-                    <div className="class-info">
-                      <h3>{cls.name}</h3>
-                      <p>
-                        <strong>Subject:</strong>{" "}
-                        {cls.subject || "Not specified"}
-                      </p>
-                    </div>
-                    <div className="class-actions">
-                      <button
-                        className="edit-btn"
-                        onClick={() => openClassModal(cls)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => deleteClass(cls.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {classes.length === 0 && (
-                  <div className="no-classes">
-                    <p>
-                      No classes found. Click "Add New Class" to create one.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
 

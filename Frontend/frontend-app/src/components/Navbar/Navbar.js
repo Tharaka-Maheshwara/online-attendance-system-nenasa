@@ -65,7 +65,7 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
-            🎓 NENASALA Attendance
+            NENASA Attendance
           </Link>
         </div>
 
@@ -77,29 +77,54 @@ const Navbar = () => {
                 isActive("/") || isActive("/dashboard") ? "active" : ""
               }`}
             >
-              🏠 Dashboard
+              Dashboard
             </Link>
 
-            {/* Course Catalog - available for students and teachers only */}
-            {(userRole === "student" || userRole === "teacher") && (
+            {/* Course Catalog - available for students only */}
+            {userRole === "student" && (
               <Link
                 to="/course-catalog"
                 className={`nav-link ${
                   isActive("/course-catalog") ? "active" : ""
                 }`}
               >
-                📖 Course Catalog
+                Course Catalog
               </Link>
             )}
 
-            {(userRole === "teacher" || userRole === "admin") && (
+            {/* Teacher Announcements - available for teachers only */}
+            {userRole === "teacher" && (
+              <Link
+                to="/teacher/announcements"
+                className={`nav-link ${
+                  isActive("/teacher/announcements") ? "active" : ""
+                }`}
+              >
+                📢 Announcements
+              </Link>
+            )}
+
+            {/* Teacher Lecture Notes - available for teachers only */}
+            {userRole === "teacher" && (
+              <Link
+                to="/teacher/lecture-notes"
+                className={`nav-link ${
+                  isActive("/teacher/lecture-notes") ? "active" : ""
+                }`}
+              >
+                📚 Lecture Notes
+              </Link>
+            )}
+
+            {/* Mark Attendance - available for admin only */}
+            {userRole === "admin" && (
               <Link
                 to="/attendance"
                 className={`nav-link ${
                   isActive("/attendance") ? "active" : ""
                 }`}
               >
-                ✓ Mark Attendance
+                Mark Attendance
               </Link>
             )}
 
@@ -111,13 +136,13 @@ const Navbar = () => {
                   to="/classes"
                   className={`nav-link ${isActive("/classes") ? "active" : ""}`}
                 >
-                  📚 Classes
+                  Classes
                 </Link>
                 <Link
                   to="/courses"
                   className={`nav-link ${isActive("/courses") ? "active" : ""}`}
                 >
-                  🎯 Courses
+                  Courses
                 </Link>
                 <Link
                   to="/students"
@@ -125,7 +150,7 @@ const Navbar = () => {
                     isActive("/students") ? "active" : ""
                   }`}
                 >
-                  🎓 Students
+                  Students
                 </Link>
                 <Link
                   to="/teachers"
@@ -133,14 +158,14 @@ const Navbar = () => {
                     isActive("/teachers") ? "active" : ""
                   }`}
                 >
-                  �‍🏫 Teachers
+                  Teachers
                 </Link>
 
                 <Link
                   to="/reports"
                   className={`nav-link ${isActive("/reports") ? "active" : ""}`}
                 >
-                  📊 Reports
+                  Reports
                 </Link>
                 <Link
                   to="/attendance-history"
@@ -148,7 +173,7 @@ const Navbar = () => {
                     isActive("/attendance-history") ? "active" : ""
                   }`}
                 >
-                  📋 Attendance History
+                  Attendance History
                 </Link>
               </>
             )}
@@ -160,7 +185,7 @@ const Navbar = () => {
               <span className="user-role">{userRole.toUpperCase()}</span>
             </div>
             <button onClick={handleLogout} className="logout-btn">
-              🚪 Logout
+              Logout
             </button>
           </div>
         </div>

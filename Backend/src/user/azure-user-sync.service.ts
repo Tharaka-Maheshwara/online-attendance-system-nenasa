@@ -75,12 +75,18 @@ export class AzureUserSyncService {
             continue;
           }
 
+          // Extract register_number from user principal name (everything before '@')
+          const userPrincipalName = user.userPrincipalName;
+          const registerNumber = userPrincipalName
+            ? userPrincipalName.split('@')[0]
+            : '';
+
           // Save user info to your DB using your UserService
           await this.userService.createOrUpdateFromAzure({
             email: user.mail || user.userPrincipalName,
             displayName: user.displayName,
             azureId: user.id,
-            register_number: user.userPrincipalName, // Azure user principal name as register number
+            register_number: registerNumber, // Extract part before '@' from user principal name
           });
 
           syncedCount++;

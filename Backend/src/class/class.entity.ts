@@ -9,7 +9,13 @@ export class Class {
   subject: string;
 
   @Column({ nullable: true })
+  teacherName: string;
+
+  @Column({ nullable: true })
   teacherId: number;
+
+  @Column({ nullable: true })
+  grade: number;
 
   @Column({ nullable: true })
   dayOfWeek: string;

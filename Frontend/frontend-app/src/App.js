@@ -21,6 +21,8 @@ import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
+import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
+import TeacherLectureNotes from "./components/LectureNotes/TeacherLectureNotes";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -83,12 +85,12 @@ function AppContent() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Attendance: teacher, admin, student (different UI) */}
+            {/* Attendance: admin only */}
             <Route
               path="/attendance"
               element={
                 <PrivateRoute
-                  allowedRoles={["teacher", "admin", "student"]}
+                  allowedRoles={["admin"]}
                   element={<AttendanceMarking />}
                 />
               }
@@ -171,12 +173,12 @@ function AppContent() {
               }
             />
 
-            {/* Student Course View: students and teachers only */}
+            {/* Student Course View: students only */}
             <Route
               path="/course-catalog"
               element={
                 <PrivateRoute
-                  allowedRoles={["student", "teacher"]}
+                  allowedRoles={["student"]}
                   element={<StudentCourseView />}
                 />
               }
@@ -211,6 +213,28 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["admin"]}
                   element={<AdminAttendanceMarking />}
+                />
+              }
+            />
+
+            {/* Teacher announcements: teacher only */}
+            <Route
+              path="/teacher/announcements"
+              element={
+                <PrivateRoute
+                  allowedRoles={["teacher"]}
+                  element={<TeacherAnnouncements />}
+                />
+              }
+            />
+
+            {/* Teacher lecture notes: teacher only */}
+            <Route
+              path="/teacher/lecture-notes"
+              element={
+                <PrivateRoute
+                  allowedRoles={["teacher"]}
+                  element={<TeacherLectureNotes />}
                 />
               }
             />

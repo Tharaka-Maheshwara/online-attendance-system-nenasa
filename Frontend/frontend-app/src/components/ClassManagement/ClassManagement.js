@@ -5,15 +5,20 @@ import {
   updateClass,
   deleteClass,
 } from "../../services/classService";
+import { getAllTeachers } from "../../services/teacherService";
 import "./ClassManagement.css";
 
 const ClassManagement = () => {
   const [classes, setClasses] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentClass, setCurrentClass] = useState(null);
   const [formData, setFormData] = useState({
     subject: "",
+    teacherId: "",
+    grade: "",
     dayOfWeek: "",
     startTime: "",
     endTime: "",
@@ -28,6 +33,7 @@ const ClassManagement = () => {
 
   useEffect(() => {
     loadClasses();
+    loadTeachers();
   }, []);
 
   const loadClasses = async () => {
@@ -39,19 +45,52 @@ const ClassManagement = () => {
     }
   };
 
+  const loadTeachers = async () => {
+    try {
+      const data = await getAllTeachers();
+      setTeachers(data);
+    } catch (error) {
+      console.error("Error loading teachers:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Filter teachers when subject changes
+    if (name === "subject" && value.trim() !== "") {
+      const matchingTeachers = teachers.filter((teacher) =>
+        [teacher.sub_01, teacher.sub_02, teacher.sub_03, teacher.sub_04]
+          .filter(Boolean)
+          .some((subject) =>
+            subject.toLowerCase().includes(value.toLowerCase())
+          )
+      );
+      setFilteredTeachers(matchingTeachers);
+    } else if (name === "subject") {
+      setFilteredTeachers([]);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert teacherId to teacherName for backend compatibility
+      const dataToSend = {
+        ...formData,
+        teacherName: formData.teacherId
+          ? teachers.find((t) => t.id === parseInt(formData.teacherId))?.name ||
+            formData.teacherId
+          : undefined,
+      };
+      delete dataToSend.teacherId; // Remove teacherId as backend doesn't expect it
+
       if (isEditing) {
-        await updateClass(currentClass.id, formData);
+        await updateClass(currentClass.id, dataToSend);
         alert("Class updated successfully!");
       } else {
-        await createClass(formData);
+        await createClass(dataToSend);
         alert("Class created successfully!");
       }
       resetForm();
@@ -65,12 +104,37 @@ const ClassManagement = () => {
   const handleEdit = (cls) => {
     setIsEditing(true);
     setCurrentClass(cls);
+
+    // Find teacherId from teacherName if available
+    let teacherId = cls.teacherId || "";
+    if (!teacherId && cls.teacherName) {
+      const matchingTeacher = teachers.find(
+        (teacher) => teacher.name === cls.teacherName
+      );
+      teacherId = matchingTeacher ? matchingTeacher.id.toString() : "";
+    }
+
     setFormData({
       subject: cls.subject || "",
+      teacherId: teacherId,
+      grade: cls.grade || "",
       dayOfWeek: cls.dayOfWeek || "",
       startTime: cls.startTime || "",
       endTime: cls.endTime || "",
     });
+
+    // Filter teachers if subject exists
+    if (cls.subject) {
+      const matchingTeachers = teachers.filter((teacher) =>
+        [teacher.sub_01, teacher.sub_02, teacher.sub_03, teacher.sub_04]
+          .filter(Boolean)
+          .some((subject) =>
+            subject.toLowerCase().includes(cls.subject.toLowerCase())
+          )
+      );
+      setFilteredTeachers(matchingTeachers);
+    }
+
     setShowForm(true);
   };
 
@@ -91,7 +155,15 @@ const ClassManagement = () => {
     setShowForm(false);
     setIsEditing(false);
     setCurrentClass(null);
-    setFormData({ subject: "", dayOfWeek: "", startTime: "", endTime: "" });
+    setFormData({
+      subject: "",
+      teacherId: "",
+      grade: "",
+      dayOfWeek: "",
+      startTime: "",
+      endTime: "",
+    });
+    setFilteredTeachers([]);
   };
 
   // Function to fetch teacher who teaches the subject
@@ -197,6 +269,46 @@ const ClassManagement = () => {
                   onChange={handleInputChange}
                   required
                 />
+              </div>
+              <div className="form-group">
+                <label>Teacher</label>
+                <select
+                  name="teacherId"
+                  value={formData.teacherId}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Teacher</option>
+                  {filteredTeachers.map((teacher) => (
+                    <option key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </option>
+                  ))}
+                </select>
+                {formData.subject && filteredTeachers.length === 0 && (
+                  <small style={{ color: "#666", fontSize: "12px" }}>
+                    No teachers found for this subject
+                  </small>
+                )}
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Grade</label>
+                <select
+                  name="grade"
+                  value={formData.grade}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Grade</option>
+                  <option value="6">Grade 6</option>
+                  <option value="7">Grade 7</option>
+                  <option value="8">Grade 8</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="13">Grade 13</option>
+                </select>
               </div>
               <div className="form-group">
                 <label>Day of Week</label>
@@ -364,7 +476,7 @@ const ClassManagement = () => {
                         Edit
                       </button>
                       <button
-                        className="delete-btn"
+                        className="delete-btn4"
                         onClick={() => handleDelete(cls.id)}
                       >
                         Delete
