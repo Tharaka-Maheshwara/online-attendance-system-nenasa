@@ -12,6 +12,9 @@ export class Class {
   teacherId: number;
 
   @Column({ nullable: true })
+  grade: number;
+
+  @Column({ nullable: true })
   dayOfWeek: string;
 
   @Column({ nullable: true })
