@@ -25,9 +25,12 @@ const TeacherLectureNotes = () => {
     }
     try {
       const token = await getAccessToken();
-      const response = await fetch(`http://localhost:8000/lecture-notes?classId=${classId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `http://localhost:8000/lecture-notes?classId=${classId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.ok) {
         const notes = await response.json();
         setLectureNotes(notes);
@@ -257,10 +260,13 @@ const TeacherLectureNotes = () => {
     try {
       setLoading(true);
       const token = await getAccessToken();
-      const response = await fetch(`http://localhost:8000/lecture-notes/${noteId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `http://localhost:8000/lecture-notes/${noteId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.ok) {
         setMessage("✅ Lecture note deleted successfully!");
@@ -268,7 +274,11 @@ const TeacherLectureNotes = () => {
         fetchLectureNotes(selectedClass);
       } else {
         const result = await response.json();
-        setMessage(`❌ Failed to delete lecture note: ${result.message || "Unknown error"}`);
+        setMessage(
+          `❌ Failed to delete lecture note: ${
+            result.message || "Unknown error"
+          }`
+        );
       }
     } catch (error) {
       console.error("Error deleting lecture note:", error);
@@ -427,14 +437,17 @@ const TeacherLectureNotes = () => {
                     <span className="note-date">
                       📅 {new Date(note.createdAt).toLocaleDateString()}
                     </span>
-                    <span className="note-size">
-                      📎 {note.fileName}
-                    </span>
+                    <span className="note-size">📎 {note.fileName}</span>
                   </div>
                   <div className="note-actions">
                     <button
                       className="download-btn"
-                      onClick={() => window.open(`http://localhost:8000/lecture-notes/download/${note.id}`, '_blank')}
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:8000/lecture-notes/download/${note.id}`,
+                          "_blank"
+                        )
+                      }
                     >
                       📥 Download
                     </button>

@@ -79,9 +79,10 @@ const ClassManagement = () => {
       // Convert teacherId to teacherName for backend compatibility
       const dataToSend = {
         ...formData,
-        teacherName: formData.teacherId ? 
-          teachers.find(t => t.id === parseInt(formData.teacherId))?.name || formData.teacherId 
-          : undefined
+        teacherName: formData.teacherId
+          ? teachers.find((t) => t.id === parseInt(formData.teacherId))?.name ||
+            formData.teacherId
+          : undefined,
       };
       delete dataToSend.teacherId; // Remove teacherId as backend doesn't expect it
 
