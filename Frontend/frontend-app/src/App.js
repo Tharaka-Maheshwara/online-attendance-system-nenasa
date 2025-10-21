@@ -22,6 +22,7 @@ import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
+import TeacherLectureNotes from "./components/LectureNotes/TeacherLectureNotes";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -223,6 +224,17 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["teacher"]}
                   element={<TeacherAnnouncements />}
+                />
+              }
+            />
+
+            {/* Teacher lecture notes: teacher only */}
+            <Route
+              path="/teacher/lecture-notes"
+              element={
+                <PrivateRoute
+                  allowedRoles={["teacher"]}
+                  element={<TeacherLectureNotes />}
                 />
               }
             />

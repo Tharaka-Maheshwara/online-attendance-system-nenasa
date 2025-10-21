@@ -104,6 +104,18 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* Teacher Lecture Notes - available for teachers only */}
+            {userRole === "teacher" && (
+              <Link
+                to="/teacher/lecture-notes"
+                className={`nav-link ${
+                  isActive("/teacher/lecture-notes") ? "active" : ""
+                }`}
+              >
+                📚 Lecture Notes
+              </Link>
+            )}
+
             {/* Mark Attendance - available for admin only */}
             {userRole === "admin" && (
               <Link
