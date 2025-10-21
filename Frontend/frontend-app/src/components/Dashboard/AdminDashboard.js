@@ -395,8 +395,6 @@ const AdminDashboard = () => {
         </div>
         {/* ...existing dashboard code... */}
 
-
-
         {/* Role Edit Modal */}
         {roleModalOpen && (
           <div className="modal-overlay">
@@ -423,8 +421,6 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-
-       
 
         {/* Student Attendance History Section */}
         {pathname === "/attendance-history" && (
