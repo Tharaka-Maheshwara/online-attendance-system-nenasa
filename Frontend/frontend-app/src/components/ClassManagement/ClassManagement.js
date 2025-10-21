@@ -104,9 +104,17 @@ const ClassManagement = () => {
   const handleEdit = (cls) => {
     setIsEditing(true);
     setCurrentClass(cls);
+    
+    // Find teacherId from teacherName if available
+    let teacherId = cls.teacherId || "";
+    if (!teacherId && cls.teacherName) {
+      const matchingTeacher = teachers.find(teacher => teacher.name === cls.teacherName);
+      teacherId = matchingTeacher ? matchingTeacher.id.toString() : "";
+    }
+    
     setFormData({
       subject: cls.subject || "",
-      teacherId: cls.teacherId || "",
+      teacherId: teacherId,
       grade: cls.grade || "",
       dayOfWeek: cls.dayOfWeek || "",
       startTime: cls.startTime || "",
