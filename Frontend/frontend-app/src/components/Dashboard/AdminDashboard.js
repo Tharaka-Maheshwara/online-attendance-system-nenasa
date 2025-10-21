@@ -303,30 +303,30 @@ const AdminDashboard = () => {
         <div className="quick-actions">
           <h2>Quick Actions</h2>
           <div className="action-buttons">
-            <button 
+            <button
               className="action-btn primary"
-              onClick={() => window.location.href = '/students'}
+              onClick={() => (window.location.href = "/students")}
             >
               <span className="btn-icon">👥</span>
               Manage Students
             </button>
-            <button 
+            <button
               className="action-btn secondary"
-              onClick={() => window.location.href = '/teachers'}
+              onClick={() => (window.location.href = "/teachers")}
             >
               <span className="btn-icon">👨‍🏫</span>
               Manage Teachers
             </button>
-            <button 
+            <button
               className="action-btn tertiary"
-              onClick={() => window.location.href = '/classes'}
+              onClick={() => (window.location.href = "/classes")}
             >
               <span className="btn-icon">📚</span>
               Manage Classes
             </button>
-            <button 
+            <button
               className="action-btn quaternary"
-              onClick={() => window.location.href = '/attendance'}
+              onClick={() => (window.location.href = "/attendance")}
             >
               <span className="btn-icon">✅</span>
               Mark Attendance
@@ -509,8 +509,7 @@ const AdminDashboard = () => {
                   <div className="class-info">
                     <h3 style={{ color: "white" }}>{cls.name}</h3>
                     <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                      <strong>Subject:</strong>{" "}
-                      {cls.subject || "Not specified"}
+                      <strong>Subject:</strong> {cls.subject || "Not specified"}
                     </p>
                     <p style={{ color: "rgba(255, 255, 255, 0.9)" }}>
                       <strong>Day of Week:</strong>{" "}
