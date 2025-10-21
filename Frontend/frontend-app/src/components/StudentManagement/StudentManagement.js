@@ -180,7 +180,7 @@ const StudentManagement = () => {
   const getAvailableSubjects = (currentSubjectField, isEditMode = false) => {
     const sourceClasses = isEditMode ? editFilteredClasses : filteredClasses;
     const studentData = isEditMode ? editingStudent : newStudent;
-    
+
     // Get all currently selected subjects except the current field
     const selectedSubjects = [
       studentData.sub_1,
@@ -190,13 +190,15 @@ const StudentManagement = () => {
       studentData.sub_5,
       studentData.sub_6,
     ].filter((subject, index) => {
-      const fieldNames = ['sub_1', 'sub_2', 'sub_3', 'sub_4', 'sub_5', 'sub_6'];
-      return subject && subject !== "" && fieldNames[index] !== currentSubjectField;
+      const fieldNames = ["sub_1", "sub_2", "sub_3", "sub_4", "sub_5", "sub_6"];
+      return (
+        subject && subject !== "" && fieldNames[index] !== currentSubjectField
+      );
     });
 
     // Filter out already selected subjects
-    return sourceClasses.filter(cls => 
-      !selectedSubjects.includes(cls.subject)
+    return sourceClasses.filter(
+      (cls) => !selectedSubjects.includes(cls.subject)
     );
   };
 
@@ -629,7 +631,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_1', false).map((cls) => (
+                    {getAvailableSubjects("sub_1", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -647,7 +649,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_2', false).map((cls) => (
+                    {getAvailableSubjects("sub_2", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -667,7 +669,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_3', false).map((cls) => (
+                    {getAvailableSubjects("sub_3", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -685,7 +687,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_4', false).map((cls) => (
+                    {getAvailableSubjects("sub_4", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -703,7 +705,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_5', false).map((cls) => (
+                    {getAvailableSubjects("sub_5", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -721,7 +723,7 @@ const StudentManagement = () => {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_6', false).map((cls) => (
+                    {getAvailableSubjects("sub_6", false).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -860,7 +862,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_1', true).map((cls) => (
+                    {getAvailableSubjects("sub_1", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -878,7 +880,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_2', true).map((cls) => (
+                    {getAvailableSubjects("sub_2", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -898,7 +900,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_3', true).map((cls) => (
+                    {getAvailableSubjects("sub_3", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -916,7 +918,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_4', true).map((cls) => (
+                    {getAvailableSubjects("sub_4", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -936,7 +938,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_5', true).map((cls) => (
+                    {getAvailableSubjects("sub_5", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
@@ -954,7 +956,7 @@ const StudentManagement = () => {
                     onChange={handleEditInputChange}
                   >
                     <option value="">Select Subject</option>
-                    {getAvailableSubjects('sub_6', true).map((cls) => (
+                    {getAvailableSubjects("sub_6", true).map((cls) => (
                       <option key={cls.id} value={cls.subject}>
                         {cls.subject}
                       </option>
