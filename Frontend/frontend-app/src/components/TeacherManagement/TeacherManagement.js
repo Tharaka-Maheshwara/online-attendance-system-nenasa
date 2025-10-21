@@ -137,8 +137,12 @@ const TeacherManagement = () => {
 
     try {
       // Validate that at least one subject is provided
-      const hasAtLeastOneSubject = formData.sub_01 || formData.sub_02 || formData.sub_03 || formData.sub_04;
-      
+      const hasAtLeastOneSubject =
+        formData.sub_01 ||
+        formData.sub_02 ||
+        formData.sub_03 ||
+        formData.sub_04;
+
       if (!hasAtLeastOneSubject) {
         alert("Please provide at least one subject.");
         setIsSubmitting(false);
@@ -357,7 +361,10 @@ const TeacherManagement = () => {
                       className="remove-image-btn"
                       onClick={() => {
                         setImagePreview(null);
-                        setFormData((prev) => ({ ...prev, profileImage: null }));
+                        setFormData((prev) => ({
+                          ...prev,
+                          profileImage: null,
+                        }));
                       }}
                     >
                       ✕ Remove
