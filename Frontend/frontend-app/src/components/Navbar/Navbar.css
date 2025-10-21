@@ -59,9 +59,6 @@
   border-radius: 6px;
   font-weight: 500;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .nav-link:hover {
@@ -113,9 +110,6 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .logout-btn:hover {
