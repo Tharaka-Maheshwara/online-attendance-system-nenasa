@@ -6,8 +6,8 @@ export class CreateClassDto {
   subject: string;
 
   @IsOptional()
-  @IsNumber()
-  teacherId?: number;
+  @IsString()
+  teacherName?: string;
 
   @IsOptional()
   @IsNumber()

@@ -9,7 +9,7 @@ export class Class {
   subject: string;
 
   @Column({ nullable: true })
-  teacherId: number;
+  teacherName: string;
 
   @Column({ nullable: true })
   grade: number;
