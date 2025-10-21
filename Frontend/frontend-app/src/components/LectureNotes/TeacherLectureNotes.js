@@ -13,8 +13,32 @@ const TeacherLectureNotes = () => {
     description: "",
     file: null,
   });
+  const [lectureNotes, setLectureNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Fetch lecture notes for selected class
+  const fetchLectureNotes = async (classId) => {
+    if (!classId) {
+      setLectureNotes([]);
+      return;
+    }
+    try {
+      const token = await getAccessToken();
+      const response = await fetch(`http://localhost:8000/lecture-notes?classId=${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const notes = await response.json();
+        setLectureNotes(notes);
+      } else {
+        setLectureNotes([]);
+      }
+    } catch (err) {
+      console.error("Error fetching lecture notes:", err);
+      setLectureNotes([]);
+    }
+  };
 
   useEffect(() => {
     fetchClasses();
@@ -23,8 +47,10 @@ const TeacherLectureNotes = () => {
   useEffect(() => {
     if (selectedClass) {
       fetchStudentsForClass(selectedClass);
+      fetchLectureNotes(selectedClass);
     } else {
       setStudents([]);
+      setLectureNotes([]);
     }
   }, [selectedClass]);
 
@@ -222,6 +248,36 @@ const TeacherLectureNotes = () => {
     }
   };
 
+  // Delete lecture note handler
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm("Are you sure you want to delete this lecture note?")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const token = await getAccessToken();
+      const response = await fetch(`http://localhost:8000/lecture-notes/${noteId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        setMessage("✅ Lecture note deleted successfully!");
+        // Refresh the lecture notes list
+        fetchLectureNotes(selectedClass);
+      } else {
+        const result = await response.json();
+        setMessage(`❌ Failed to delete lecture note: ${result.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error deleting lecture note:", error);
+      setMessage("❌ Error deleting lecture note. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const selectedClassInfo = classes.find(
     (c) => c.id === parseInt(selectedClass)
   );
@@ -346,6 +402,48 @@ const TeacherLectureNotes = () => {
             </button>
           </form>
         </div>
+
+        {/* Display existing lecture notes for the selected class */}
+        {selectedClass && lectureNotes.length > 0 && (
+          <div className="lecture-notes-list">
+            <h3>📄 Existing Lecture Notes</h3>
+            <div className="notes-grid">
+              {lectureNotes.map((note) => (
+                <div key={note.id} className="note-card">
+                  <div className="note-header">
+                    <h4 className="note-title">{note.title}</h4>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDeleteNote(note.id)}
+                      title="Delete this lecture note"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                  {note.description && (
+                    <p className="note-description">{note.description}</p>
+                  )}
+                  <div className="note-meta">
+                    <span className="note-date">
+                      📅 {new Date(note.createdAt).toLocaleDateString()}
+                    </span>
+                    <span className="note-size">
+                      📎 {note.fileName}
+                    </span>
+                  </div>
+                  <div className="note-actions">
+                    <button
+                      className="download-btn"
+                      onClick={() => window.open(`http://localhost:8000/lecture-notes/download/${note.id}`, '_blank')}
+                    >
+                      📥 Download
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

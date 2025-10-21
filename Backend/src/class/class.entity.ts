@@ -12,6 +12,9 @@ export class Class {
   teacherName: string;
 
   @Column({ nullable: true })
+  teacherId: number;
+
+  @Column({ nullable: true })
   grade: number;
 
   @Column({ nullable: true })

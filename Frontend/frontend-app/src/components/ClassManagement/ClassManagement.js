@@ -76,11 +76,20 @@ const ClassManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert teacherId to teacherName for backend compatibility
+      const dataToSend = {
+        ...formData,
+        teacherName: formData.teacherId ? 
+          teachers.find(t => t.id === parseInt(formData.teacherId))?.name || formData.teacherId 
+          : undefined
+      };
+      delete dataToSend.teacherId; // Remove teacherId as backend doesn't expect it
+
       if (isEditing) {
-        await updateClass(currentClass.id, formData);
+        await updateClass(currentClass.id, dataToSend);
         alert("Class updated successfully!");
       } else {
-        await createClass(formData);
+        await createClass(dataToSend);
         alert("Class created successfully!");
       }
       resetForm();

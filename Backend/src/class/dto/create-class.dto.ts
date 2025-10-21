@@ -11,6 +11,10 @@ export class CreateClassDto {
 
   @IsOptional()
   @IsNumber()
+  teacherId?: number;
+
+  @IsOptional()
+  @IsNumber()
   grade?: number;
 
   @IsString()
