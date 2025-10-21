@@ -11,7 +11,7 @@ const TeacherAnnouncements = () => {
   const [announcement, setAnnouncement] = useState({
     title: "",
     message: "",
-    priority: "normal"
+    priority: "normal",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -90,12 +90,15 @@ const TeacherAnnouncements = () => {
   const fetchSentAnnouncements = async () => {
     try {
       const token = await getAccessToken();
-      const response = await fetch("http://localhost:8000/announcements/teacher", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "http://localhost:8000/announcements/teacher",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const announcements = await response.json();
@@ -116,8 +119,12 @@ const TeacherAnnouncements = () => {
 
   const handleSendAnnouncement = async (e) => {
     e.preventDefault();
-    
-    if (!selectedClass || !announcement.title.trim() || !announcement.message.trim()) {
+
+    if (
+      !selectedClass ||
+      !announcement.title.trim() ||
+      !announcement.message.trim()
+    ) {
       setMessage("⚠️ Please select a class and fill in all fields.");
       return;
     }
@@ -133,14 +140,14 @@ const TeacherAnnouncements = () => {
     try {
       const token = await getAccessToken();
       const teacherEmail = accounts[0]?.username || accounts[0]?.name;
-      
+
       const announcementData = {
         classId: parseInt(selectedClass),
         title: announcement.title.trim(),
         message: announcement.message.trim(),
         priority: announcement.priority,
         teacherEmail: teacherEmail,
-        studentIds: students.map(student => student.id)
+        studentIds: students.map((student) => student.id),
       };
 
       const response = await fetch("http://localhost:8000/announcements/send", {
@@ -155,13 +162,17 @@ const TeacherAnnouncements = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Announcement sent successfully to ${students.length} students!`);
+        setMessage(
+          `✅ Announcement sent successfully to ${students.length} students!`
+        );
         setAnnouncement({ title: "", message: "", priority: "normal" });
         setSelectedClass("");
         setStudents([]);
         fetchSentAnnouncements(); // Refresh sent announcements
       } else {
-        setMessage(`❌ Failed to send announcement: ${result.message || "Unknown error"}`);
+        setMessage(
+          `❌ Failed to send announcement: ${result.message || "Unknown error"}`
+        );
       }
     } catch (error) {
       console.error("Error sending announcement:", error);
@@ -171,7 +182,9 @@ const TeacherAnnouncements = () => {
     }
   };
 
-  const selectedClassInfo = classes.find((c) => c.id === parseInt(selectedClass));
+  const selectedClassInfo = classes.find(
+    (c) => c.id === parseInt(selectedClass)
+  );
 
   return (
     <div className="teacher-announcements">
@@ -181,7 +194,9 @@ const TeacherAnnouncements = () => {
       </div>
 
       {message && (
-        <div className={`message ${message.includes("✅") ? "success" : "error"}`}>
+        <div
+          className={`message ${message.includes("✅") ? "success" : "error"}`}
+        >
           {message}
         </div>
       )}
@@ -189,7 +204,7 @@ const TeacherAnnouncements = () => {
       <div className="announcements-content">
         <div className="announcement-form">
           <h3>Create New Announcement</h3>
-          
+
           <form onSubmit={handleSendAnnouncement}>
             <div className="form-group">
               <label>Select Class:</label>
@@ -211,9 +226,18 @@ const TeacherAnnouncements = () => {
             {selectedClass && (
               <div className="class-info">
                 <h4>Class Details:</h4>
-                <p><strong>Subject:</strong> {selectedClassInfo?.subject}</p>
-                {selectedClassInfo?.grade && <p><strong>Grade:</strong> {selectedClassInfo.grade}</p>}
-                <p><strong>Enrolled Students:</strong> {loading ? "Loading..." : students.length}</p>
+                <p>
+                  <strong>Subject:</strong> {selectedClassInfo?.subject}
+                </p>
+                {selectedClassInfo?.grade && (
+                  <p>
+                    <strong>Grade:</strong> {selectedClassInfo.grade}
+                  </p>
+                )}
+                <p>
+                  <strong>Enrolled Students:</strong>{" "}
+                  {loading ? "Loading..." : students.length}
+                </p>
                 {students.length > 0 && (
                   <details className="students-list">
                     <summary>View Students ({students.length})</summary>
@@ -269,10 +293,15 @@ const TeacherAnnouncements = () => {
               <small>{announcement.message.length}/1000 characters</small>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="send-btn"
-              disabled={loading || !selectedClass || !announcement.title.trim() || !announcement.message.trim()}
+              disabled={
+                loading ||
+                !selectedClass ||
+                !announcement.title.trim() ||
+                !announcement.message.trim()
+              }
             >
               {loading ? "📤 Sending..." : "📢 Send Announcement"}
             </button>
@@ -296,7 +325,9 @@ const TeacherAnnouncements = () => {
                   </div>
                   <p className="announcement-message">{announce.message}</p>
                   <div className="announcement-meta">
-                    <span>📅 {new Date(announce.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      📅 {new Date(announce.createdAt).toLocaleDateString()}
+                    </span>
                     <span>👥 {announce.recipientCount || 0} students</span>
                     <span>📚 {announce.className}</span>
                   </div>

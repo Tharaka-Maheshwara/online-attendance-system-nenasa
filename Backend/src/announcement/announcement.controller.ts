@@ -21,12 +21,18 @@ export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) {}
 
   @Post('send')
-  async sendAnnouncement(@Body() createAnnouncementDto: CreateAnnouncementDto, @Request() req) {
+  async sendAnnouncement(
+    @Body() createAnnouncementDto: CreateAnnouncementDto,
+    @Request() req,
+  ) {
     try {
       // Validate teacher email from token
       const userEmail = req.user?.email || req.user?.upn;
       if (!userEmail) {
-        throw new HttpException('User email not found in token', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'User email not found in token',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       // Use email from token instead of request body for security
@@ -35,7 +41,8 @@ export class AnnouncementController {
         teacherEmail: userEmail,
       };
 
-      const announcement = await this.announcementService.createAnnouncement(announcementData);
+      const announcement =
+        await this.announcementService.createAnnouncement(announcementData);
 
       return {
         success: true,
@@ -63,10 +70,14 @@ export class AnnouncementController {
     try {
       const userEmail = req.user?.email || req.user?.upn;
       if (!userEmail) {
-        throw new HttpException('User email not found in token', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'User email not found in token',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
-      const announcements = await this.announcementService.getAnnouncementsByTeacher(userEmail);
+      const announcements =
+        await this.announcementService.getAnnouncementsByTeacher(userEmail);
 
       // Add class information to each announcement
       const announcementsWithClassInfo = announcements.map((announcement) => ({
@@ -92,7 +103,8 @@ export class AnnouncementController {
   @Get('student/:studentId')
   async getStudentAnnouncements(@Param('studentId') studentId: number) {
     try {
-      const announcements = await this.announcementService.getAnnouncementsForStudent(studentId);
+      const announcements =
+        await this.announcementService.getAnnouncementsForStudent(studentId);
 
       return {
         success: true,
@@ -112,7 +124,8 @@ export class AnnouncementController {
   @Get('all')
   async getAllAnnouncements() {
     try {
-      const announcements = await this.announcementService.getAllAnnouncements();
+      const announcements =
+        await this.announcementService.getAllAnnouncements();
 
       return {
         success: true,
@@ -133,7 +146,8 @@ export class AnnouncementController {
   async getAnnouncementStats(@Request() req) {
     try {
       const userEmail = req.user?.email || req.user?.upn;
-      const stats = await this.announcementService.getAnnouncementStats(userEmail);
+      const stats =
+        await this.announcementService.getAnnouncementStats(userEmail);
 
       return {
         success: true,
@@ -153,7 +167,8 @@ export class AnnouncementController {
   @Get(':id')
   async getAnnouncementById(@Param('id') id: number) {
     try {
-      const announcement = await this.announcementService.getAnnouncementById(id);
+      const announcement =
+        await this.announcementService.getAnnouncementById(id);
 
       return {
         success: true,
@@ -175,7 +190,10 @@ export class AnnouncementController {
     try {
       const userEmail = req.user?.email || req.user?.upn;
       if (!userEmail) {
-        throw new HttpException('User email not found in token', HttpStatus.UNAUTHORIZED);
+        throw new HttpException(
+          'User email not found in token',
+          HttpStatus.UNAUTHORIZED,
+        );
       }
 
       await this.announcementService.deleteAnnouncement(id, userEmail);

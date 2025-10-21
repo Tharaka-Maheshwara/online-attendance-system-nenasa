@@ -7,7 +7,7 @@ export class MockAuthGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    
+
     // Mock user for testing
     request.user = {
       userId: 'test-user-id',
@@ -16,7 +16,7 @@ export class MockAuthGuard implements CanActivate {
       name: 'Test User',
       roles: ['teacher'],
     };
-    
+
     return true;
   }
 }

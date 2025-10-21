@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Announcement } from './announcement.entity';
@@ -19,10 +23,20 @@ export class AnnouncementService {
     private announcementRepository: Repository<Announcement>,
   ) {}
 
-  async createAnnouncement(createAnnouncementDto: CreateAnnouncementDto): Promise<Announcement> {
-    const { classId, title, message, priority, teacherEmail, studentIds } = createAnnouncementDto;
+  async createAnnouncement(
+    createAnnouncementDto: CreateAnnouncementDto,
+  ): Promise<Announcement> {
+    const { classId, title, message, priority, teacherEmail, studentIds } =
+      createAnnouncementDto;
 
-    if (!classId || !title || !message || !teacherEmail || !studentIds || studentIds.length === 0) {
+    if (
+      !classId ||
+      !title ||
+      !message ||
+      !teacherEmail ||
+      !studentIds ||
+      studentIds.length === 0
+    ) {
       throw new BadRequestException('Missing required fields');
     }
 
@@ -39,7 +53,9 @@ export class AnnouncementService {
     return await this.announcementRepository.save(announcement);
   }
 
-  async getAnnouncementsByTeacher(teacherEmail: string): Promise<Announcement[]> {
+  async getAnnouncementsByTeacher(
+    teacherEmail: string,
+  ): Promise<Announcement[]> {
     return await this.announcementRepository.find({
       where: { teacherEmail },
       order: { createdAt: 'DESC' },
@@ -80,21 +96,26 @@ export class AnnouncementService {
     const announcement = await this.getAnnouncementById(id);
 
     if (announcement.teacherEmail !== teacherEmail) {
-      throw new BadRequestException('You can only delete your own announcements');
+      throw new BadRequestException(
+        'You can only delete your own announcements',
+      );
     }
 
     await this.announcementRepository.delete(id);
   }
 
   async getAnnouncementStats(teacherEmail?: string): Promise<any> {
-    const queryBuilder = this.announcementRepository.createQueryBuilder('announcement');
+    const queryBuilder =
+      this.announcementRepository.createQueryBuilder('announcement');
 
     if (teacherEmail) {
-      queryBuilder.where('announcement.teacherEmail = :teacherEmail', { teacherEmail });
+      queryBuilder.where('announcement.teacherEmail = :teacherEmail', {
+        teacherEmail,
+      });
     }
 
     const total = await queryBuilder.getCount();
-    
+
     const priorityStats = await queryBuilder
       .select('announcement.priority', 'priority')
       .addSelect('COUNT(*)', 'count')

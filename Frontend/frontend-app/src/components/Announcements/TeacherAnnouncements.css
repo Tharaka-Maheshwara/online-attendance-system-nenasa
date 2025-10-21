@@ -54,14 +54,16 @@
   gap: 30px;
 }
 
-.announcement-form, .sent-announcements {
+.announcement-form,
+.sent-announcements {
   background: white;
   padding: 25px;
   border-radius: 12px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.announcement-form h3, .sent-announcements h3 {
+.announcement-form h3,
+.sent-announcements h3 {
   margin: 0 0 20px 0;
   color: #333;
   font-size: 1.4rem;
@@ -288,20 +290,21 @@
   .teacher-announcements {
     padding: 15px;
   }
-  
+
   .announcements-content {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .announcements-header h2 {
     font-size: 1.8rem;
   }
-  
-  .announcement-form, .sent-announcements {
+
+  .announcement-form,
+  .sent-announcements {
     padding: 20px;
   }
-  
+
   .announcement-meta {
     flex-direction: column;
     gap: 8px;
@@ -312,19 +315,20 @@
   .announcements-header {
     padding: 15px;
   }
-  
+
   .announcements-header h2 {
     font-size: 1.5rem;
   }
-  
+
   .announcements-header p {
     font-size: 1rem;
   }
-  
-  .announcement-form, .sent-announcements {
+
+  .announcement-form,
+  .sent-announcements {
     padding: 15px;
   }
-  
+
   .form-group input,
   .form-group select,
   .form-group textarea {
