@@ -75,12 +75,6 @@ const TeacherDashboard = () => {
                     <p>Status: Upcoming</p>
                   </div>
                   <div className="class-actions">
-                    <button
-                      className="btn-primary"
-                      onClick={() => (window.location.href = "/attendance")}
-                    >
-                      Mark Attendance
-                    </button>
                     <button className="btn-secondary">View Details</button>
                   </div>
                 </div>

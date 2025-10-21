@@ -83,12 +83,12 @@ function AppContent() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Attendance: teacher, admin, student (different UI) */}
+            {/* Attendance: admin only */}
             <Route
               path="/attendance"
               element={
                 <PrivateRoute
-                  allowedRoles={["teacher", "admin", "student"]}
+                  allowedRoles={["admin"]}
                   element={<AttendanceMarking />}
                 />
               }
@@ -171,12 +171,12 @@ function AppContent() {
               }
             />
 
-            {/* Student Course View: students and teachers only */}
+            {/* Student Course View: students only */}
             <Route
               path="/course-catalog"
               element={
                 <PrivateRoute
-                  allowedRoles={["student", "teacher"]}
+                  allowedRoles={["student"]}
                   element={<StudentCourseView />}
                 />
               }

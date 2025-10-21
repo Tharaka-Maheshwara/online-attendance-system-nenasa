@@ -80,8 +80,8 @@ const Navbar = () => {
               Dashboard
             </Link>
 
-            {/* Course Catalog - available for students and teachers only */}
-            {(userRole === "student" || userRole === "teacher") && (
+            {/* Course Catalog - available for students only */}
+            {userRole === "student" && (
               <Link
                 to="/course-catalog"
                 className={`nav-link ${
@@ -92,7 +92,8 @@ const Navbar = () => {
               </Link>
             )}
 
-            {(userRole === "teacher" || userRole === "admin") && (
+            {/* Mark Attendance - available for admin only */}
+            {userRole === "admin" && (
               <Link
                 to="/attendance"
                 className={`nav-link ${
