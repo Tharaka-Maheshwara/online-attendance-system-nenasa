@@ -12,6 +12,7 @@ import { NotificationModule } from './notification/notification.module';
 import { StudentModule } from './student/student.module';
 import { TeacherModule } from './teacher/teacher.module';
 import { CourseModule } from './course/course.module';
+import { AnnouncementModule } from './announcement/announcement.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { CourseModule } from './course/course.module';
     StudentModule,
     TeacherModule,
     CourseModule,
+    AnnouncementModule,
   ],
   controllers: [AppController],
   providers: [AppService],

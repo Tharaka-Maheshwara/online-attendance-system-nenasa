@@ -92,6 +92,18 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* Teacher Announcements - available for teachers only */}
+            {userRole === "teacher" && (
+              <Link
+                to="/teacher/announcements"
+                className={`nav-link ${
+                  isActive("/teacher/announcements") ? "active" : ""
+                }`}
+              >
+                📢 Announcements
+              </Link>
+            )}
+
             {/* Mark Attendance - available for admin only */}
             {userRole === "admin" && (
               <Link

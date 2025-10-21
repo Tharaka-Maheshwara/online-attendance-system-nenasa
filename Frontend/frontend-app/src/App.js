@@ -21,6 +21,7 @@ import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
+import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -211,6 +212,17 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["admin"]}
                   element={<AdminAttendanceMarking />}
+                />
+              }
+            />
+
+            {/* Teacher announcements: teacher only */}
+            <Route
+              path="/teacher/announcements"
+              element={
+                <PrivateRoute
+                  allowedRoles={["teacher"]}
+                  element={<TeacherAnnouncements />}
                 />
               }
             />
