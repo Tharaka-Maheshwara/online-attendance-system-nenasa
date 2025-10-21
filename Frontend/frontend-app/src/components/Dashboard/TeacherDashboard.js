@@ -53,6 +53,15 @@ const TeacherDashboard = () => {
     fetchTodayClasses();
   }, [accounts]);
 
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const [hour, minute] = timeString.split(':');
+    const hourNum = parseInt(hour, 10);
+    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const formattedHour = hourNum % 12 || 12; // Convert 0 to 12
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
   return (
     <div className="teacher-dashboard">
       <div className="dashboard-grid">
@@ -67,15 +76,13 @@ const TeacherDashboard = () => {
                 <div className="class-card" key={cls.id}>
                   <div className="class-header">
                     <h3>{cls.subject}</h3>
+                    <p>Grade: {cls.grade}</p>
                     <span className="class-time">
-                      {cls.startTime} - {cls.endTime}
+                      {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
                     </span>
                   </div>
                   <div className="class-details">
                     <p>Status: Upcoming</p>
-                  </div>
-                  <div className="class-actions">
-                    <button className="btn-secondary">View Details</button>
                   </div>
                 </div>
               ))
