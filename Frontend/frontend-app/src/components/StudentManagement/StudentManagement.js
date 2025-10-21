@@ -1053,7 +1053,7 @@ const StudentManagement = () => {
                             QR Code
                           </button>
                           <button
-                            className="delete-btn"
+                            className="delete-btn2"
                             onClick={() => handleDelete(student.id)}
                           >
                             Delete

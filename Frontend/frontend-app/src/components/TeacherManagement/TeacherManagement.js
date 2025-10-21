@@ -497,7 +497,7 @@ const TeacherManagement = () => {
                           Edit
                         </button>
                         <button
-                          className="delete-btn"
+                          className="delete-btn1"
                           onClick={() => handleDelete(teacher.id)}
                         >
                           Delete

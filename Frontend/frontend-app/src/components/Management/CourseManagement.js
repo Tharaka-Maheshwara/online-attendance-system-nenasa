@@ -405,7 +405,7 @@ const CourseManagement = () => {
                       Edit
                     </button>
                     <button
-                      className="btn-delete"
+                      className="btn-delete3"
                       onClick={() => handleDelete(course.id)}
                     >
                       Delete

@@ -456,7 +456,7 @@ const ClassManagement = () => {
                         Edit
                       </button>
                       <button
-                        className="delete-btn"
+                        className="delete-btn4"
                         onClick={() => handleDelete(cls.id)}
                       >
                         Delete

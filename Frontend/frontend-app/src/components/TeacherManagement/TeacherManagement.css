@@ -196,7 +196,7 @@
   background-color: #e0a800;
 }
 
-.delete-btn {
+.delete-btn1 {
   background-color: #dc3545;
   color: white;
   border: none;
@@ -207,7 +207,7 @@
   transition: background-color 0.3s;
 }
 
-.delete-btn:hover {
+.delete-btn1:hover {
   background-color: #c82333;
 }
 
