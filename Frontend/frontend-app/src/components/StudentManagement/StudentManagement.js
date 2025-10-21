@@ -21,6 +21,7 @@ const StudentManagement = () => {
     parentName: "",
     parentEmail: "",
     gender: "",
+    grade: "",
     sub_1: "",
     sub_2: "",
     sub_3: "",
@@ -221,6 +222,7 @@ const StudentManagement = () => {
         parentName: "",
         parentEmail: "",
         gender: "",
+        grade: "",
         sub_1: "",
         sub_2: "",
         sub_3: "",
@@ -434,6 +436,25 @@ const StudentManagement = () => {
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Grade:</label>
+                <select
+                  name="grade"
+                  value={newStudent.grade}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select Grade</option>
+                  <option value="6">Grade 6</option>
+                  <option value="7">Grade 7</option>
+                  <option value="8">Grade 8</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="13">Grade 13</option>
                 </select>
               </div>
             </div>
@@ -671,6 +692,25 @@ const StudentManagement = () => {
                   <option value="Female">Female</option>
                 </select>
               </div>
+              <div className="form-group">
+                <label>Grade:</label>
+                <select
+                  name="grade"
+                  value={editingStudent.grade || ""}
+                  onChange={handleEditInputChange}
+                  required
+                >
+                  <option value="">Select Grade</option>
+                  <option value="6">Grade 6</option>
+                  <option value="7">Grade 7</option>
+                  <option value="8">Grade 8</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="13">Grade 13</option>
+                </select>
+              </div>
             </div>
 
             <div className="form-row">
@@ -822,6 +862,7 @@ const StudentManagement = () => {
                   <th>Email</th>
                   <th>Register Number</th>
                   <th>Contact</th>
+                  <th>Grade</th>
                   <th>Parent Name</th>
                   <th>Parent Email</th>
                   <th>Subjects</th>
@@ -858,6 +899,7 @@ const StudentManagement = () => {
                       <td>{student.email}</td>
                       <td>{student.registerNumber || "N/A"}</td>
                       <td>{student.contactNumber || "N/A"}</td>
+                      <td>{student.grade ? `Grade ${student.grade}` : "N/A"}</td>
                       <td>{student.parentName || "N/A"}</td>
                       <td>{student.parentEmail || "N/A"}</td>
                       <td>{subjects || "No subjects assigned"}</td>
