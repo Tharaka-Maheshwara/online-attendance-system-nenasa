@@ -899,7 +899,9 @@ const StudentManagement = () => {
                       <td>{student.email}</td>
                       <td>{student.registerNumber || "N/A"}</td>
                       <td>{student.contactNumber || "N/A"}</td>
-                      <td>{student.grade ? `Grade ${student.grade}` : "N/A"}</td>
+                      <td>
+                        {student.grade ? `Grade ${student.grade}` : "N/A"}
+                      </td>
                       <td>{student.parentName || "N/A"}</td>
                       <td>{student.parentEmail || "N/A"}</td>
                       <td>{subjects || "No subjects assigned"}</td>
