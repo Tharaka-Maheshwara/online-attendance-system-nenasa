@@ -34,9 +34,7 @@ export class LectureNoteService {
     return await this.lectureNoteRepository.save(lectureNote);
   }
 
-  async getLectureNotesByTeacher(
-    teacherEmail: string,
-  ): Promise<LectureNote[]> {
+  async getLectureNotesByTeacher(teacherEmail: string): Promise<LectureNote[]> {
     return await this.lectureNoteRepository.find({
       where: { teacherEmail },
       order: { createdAt: 'DESC' },

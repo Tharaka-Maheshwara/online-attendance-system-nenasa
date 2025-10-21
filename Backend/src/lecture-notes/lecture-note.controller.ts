@@ -16,7 +16,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import type { Response } from 'express';
-import { LectureNoteService, CreateLectureNoteDto } from './lecture-note.service';
+import {
+  LectureNoteService,
+  CreateLectureNoteDto,
+} from './lecture-note.service';
 import { MockAuthGuard } from '../auth/mock-auth.guard';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -34,7 +37,10 @@ const fileFilter = (req: any, file: any, cb: any) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true);
   } else {
-    cb(new HttpException('Only PDF files are allowed', HttpStatus.BAD_REQUEST), false);
+    cb(
+      new HttpException('Only PDF files are allowed', HttpStatus.BAD_REQUEST),
+      false,
+    );
   }
 };
 
@@ -82,9 +88,8 @@ export class LectureNoteController {
         studentIds: JSON.parse(body.studentIds),
       };
 
-      const lectureNote = await this.lectureNoteService.createLectureNote(
-        createLectureNoteDto,
-      );
+      const lectureNote =
+        await this.lectureNoteService.createLectureNote(createLectureNoteDto);
 
       return {
         success: true,
@@ -118,9 +123,8 @@ export class LectureNoteController {
         );
       }
 
-      const notes = await this.lectureNoteService.getLectureNotesByTeacher(
-        userEmail,
-      );
+      const notes =
+        await this.lectureNoteService.getLectureNotesByTeacher(userEmail);
 
       // Add class information to each note
       const notesWithClassInfo = notes.map((note) => ({
@@ -146,9 +150,8 @@ export class LectureNoteController {
   @Get('student/:studentId')
   async getStudentLectureNotes(@Param('studentId') studentId: number) {
     try {
-      const notes = await this.lectureNoteService.getLectureNotesForStudent(
-        studentId,
-      );
+      const notes =
+        await this.lectureNoteService.getLectureNotesForStudent(studentId);
 
       return {
         success: true,
@@ -217,7 +220,8 @@ export class LectureNoteController {
   async getLectureNoteStats(@Request() req) {
     try {
       const userEmail = req.user?.email || req.user?.upn;
-      const stats = await this.lectureNoteService.getLectureNoteStats(userEmail);
+      const stats =
+        await this.lectureNoteService.getLectureNoteStats(userEmail);
 
       return {
         success: true,

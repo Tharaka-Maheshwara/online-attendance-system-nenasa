@@ -34,42 +34,44 @@ const TeacherLectureNotes = () => {
     try {
       // Get current teacher's email
       const teacherEmail = accounts[0]?.username || accounts[0]?.name;
-      
+
       // First, get the teacher info to find their subjects
-      const teacherResponse = await fetch(`http://localhost:8000/teacher?email=${teacherEmail}`);
+      const teacherResponse = await fetch(
+        `http://localhost:8000/teacher?email=${teacherEmail}`
+      );
       if (!teacherResponse.ok) {
         console.error("Failed to fetch teacher info");
         return;
       }
-      
+
       const teachers = await teacherResponse.json();
-      const currentTeacher = teachers.find(t => t.email === teacherEmail);
-      
+      const currentTeacher = teachers.find((t) => t.email === teacherEmail);
+
       if (!currentTeacher) {
         console.error("Current teacher not found");
         return;
       }
-      
+
       // Get teacher's subjects
       const teacherSubjects = [
         currentTeacher.sub_01,
         currentTeacher.sub_02,
         currentTeacher.sub_03,
-        currentTeacher.sub_04
+        currentTeacher.sub_04,
       ].filter(Boolean);
-      
+
       // Fetch all classes
       const response = await fetch("http://localhost:8000/class");
       if (response.ok) {
         const allClasses = await response.json();
-        
+
         // Filter classes to show only those taught by current teacher
-        const teacherClasses = allClasses.filter(cls => 
-          teacherSubjects.some(subject => 
-            subject.toLowerCase() === cls.subject?.toLowerCase()
+        const teacherClasses = allClasses.filter((cls) =>
+          teacherSubjects.some(
+            (subject) => subject.toLowerCase() === cls.subject?.toLowerCase()
           )
         );
-        
+
         setClasses(teacherClasses);
       } else {
         console.error("Failed to fetch classes");
@@ -161,14 +163,14 @@ const TeacherLectureNotes = () => {
         e.target.value = "";
         return;
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         setMessage("⚠️ File size should be less than 10MB.");
         e.target.value = "";
         return;
       }
-      
+
       setLectureNote((prev) => ({
         ...prev,
         file: file,
@@ -180,12 +182,10 @@ const TeacherLectureNotes = () => {
   const handleUploadNote = async (e) => {
     e.preventDefault();
 
-    if (
-      !selectedClass ||
-      !lectureNote.title.trim() ||
-      !lectureNote.file
-    ) {
-      setMessage("⚠️ Please select a class, enter a title, and choose a PDF file.");
+    if (!selectedClass || !lectureNote.title.trim() || !lectureNote.file) {
+      setMessage(
+        "⚠️ Please select a class, enter a title, and choose a PDF file."
+      );
       return;
     }
 
@@ -206,16 +206,19 @@ const TeacherLectureNotes = () => {
       formData.append("title", lectureNote.title.trim());
       formData.append("description", lectureNote.description.trim());
       formData.append("teacherEmail", teacherEmail);
-      formData.append("studentIds", JSON.stringify(students.map(s => s.id)));
+      formData.append("studentIds", JSON.stringify(students.map((s) => s.id)));
       formData.append("file", lectureNote.file);
 
-      const response = await fetch("http://localhost:8000/lecture-notes/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const response = await fetch(
+        "http://localhost:8000/lecture-notes/upload",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       const result = await response.json();
 
@@ -231,7 +234,9 @@ const TeacherLectureNotes = () => {
         fetchUploadedNotes(); // Refresh uploaded notes
       } else {
         setMessage(
-          `❌ Failed to upload lecture note: ${result.message || "Unknown error"}`
+          `❌ Failed to upload lecture note: ${
+            result.message || "Unknown error"
+          }`
         );
       }
     } catch (error) {
@@ -249,12 +254,15 @@ const TeacherLectureNotes = () => {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch(`http://localhost:8000/lecture-notes/${noteId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/lecture-notes/${noteId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setMessage("✅ Lecture note deleted successfully!");
