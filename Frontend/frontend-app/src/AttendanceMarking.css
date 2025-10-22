@@ -17,11 +17,72 @@
   border-bottom: 2px solid #f0f2f5;
 }
 
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .attendance-header h2 {
   color: #2c3e50;
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
+}
+
+.current-date {
+  color: #7f8c8d;
+  font-size: 1rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #dee2e6;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Manual Attendance Header */
+.manual-attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.manual-attendance-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+/* QR Scanning Header */
+.qr-scanning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.qr-scanning-header h3 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+/* Attendance Date Info */
+.attendance-date-info {
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 6px 12px;
+  border-radius: 15px;
+  border: 1px solid #90caf9;
+  display: inline-block;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .mode-selector {
@@ -358,6 +419,28 @@
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
+  }
+
+  .header-left {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .current-date {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+
+  .manual-attendance-header,
+  .qr-scanning-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .attendance-date-info {
+    font-size: 0.85rem;
+    padding: 5px 10px;
   }
 
   .mode-selector {
