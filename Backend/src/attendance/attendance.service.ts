@@ -21,6 +21,36 @@ export class AttendanceService {
     private readonly notificationService: NotificationService,
   ) {}
 
+  async getAvailableGrades(): Promise<number[]> {
+    try {
+      const grades = await this.classRepository
+        .createQueryBuilder('class')
+        .select('DISTINCT class.grade', 'grade')
+        .where('class.grade IS NOT NULL')
+        .orderBy('class.grade', 'ASC')
+        .getRawMany();
+      
+      return grades.map(g => g.grade).filter(grade => grade !== null);
+    } catch (error) {
+      console.error('Error fetching available grades:', error);
+      return [];
+    }
+  }
+
+  async getClassesByGrade(grade: number): Promise<any[]> {
+    try {
+      const classes = await this.classRepository.find({
+        where: { grade },
+        order: { subject: 'ASC' }
+      });
+      
+      return classes;
+    } catch (error) {
+      console.error('Error fetching classes by grade:', error);
+      return [];
+    }
+  }
+
   async create(att: Partial<Attendance>): Promise<Attendance> {
     console.log('📝 Creating attendance record:', att);
     const attendance = await this.attendanceRepository.save(att);

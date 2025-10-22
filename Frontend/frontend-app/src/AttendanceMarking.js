@@ -8,6 +8,8 @@ const AttendanceMarking = () => {
   const { instance, accounts } = useMsal();
   const [userRole, setUserRole] = useState("student");
   const [markingMode, setMarkingMode] = useState("manual"); // 'manual' or 'qr'
+  const [grades, setGrades] = useState([]);
+  const [selectedGrade, setSelectedGrade] = useState("");
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState("");
   const [students, setStudents] = useState([]);
@@ -22,7 +24,7 @@ const AttendanceMarking = () => {
 
   useEffect(() => {
     fetchUserRole();
-    fetchClasses();
+    fetchGrades();
     checkCameraPermission();
   }, [accounts]);
 
@@ -113,18 +115,45 @@ const AttendanceMarking = () => {
     }
   };
 
-  const fetchClasses = async () => {
+  const fetchGrades = async () => {
     try {
-      const response = await fetch("http://localhost:8000/class");
+      const response = await fetch("http://localhost:8000/attendance/grades");
+      if (response.ok) {
+        const gradeData = await response.json();
+        setGrades(gradeData);
+        console.log("Available grades:", gradeData);
+      } else {
+        console.error("Failed to fetch grades - Status:", response.status);
+        setGrades([]);
+      }
+    } catch (error) {
+      console.error("Error fetching grades:", error);
+      setGrades([]);
+    }
+  };
+
+  const fetchClasses = async (grade) => {
+    try {
+      if (!grade) {
+        setClasses([]);
+        setSelectedClass("");
+        setStudents([]);
+        setAttendance({});
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8000/attendance/classes/by-grade/${grade}`);
       if (response.ok) {
         const classData = await response.json();
         setClasses(classData);
+        console.log(`Classes for grade ${grade}:`, classData);
       } else {
         console.error("Failed to fetch classes - Status:", response.status);
-        throw new Error("Failed to fetch classes");
+        setClasses([]);
       }
     } catch (error) {
       console.error("Error fetching classes:", error);
+      setClasses([]);
     }
   };
 
@@ -436,6 +465,19 @@ const AttendanceMarking = () => {
     }));
   };
 
+  const handleGradeChange = (grade) => {
+    setSelectedGrade(grade);
+    setSelectedClass("");
+    setStudents([]);
+    setAttendance({});
+    
+    if (grade) {
+      fetchClasses(grade);
+    } else {
+      setClasses([]);
+    }
+  };
+
   const handleClassChange = (classId) => {
     setSelectedClass(classId);
     if (classId) {
@@ -452,6 +494,8 @@ const AttendanceMarking = () => {
 
       const attendanceData = {
         classId: selectedClass,
+        grade: selectedGrade,
+        subject: classes.find(c => c.id === parseInt(selectedClass))?.subject,
         date: new Date().toISOString().split("T")[0],
         attendance: [
           {
@@ -491,20 +535,22 @@ const AttendanceMarking = () => {
 
   // Bulk save all students' attendance
   const saveAllAttendance = async () => {
-    if (!selectedClass || students.length === 0) {
-      alert("Please select a class and ensure students are loaded.");
+    if (!selectedClass || !selectedGrade || students.length === 0) {
+      alert("Please select a grade, subject and ensure students are loaded.");
       return;
     }
 
-    const attendanceData = {
-      classId: selectedClass,
-      date: new Date().toISOString().split("T")[0],
-      attendance: students.map((student) => ({
-        studentId: student.id,
-        status: attendance[student.id] || "absent",
-        timestamp: new Date().toISOString(),
-      })),
-    };
+      const attendanceData = {
+        classId: selectedClass,
+        grade: selectedGrade,
+        subject: classes.find(c => c.id === parseInt(selectedClass))?.subject,
+        date: new Date().toISOString().split("T")[0],
+        attendance: students.map((student) => ({
+          studentId: student.id,
+          status: attendance[student.id] || "absent",
+          timestamp: new Date().toISOString(),
+        })),
+      };
 
     try {
       const token = await getAccessToken();
@@ -559,23 +605,39 @@ const AttendanceMarking = () => {
 
       {userRole === "admin" ? (
         <div className="teacher-interface">
-          <div className="class-selector">
-            <label>Select Class:</label>
+          <div className="grade-selector">
+            <label>Select Grade:</label>
             <select
-              value={selectedClass}
-              onChange={(e) => handleClassChange(e.target.value)}
+              value={selectedGrade}
+              onChange={(e) => handleGradeChange(e.target.value)}
             >
-              <option value="">-- Select a Class --</option>
-              {classes.map((cls) => (
-                <option key={cls.id} value={cls.id}>
-                  {cls.subject}
-                  {cls.code ? ` (${cls.code})` : ""}
+              <option value="">-- Select a Grade --</option>
+              {grades.map((grade) => (
+                <option key={grade} value={grade}>
+                  Grade {grade}
                 </option>
               ))}
             </select>
           </div>
 
-          {markingMode === "qr" && selectedClass && (
+          {selectedGrade && (
+            <div className="class-selector">
+              <label>Select Subject:</label>
+              <select
+                value={selectedClass}
+                onChange={(e) => handleClassChange(e.target.value)}
+              >
+                <option value="">-- Select a Subject --</option>
+                {classes.map((cls) => (
+                  <option key={cls.id} value={cls.id}>
+                    {cls.subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {markingMode === "qr" && selectedClass && selectedGrade && (
             <div className="qr-scanning">
               <h3>Scan Student QR Codes</h3>
               <p>
@@ -647,7 +709,7 @@ const AttendanceMarking = () => {
             </div>
           )}
 
-          {markingMode === "manual" && selectedClass && (
+          {markingMode === "manual" && selectedClass && selectedGrade && (
             <div className="manual-attendance">
               <h3>Mark Attendance Manually</h3>
               {students.length > 0 ? (

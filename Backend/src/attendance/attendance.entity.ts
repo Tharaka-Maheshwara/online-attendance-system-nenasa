@@ -19,6 +19,12 @@ export class Attendance {
   @Column()
   classId: number;
 
+  @Column({ nullable: true })
+  grade: number;
+
+  @Column({ nullable: true })
+  subject: string;
+
   @Column({ type: 'date' })
   date: string;
 

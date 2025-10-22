@@ -23,6 +23,18 @@ import { Roles } from '../auth/roles.decorator';
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
+  @Get('classes/by-grade/:grade')
+  @Roles('teacher', 'admin')
+  async getClassesByGrade(@Param('grade') grade: number): Promise<any[]> {
+    return this.attendanceService.getClassesByGrade(Number(grade));
+  }
+
+  @Get('grades')
+  @Roles('teacher', 'admin')
+  async getAvailableGrades(): Promise<number[]> {
+    return this.attendanceService.getAvailableGrades();
+  }
+
   @Post()
   // @Roles('teacher', 'admin') // Temporarily disabled for testing
   async create(@Body() attendanceData: any): Promise<any> {
@@ -37,6 +49,8 @@ export class AttendanceController {
           const attendance = {
             studentId: record.studentId,
             classId: attendanceData.classId,
+            grade: attendanceData.grade,
+            subject: attendanceData.subject,
             date: attendanceData.date,
             status: record.status,
             timestamp: record.timestamp
