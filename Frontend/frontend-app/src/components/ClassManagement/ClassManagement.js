@@ -351,7 +351,7 @@ const ClassManagement = () => {
                 />
               </div>
             </div>
-            
+
             {/* Monthly Class Fees */}
             <div className="form-row">
               <div className="form-group">
