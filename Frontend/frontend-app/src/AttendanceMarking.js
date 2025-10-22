@@ -601,11 +601,12 @@ const AttendanceMarking = () => {
         <div className="header-left">
           <h2>Attendance Marking</h2>
           <div className="current-date">
-            📅 {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
+            📅{" "}
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
           </div>
         </div>
