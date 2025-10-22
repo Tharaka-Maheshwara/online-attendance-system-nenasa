@@ -516,9 +516,11 @@ const AttendanceMarking = () => {
           );
 
           if (attendanceResponse.ok) {
-            const wasAlreadyMarked = attendanceRecords.some(record => record.studentId === userData.id);
-            const action = wasAlreadyMarked ? 'updated' : 'marked';
-            
+            const wasAlreadyMarked = attendanceRecords.some(
+              (record) => record.studentId === userData.id
+            );
+            const action = wasAlreadyMarked ? "updated" : "marked";
+
             alert(`Attendance ${action} successfully!`);
             // Refresh attendance records table
             fetchTodayAttendanceRecords();
@@ -605,9 +607,11 @@ const AttendanceMarking = () => {
 
       if (response.ok) {
         const studentDisplayName = studentName || `student ID ${studentId}`;
-        const wasAlreadyMarked = attendanceRecords.some(record => record.studentId === parseInt(studentId));
-        const action = wasAlreadyMarked ? 'updated' : 'saved';
-        
+        const wasAlreadyMarked = attendanceRecords.some(
+          (record) => record.studentId === parseInt(studentId)
+        );
+        const action = wasAlreadyMarked ? "updated" : "saved";
+
         alert(
           `✅ Attendance for ${studentDisplayName} ${action} successfully!\n📧 Parent email notification has been sent automatically.`
         );
@@ -668,12 +672,12 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
-        const alreadyMarkedCount = students.filter(student => 
-          attendanceRecords.some(record => record.studentId === student.id)
+        const alreadyMarkedCount = students.filter((student) =>
+          attendanceRecords.some((record) => record.studentId === student.id)
         ).length;
-        
-        const action = alreadyMarkedCount > 0 ? 'saved/updated' : 'saved';
-        
+
+        const action = alreadyMarkedCount > 0 ? "saved/updated" : "saved";
+
         alert(
           `✅ All attendance ${action} successfully!\n📧 Parent email notifications have been sent automatically to all students' parents.`
         );
@@ -824,8 +828,13 @@ const AttendanceMarking = () => {
                         </span>
                         <span className="student-name">
                           {student.name}
-                          {attendanceRecords.some(record => record.studentId === student.id) && (
-                            <small className="already-marked-text"> (Previously Marked)</small>
+                          {attendanceRecords.some(
+                            (record) => record.studentId === student.id
+                          ) && (
+                            <small className="already-marked-text">
+                              {" "}
+                              (Previously Marked)
+                            </small>
                           )}
                         </span>
                         <span className="status-text">
@@ -869,15 +878,22 @@ const AttendanceMarking = () => {
                     💾 Save All Attendance
                   </button>
                   {students.map((student) => (
-                    <div key={student.id} className={`student-row ${
-                      attendanceRecords.some(record => record.studentId === student.id) 
-                        ? 'already-marked' 
-                        : ''
-                    }`}>
+                    <div
+                      key={student.id}
+                      className={`student-row ${
+                        attendanceRecords.some(
+                          (record) => record.studentId === student.id
+                        )
+                          ? "already-marked"
+                          : ""
+                      }`}
+                    >
                       <div className="student-info">
                         <span className="student-name">
                           {student.name || student.email}
-                          {attendanceRecords.some(record => record.studentId === student.id) && (
+                          {attendanceRecords.some(
+                            (record) => record.studentId === student.id
+                          ) && (
                             <span className="already-marked-badge">
                               ✓ Already Marked
                             </span>

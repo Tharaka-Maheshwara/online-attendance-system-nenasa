@@ -53,7 +53,7 @@ export class AttendanceService {
 
   async create(att: Partial<Attendance>): Promise<Attendance> {
     console.log('📝 Creating/Updating attendance record:', att);
-    
+
     // Check if attendance record already exists for the same student, class, and date
     const existingRecord = await this.attendanceRepository.findOne({
       where: {
@@ -68,7 +68,7 @@ export class AttendanceService {
     if (existingRecord) {
       // Update existing record
       console.log('📄 Found existing record, updating:', existingRecord.id);
-      
+
       // Update the existing record with new data
       await this.attendanceRepository.update(existingRecord.id, {
         status: att.status,
@@ -79,16 +79,16 @@ export class AttendanceService {
         grade: att.grade,
         subject: att.subject,
       });
-      
+
       // Fetch the updated record
       const updatedRecord = await this.attendanceRepository.findOne({
         where: { id: existingRecord.id },
       });
-      
+
       if (!updatedRecord) {
         throw new Error('Failed to fetch updated attendance record');
       }
-      
+
       attendance = updatedRecord;
       console.log('✅ Attendance updated with ID:', attendance.id);
     } else {
