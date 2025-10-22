@@ -14,6 +14,8 @@ const AttendanceMarking = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [showAttendanceTable, setShowAttendanceTable] = useState(false);
   const [qrCode, setQrCode] = useState("");
   const [scanning, setScanning] = useState(false);
   const [scanResult, setScanResult] = useState("");
@@ -212,6 +214,63 @@ const AttendanceMarking = () => {
       console.error("Error fetching students:", error);
       setStudents([]);
       setAttendance({});
+    }
+  };
+
+  const fetchTodayAttendanceRecords = async () => {
+    try {
+      if (!selectedClass) {
+        setAttendanceRecords([]);
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const response = await fetch(
+        `http://localhost:8000/attendance/class/${selectedClass}/date/${today}`
+      );
+
+      if (response.ok) {
+        const records = await response.json();
+        console.log('Today\'s attendance records:', records);
+        
+        // Enrich records with student details
+        const enrichedRecords = await Promise.all(
+          records.map(async (record) => {
+            try {
+              const studentResponse = await fetch(
+                `http://localhost:8000/student/${record.studentId}`
+              );
+              const studentData = studentResponse.ok 
+                ? await studentResponse.json() 
+                : { name: 'Unknown Student' };
+              
+              return {
+                ...record,
+                studentName: studentData.name || 'Unknown Student',
+                studentRegisterNumber: studentData.registerNumber || ''
+              };
+            } catch (error) {
+              console.error('Error fetching student details:', error);
+              return {
+                ...record,
+                studentName: 'Unknown Student',
+                studentRegisterNumber: ''
+              };
+            }
+          })
+        );
+
+        setAttendanceRecords(enrichedRecords);
+        setShowAttendanceTable(enrichedRecords.length > 0);
+      } else {
+        console.error('Failed to fetch attendance records:', response.status);
+        setAttendanceRecords([]);
+        setShowAttendanceTable(false);
+      }
+    } catch (error) {
+      console.error('Error fetching attendance records:', error);
+      setAttendanceRecords([]);
+      setShowAttendanceTable(false);
     }
   };
 
@@ -441,6 +500,8 @@ const AttendanceMarking = () => {
 
           if (attendanceResponse.ok) {
             alert("Attendance marked successfully!");
+            // Refresh attendance records table
+            fetchTodayAttendanceRecords();
           } else {
             const errorData = await attendanceResponse.json();
             alert(
@@ -484,6 +545,10 @@ const AttendanceMarking = () => {
     setSelectedClass(classId);
     if (classId) {
       fetchStudents(classId);
+      fetchTodayAttendanceRecords();
+    } else {
+      setAttendanceRecords([]);
+      setShowAttendanceTable(false);
     }
   };
 
@@ -523,6 +588,8 @@ const AttendanceMarking = () => {
         alert(
           `✅ Attendance for ${studentDisplayName} saved successfully!\n📧 Parent email notification has been sent automatically.`
         );
+        // Refresh attendance records table
+        fetchTodayAttendanceRecords();
       } else {
         const errorData = await response.json();
         alert(
@@ -581,6 +648,8 @@ const AttendanceMarking = () => {
         alert(
           "✅ All attendance saved successfully!\n📧 Parent email notifications have been sent automatically to all students' parents."
         );
+        // Refresh attendance records table
+        fetchTodayAttendanceRecords();
       } else {
         const errorData = await response.json();
         alert(
@@ -887,6 +956,79 @@ const AttendanceMarking = () => {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Today's Attendance Records Table */}
+      {userRole === "admin" && showAttendanceTable && (
+        <div className="attendance-records-section">
+          <div className="records-header">
+            <h3>Today's Attendance Records</h3>
+            <div className="records-date">
+              📅 {new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+          </div>
+          
+          <div className="attendance-table-container">
+            <table className="attendance-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th>Register No.</th>
+                  <th>Status</th>
+                  <th>Time Marked</th>
+                  <th>Method</th>
+                </tr>
+              </thead>
+              <tbody>
+                {attendanceRecords.map((record, index) => (
+                  <tr key={`${record.id}-${index}`}>
+                    <td className="student-name-cell">
+                      {record.studentName}
+                    </td>
+                    <td className="register-cell">
+                      {record.studentRegisterNumber || '-'}
+                    </td>
+                    <td className={`status-cell status-${record.status}`}>
+                      <span className={`status-badge ${record.status}`}>
+                        {record.status === 'present' && '✅ Present'}
+                        {record.status === 'absent' && '❌ Absent'}
+                        {record.status === 'late' && '⏰ Late'}
+                      </span>
+                    </td>
+                    <td className="time-cell">
+                      {record.timestamp 
+                        ? new Date(record.timestamp).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          })
+                        : new Date(record.createdAt).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                          })
+                      }
+                    </td>
+                    <td className="method-cell">
+                      {record.method || 'Manual'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {attendanceRecords.length === 0 && (
+            <div className="no-records-message">
+              <p>No attendance records found for today.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
