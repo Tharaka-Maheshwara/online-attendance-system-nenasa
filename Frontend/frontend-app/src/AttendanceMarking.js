@@ -543,10 +543,14 @@ const AttendanceMarking = () => {
     }
 
     // Check if all students have attendance status selected
-    const unselectedStudents = students.filter(student => !attendance[student.id]);
+    const unselectedStudents = students.filter(
+      (student) => !attendance[student.id]
+    );
     if (unselectedStudents.length > 0) {
-      const unselectedNames = unselectedStudents.map(s => s.name).join(', ');
-      alert(`Please select attendance status for all students. Missing: ${unselectedNames}`);
+      const unselectedNames = unselectedStudents.map((s) => s.name).join(", ");
+      alert(
+        `Please select attendance status for all students. Missing: ${unselectedNames}`
+      );
       return;
     }
 
@@ -703,8 +707,11 @@ const AttendanceMarking = () => {
                         }`}
                       >
                         <span className="status-icon">
-                          {attendance[student.id] === "present" ? "✅" : 
-                           attendance[student.id] ? "⭕" : "❓"}
+                          {attendance[student.id] === "present"
+                            ? "✅"
+                            : attendance[student.id]
+                            ? "⭕"
+                            : "❓"}
                         </span>
                         <span className="student-name">{student.name}</span>
                         <span className="status-text">
