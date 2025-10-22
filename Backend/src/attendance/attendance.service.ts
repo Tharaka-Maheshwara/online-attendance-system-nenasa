@@ -29,8 +29,8 @@ export class AttendanceService {
         .where('class.grade IS NOT NULL')
         .orderBy('class.grade', 'ASC')
         .getRawMany();
-      
-      return grades.map(g => g.grade).filter(grade => grade !== null);
+
+      return grades.map((g) => g.grade).filter((grade) => grade !== null);
     } catch (error) {
       console.error('Error fetching available grades:', error);
       return [];
@@ -41,9 +41,9 @@ export class AttendanceService {
     try {
       const classes = await this.classRepository.find({
         where: { grade },
-        order: { subject: 'ASC' }
+        order: { subject: 'ASC' },
       });
-      
+
       return classes;
     } catch (error) {
       console.error('Error fetching classes by grade:', error);

@@ -120,7 +120,7 @@ export class AttendanceController {
     const user = req.user;
     return this.attendanceService.findByStudent(user.id);
   }
- //Get Function to test rolebase-access
+  //Get Function to test rolebase-access
   @Get('test-role-access')
   async testRoleAccess(@Request() req): Promise<any> {
     const user = req.user;

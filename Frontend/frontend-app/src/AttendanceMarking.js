@@ -142,7 +142,9 @@ const AttendanceMarking = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/attendance/classes/by-grade/${grade}`);
+      const response = await fetch(
+        `http://localhost:8000/attendance/classes/by-grade/${grade}`
+      );
       if (response.ok) {
         const classData = await response.json();
         setClasses(classData);
@@ -470,7 +472,7 @@ const AttendanceMarking = () => {
     setSelectedClass("");
     setStudents([]);
     setAttendance({});
-    
+
     if (grade) {
       fetchClasses(grade);
     } else {
@@ -495,7 +497,7 @@ const AttendanceMarking = () => {
       const attendanceData = {
         classId: selectedClass,
         grade: selectedGrade,
-        subject: classes.find(c => c.id === parseInt(selectedClass))?.subject,
+        subject: classes.find((c) => c.id === parseInt(selectedClass))?.subject,
         date: new Date().toISOString().split("T")[0],
         attendance: [
           {
@@ -540,17 +542,17 @@ const AttendanceMarking = () => {
       return;
     }
 
-      const attendanceData = {
-        classId: selectedClass,
-        grade: selectedGrade,
-        subject: classes.find(c => c.id === parseInt(selectedClass))?.subject,
-        date: new Date().toISOString().split("T")[0],
-        attendance: students.map((student) => ({
-          studentId: student.id,
-          status: attendance[student.id] || "absent",
-          timestamp: new Date().toISOString(),
-        })),
-      };
+    const attendanceData = {
+      classId: selectedClass,
+      grade: selectedGrade,
+      subject: classes.find((c) => c.id === parseInt(selectedClass))?.subject,
+      date: new Date().toISOString().split("T")[0],
+      attendance: students.map((student) => ({
+        studentId: student.id,
+        status: attendance[student.id] || "absent",
+        timestamp: new Date().toISOString(),
+      })),
+    };
 
     try {
       const token = await getAccessToken();
