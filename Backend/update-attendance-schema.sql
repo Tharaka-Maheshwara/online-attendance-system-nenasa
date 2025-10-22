@@ -13,7 +13,7 @@ UPDATE attendance a
 INNER JOIN class c ON a.classId = c.id
 SET 
     a.grade = c.grade,
-    a.subject = c.subject;
+    a.subject = c.subject;1`
 
 -- Create index for better performance on grade-based queries
 CREATE INDEX idx_attendance_grade ON attendance(grade);
