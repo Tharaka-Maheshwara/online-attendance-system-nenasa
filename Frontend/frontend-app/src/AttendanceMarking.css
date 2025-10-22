@@ -1231,18 +1231,18 @@
   .attendance-and-payment-controls {
     align-items: stretch;
   }
-  
+
   .button-group {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .mark-payment-btn {
     width: 100%;
     padding: 10px;
     font-size: 14px;
   }
-  
+
   .payment-status-badge {
     margin-left: 0;
     margin-top: 5px;
@@ -1258,7 +1258,7 @@
     align-items: stretch;
     gap: 15px;
   }
-  
+
   .payment-info {
     font-size: 0.8rem;
   }

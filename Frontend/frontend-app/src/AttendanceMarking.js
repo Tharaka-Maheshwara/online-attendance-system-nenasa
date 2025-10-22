@@ -322,16 +322,20 @@ const AttendanceMarking = () => {
   const markPaymentAsPaid = async (studentId) => {
     try {
       setMarkingPayment(studentId);
-      
+
       // Immediately update the local payment status to show PAID
-      setPaymentStatuses(prevStatuses => 
-        prevStatuses.map(status => 
-          status.studentId === studentId 
-            ? { ...status, paymentStatus: 'paid', paidDate: new Date().toISOString() }
+      setPaymentStatuses((prevStatuses) =>
+        prevStatuses.map((status) =>
+          status.studentId === studentId
+            ? {
+                ...status,
+                paymentStatus: "paid",
+                paidDate: new Date().toISOString(),
+              }
             : status
         )
       );
-      
+
       const currentUser = accounts[0];
       const userEmail = currentUser.username || currentUser.name;
 
@@ -339,14 +343,14 @@ const AttendanceMarking = () => {
       const userResponse = await fetch(
         `http://localhost:8000/users/profile/${userEmail}`
       );
-      
+
       if (!userResponse.ok) {
         alert("Failed to get user information");
         // Revert the optimistic update on error
-        setPaymentStatuses(prevStatuses => 
-          prevStatuses.map(status => 
-            status.studentId === studentId 
-              ? { ...status, paymentStatus: 'pending', paidDate: null }
+        setPaymentStatuses((prevStatuses) =>
+          prevStatuses.map((status) =>
+            status.studentId === studentId
+              ? { ...status, paymentStatus: "pending", paidDate: null }
               : status
           )
         );
@@ -368,17 +372,22 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
-        const studentName = students.find(s => s.id === studentId)?.name || 'Student';
+        const studentName =
+          students.find((s) => s.id === studentId)?.name || "Student";
         alert(`✅ Payment marked as paid for ${studentName}`);
         // Keep the optimistic update - no need to refresh from server
       } else {
         const errorData = await response.json();
-        alert(`Failed to mark payment as paid: ${errorData.message || "Unknown error"}`);
+        alert(
+          `Failed to mark payment as paid: ${
+            errorData.message || "Unknown error"
+          }`
+        );
         // Revert the optimistic update on error
-        setPaymentStatuses(prevStatuses => 
-          prevStatuses.map(status => 
-            status.studentId === studentId 
-              ? { ...status, paymentStatus: 'pending', paidDate: null }
+        setPaymentStatuses((prevStatuses) =>
+          prevStatuses.map((status) =>
+            status.studentId === studentId
+              ? { ...status, paymentStatus: "pending", paidDate: null }
               : status
           )
         );
@@ -387,10 +396,10 @@ const AttendanceMarking = () => {
       console.error("Error marking payment as paid:", error);
       alert("Error updating payment status!");
       // Revert the optimistic update on error
-      setPaymentStatuses(prevStatuses => 
-        prevStatuses.map(status => 
-          status.studentId === studentId 
-            ? { ...status, paymentStatus: 'pending', paidDate: null }
+      setPaymentStatuses((prevStatuses) =>
+        prevStatuses.map((status) =>
+          status.studentId === studentId
+            ? { ...status, paymentStatus: "pending", paidDate: null }
             : status
         )
       );
@@ -988,7 +997,9 @@ const AttendanceMarking = () => {
                     💾 Save All Attendance
                   </button>
                   {students.map((student) => {
-                    const paymentStatus = paymentStatuses.find(ps => ps.studentId === student.id);
+                    const paymentStatus = paymentStatuses.find(
+                      (ps) => ps.studentId === student.id
+                    );
                     return (
                       <div
                         key={student.id}
@@ -1011,21 +1022,35 @@ const AttendanceMarking = () => {
                               </span>
                             )}
                             {/* Payment Status Badge */}
-                            <span className={`payment-status-badge ${
-                              paymentStatus?.paymentStatus === 'paid' ? 'payment-paid' : 
-                              paymentStatus?.paymentStatus === 'pending' ? 'payment-pending' : 'payment-unpaid'
-                            }`}>
-                              {paymentStatus?.paymentStatus === 'paid' ? '💰 Paid' : 
-                               paymentStatus?.paymentStatus === 'pending' ? '⏳ Pending' : '❌ Unpaid'}
+                            <span
+                              className={`payment-status-badge ${
+                                paymentStatus?.paymentStatus === "paid"
+                                  ? "payment-paid"
+                                  : paymentStatus?.paymentStatus === "pending"
+                                  ? "payment-pending"
+                                  : "payment-unpaid"
+                              }`}
+                            >
+                              {paymentStatus?.paymentStatus === "paid"
+                                ? "💰 Paid"
+                                : paymentStatus?.paymentStatus === "pending"
+                                ? "⏳ Pending"
+                                : "❌ Unpaid"}
                             </span>
                           </span>
                           {/* Payment Information */}
                           {paymentStatus && (
                             <div className="payment-info">
                               <small>
-                                Monthly Fee: Rs. {paymentStatus.monthlyFee} | 
-                                Due Date: {new Date(paymentStatus.dueDate).toLocaleDateString()}
-                                {paymentStatus.paidDate && ` | Paid: ${new Date(paymentStatus.paidDate).toLocaleDateString()}`}
+                                Monthly Fee: Rs. {paymentStatus.monthlyFee} |
+                                Due Date:{" "}
+                                {new Date(
+                                  paymentStatus.dueDate
+                                ).toLocaleDateString()}
+                                {paymentStatus.paidDate &&
+                                  ` | Paid: ${new Date(
+                                    paymentStatus.paidDate
+                                  ).toLocaleDateString()}`}
                               </small>
                             </div>
                           )}
@@ -1039,7 +1064,10 @@ const AttendanceMarking = () => {
                                 value="present"
                                 checked={attendance[student.id] === "present"}
                                 onChange={(e) =>
-                                  handleAttendanceChange(student.id, e.target.value)
+                                  handleAttendanceChange(
+                                    student.id,
+                                    e.target.value
+                                  )
                                 }
                               />
                               Present
@@ -1051,7 +1079,10 @@ const AttendanceMarking = () => {
                                 value="absent"
                                 checked={attendance[student.id] === "absent"}
                                 onChange={(e) =>
-                                  handleAttendanceChange(student.id, e.target.value)
+                                  handleAttendanceChange(
+                                    student.id,
+                                    e.target.value
+                                  )
                                 }
                               />
                               Absent
@@ -1063,7 +1094,10 @@ const AttendanceMarking = () => {
                                 value="late"
                                 checked={attendance[student.id] === "late"}
                                 onChange={(e) =>
-                                  handleAttendanceChange(student.id, e.target.value)
+                                  handleAttendanceChange(
+                                    student.id,
+                                    e.target.value
+                                  )
                                 }
                               />
                               Late
@@ -1082,15 +1116,18 @@ const AttendanceMarking = () => {
                               Save
                             </button>
                             {/* Payment Mark as Paid Button */}
-                            {paymentStatus && paymentStatus.paymentStatus !== 'paid' && (
-                              <button
-                                onClick={() => markPaymentAsPaid(student.id)}
-                                className="mark-payment-btn"
-                                disabled={markingPayment === student.id}
-                              >
-                                {markingPayment === student.id ? 'Marking...' : 'Mark Payment'}
-                              </button>
-                            )}
+                            {paymentStatus &&
+                              paymentStatus.paymentStatus !== "paid" && (
+                                <button
+                                  onClick={() => markPaymentAsPaid(student.id)}
+                                  className="mark-payment-btn"
+                                  disabled={markingPayment === student.id}
+                                >
+                                  {markingPayment === student.id
+                                    ? "Marking..."
+                                    : "Mark Payment"}
+                                </button>
+                              )}
                           </div>
                         </div>
                       </div>

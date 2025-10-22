@@ -59,12 +59,12 @@ export class PaymentController {
   @Post('mark-paid')
   @Roles('admin', 'teacher')
   markAsPaid(
-    @Body() body: { studentId: number; classId: number; paidBy: number }
+    @Body() body: { studentId: number; classId: number; paidBy: number },
   ) {
     return this.paymentService.markAsPaid(
       body.studentId,
       body.classId,
-      body.paidBy
+      body.paidBy,
     );
   }
 

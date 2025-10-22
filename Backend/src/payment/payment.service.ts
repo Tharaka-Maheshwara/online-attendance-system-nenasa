@@ -33,7 +33,10 @@ export class PaymentService {
     return this.paymentRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updatePaymentDto: UpdatePaymentDto): Promise<Payment | null> {
+  async update(
+    id: number,
+    updatePaymentDto: UpdatePaymentDto,
+  ): Promise<Payment | null> {
     await this.paymentRepository.update(id, updatePaymentDto);
     return this.findOne(id);
   }
@@ -49,8 +52,8 @@ export class PaymentService {
     const currentYear = currentDate.getFullYear();
 
     // Get class details
-    const classInfo = await this.classRepository.findOne({ 
-      where: { id: classId } 
+    const classInfo = await this.classRepository.findOne({
+      where: { id: classId },
     });
 
     if (!classInfo) {
@@ -70,8 +73,7 @@ export class PaymentService {
       ].filter(Boolean);
 
       return studentSubjects.some(
-        (subject) =>
-          subject.toLowerCase() === classInfo.subject.toLowerCase()
+        (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
       );
     });
 
@@ -87,7 +89,7 @@ export class PaymentService {
     // Create payment status for each student
     const paymentStatuses = enrolledStudents.map((student) => {
       const payment = payments.find((p) => p.studentId === student.id);
-      
+
       return {
         studentId: student.id,
         studentName: student.name,
@@ -108,14 +110,18 @@ export class PaymentService {
   }
 
   // Mark payment as paid
-  async markAsPaid(studentId: number, classId: number, paidBy: number): Promise<Payment> {
+  async markAsPaid(
+    studentId: number,
+    classId: number,
+    paidBy: number,
+  ): Promise<Payment> {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     const currentYear = currentDate.getFullYear();
 
     // Get class info for fee amount
-    const classInfo = await this.classRepository.findOne({ 
-      where: { id: classId } 
+    const classInfo = await this.classRepository.findOne({
+      where: { id: classId },
     });
 
     if (!classInfo) {
