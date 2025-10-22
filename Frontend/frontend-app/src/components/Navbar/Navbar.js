@@ -162,12 +162,6 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/reports"
-                  className={`nav-link ${isActive("/reports") ? "active" : ""}`}
-                >
-                  Reports
-                </Link>
-                <Link
                   to="/attendance-history"
                   className={`nav-link ${
                     isActive("/attendance-history") ? "active" : ""
