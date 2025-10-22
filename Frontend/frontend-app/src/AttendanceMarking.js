@@ -208,7 +208,7 @@ const AttendanceMarking = () => {
 
         // After setting initial attendance, fetch today's records to update with existing data
         setTimeout(() => {
-          fetchTodayAttendanceRecords();
+          fetchTodayAttendanceRecords(classId);
         }, 100);
       } else {
         console.error("Failed to fetch students:", studentsResponse.status);
@@ -222,16 +222,17 @@ const AttendanceMarking = () => {
     }
   };
 
-  const fetchTodayAttendanceRecords = async () => {
+  const fetchTodayAttendanceRecords = async (classId) => {
     try {
-      if (!selectedClass) {
+      const classToFetch = classId || selectedClass;
+      if (!classToFetch) {
         setAttendanceRecords([]);
         return;
       }
 
       const today = new Date().toISOString().split("T")[0];
       const response = await fetch(
-        `http://localhost:8000/attendance/class/${selectedClass}/date/${today}`
+        `http://localhost:8000/attendance/class/${classToFetch}/date/${today}`
       );
 
       if (response.ok) {
