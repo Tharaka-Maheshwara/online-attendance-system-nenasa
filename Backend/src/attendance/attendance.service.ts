@@ -52,11 +52,53 @@ export class AttendanceService {
   }
 
   async create(att: Partial<Attendance>): Promise<Attendance> {
-    console.log('📝 Creating attendance record:', att);
-    const attendance = await this.attendanceRepository.save(att);
-    console.log('✅ Attendance saved with ID:', attendance.id);
+    console.log('📝 Creating/Updating attendance record:', att);
+    
+    // Check if attendance record already exists for the same student, class, and date
+    const existingRecord = await this.attendanceRepository.findOne({
+      where: {
+        studentId: att.studentId,
+        classId: att.classId,
+        date: att.date,
+      },
+    });
 
-    // Send notification after attendance is marked
+    let attendance: Attendance;
+
+    if (existingRecord) {
+      // Update existing record
+      console.log('📄 Found existing record, updating:', existingRecord.id);
+      
+      // Update the existing record with new data
+      await this.attendanceRepository.update(existingRecord.id, {
+        status: att.status,
+        isPresent: att.isPresent,
+        timestamp: att.timestamp || new Date(),
+        method: att.method,
+        markedBy: att.markedBy,
+        grade: att.grade,
+        subject: att.subject,
+      });
+      
+      // Fetch the updated record
+      const updatedRecord = await this.attendanceRepository.findOne({
+        where: { id: existingRecord.id },
+      });
+      
+      if (!updatedRecord) {
+        throw new Error('Failed to fetch updated attendance record');
+      }
+      
+      attendance = updatedRecord;
+      console.log('✅ Attendance updated with ID:', attendance.id);
+    } else {
+      // Create new record
+      console.log('📝 No existing record found, creating new one');
+      attendance = await this.attendanceRepository.save(att);
+      console.log('✅ New attendance saved with ID:', attendance.id);
+    }
+
+    // Send notification after attendance is marked/updated
     console.log(
       '📧 Attempting to send notification for attendance ID:',
       attendance.id,

@@ -205,6 +205,11 @@ const AttendanceMarking = () => {
           initialAttendance[student.id] = ""; // No default selection
         });
         setAttendance(initialAttendance);
+
+        // After setting initial attendance, fetch today's records to update with existing data
+        setTimeout(() => {
+          fetchTodayAttendanceRecords();
+        }, 100);
       } else {
         console.error("Failed to fetch students:", studentsResponse.status);
         setStudents([]);
@@ -262,6 +267,18 @@ const AttendanceMarking = () => {
 
         setAttendanceRecords(enrichedRecords);
         setShowAttendanceTable(enrichedRecords.length > 0);
+
+        // Update attendance state with existing records for radio buttons
+        const existingAttendance = {};
+        enrichedRecords.forEach((record) => {
+          existingAttendance[record.studentId] = record.status;
+        });
+
+        // Merge with current attendance state (preserve any unsaved changes)
+        setAttendance((prevAttendance) => ({
+          ...prevAttendance,
+          ...existingAttendance,
+        }));
       } else {
         console.error("Failed to fetch attendance records:", response.status);
         setAttendanceRecords([]);
@@ -499,7 +516,10 @@ const AttendanceMarking = () => {
           );
 
           if (attendanceResponse.ok) {
-            alert("Attendance marked successfully!");
+            const wasAlreadyMarked = attendanceRecords.some(record => record.studentId === userData.id);
+            const action = wasAlreadyMarked ? 'updated' : 'marked';
+            
+            alert(`Attendance ${action} successfully!`);
             // Refresh attendance records table
             fetchTodayAttendanceRecords();
           } else {
@@ -545,7 +565,7 @@ const AttendanceMarking = () => {
     setSelectedClass(classId);
     if (classId) {
       fetchStudents(classId);
-      fetchTodayAttendanceRecords();
+      // fetchTodayAttendanceRecords will be called from fetchStudents
     } else {
       setAttendanceRecords([]);
       setShowAttendanceTable(false);
@@ -585,8 +605,11 @@ const AttendanceMarking = () => {
 
       if (response.ok) {
         const studentDisplayName = studentName || `student ID ${studentId}`;
+        const wasAlreadyMarked = attendanceRecords.some(record => record.studentId === parseInt(studentId));
+        const action = wasAlreadyMarked ? 'updated' : 'saved';
+        
         alert(
-          `✅ Attendance for ${studentDisplayName} saved successfully!\n📧 Parent email notification has been sent automatically.`
+          `✅ Attendance for ${studentDisplayName} ${action} successfully!\n📧 Parent email notification has been sent automatically.`
         );
         // Refresh attendance records table
         fetchTodayAttendanceRecords();
@@ -645,8 +668,14 @@ const AttendanceMarking = () => {
       });
 
       if (response.ok) {
+        const alreadyMarkedCount = students.filter(student => 
+          attendanceRecords.some(record => record.studentId === student.id)
+        ).length;
+        
+        const action = alreadyMarkedCount > 0 ? 'saved/updated' : 'saved';
+        
         alert(
-          "✅ All attendance saved successfully!\n📧 Parent email notifications have been sent automatically to all students' parents."
+          `✅ All attendance ${action} successfully!\n📧 Parent email notifications have been sent automatically to all students' parents.`
         );
         // Refresh attendance records table
         fetchTodayAttendanceRecords();
@@ -793,7 +822,12 @@ const AttendanceMarking = () => {
                             ? "⭕"
                             : "❓"}
                         </span>
-                        <span className="student-name">{student.name}</span>
+                        <span className="student-name">
+                          {student.name}
+                          {attendanceRecords.some(record => record.studentId === student.id) && (
+                            <small className="already-marked-text"> (Previously Marked)</small>
+                          )}
+                        </span>
                         <span className="status-text">
                           {attendance[student.id] === "present"
                             ? "Present"
@@ -835,10 +869,19 @@ const AttendanceMarking = () => {
                     💾 Save All Attendance
                   </button>
                   {students.map((student) => (
-                    <div key={student.id} className="student-row">
+                    <div key={student.id} className={`student-row ${
+                      attendanceRecords.some(record => record.studentId === student.id) 
+                        ? 'already-marked' 
+                        : ''
+                    }`}>
                       <div className="student-info">
                         <span className="student-name">
                           {student.name || student.email}
+                          {attendanceRecords.some(record => record.studentId === student.id) && (
+                            <span className="already-marked-badge">
+                              ✓ Already Marked
+                            </span>
+                          )}
                         </span>
                       </div>
                       <div className="attendance-options">

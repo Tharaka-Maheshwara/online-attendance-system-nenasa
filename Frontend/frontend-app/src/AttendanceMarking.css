@@ -254,6 +254,34 @@
   font-weight: 600;
   color: #2c3e50;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.already-marked-badge {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.student-row.already-marked {
+  background: linear-gradient(135deg, #f8fff9 0%, #f0fff4 100%);
+  border: 2px solid #c3e6cb;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.1);
+}
+
+.already-marked-text {
+  color: #28a745;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .student-email {
