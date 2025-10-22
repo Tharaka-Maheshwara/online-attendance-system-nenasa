@@ -224,15 +224,15 @@ const AttendanceMarking = () => {
         return;
       }
 
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       const response = await fetch(
         `http://localhost:8000/attendance/class/${selectedClass}/date/${today}`
       );
 
       if (response.ok) {
         const records = await response.json();
-        console.log('Today\'s attendance records:', records);
-        
+        console.log("Today's attendance records:", records);
+
         // Enrich records with student details
         const enrichedRecords = await Promise.all(
           records.map(async (record) => {
@@ -240,21 +240,21 @@ const AttendanceMarking = () => {
               const studentResponse = await fetch(
                 `http://localhost:8000/student/${record.studentId}`
               );
-              const studentData = studentResponse.ok 
-                ? await studentResponse.json() 
-                : { name: 'Unknown Student' };
-              
+              const studentData = studentResponse.ok
+                ? await studentResponse.json()
+                : { name: "Unknown Student" };
+
               return {
                 ...record,
-                studentName: studentData.name || 'Unknown Student',
-                studentRegisterNumber: studentData.registerNumber || ''
+                studentName: studentData.name || "Unknown Student",
+                studentRegisterNumber: studentData.registerNumber || "",
               };
             } catch (error) {
-              console.error('Error fetching student details:', error);
+              console.error("Error fetching student details:", error);
               return {
                 ...record,
-                studentName: 'Unknown Student',
-                studentRegisterNumber: ''
+                studentName: "Unknown Student",
+                studentRegisterNumber: "",
               };
             }
           })
@@ -263,12 +263,12 @@ const AttendanceMarking = () => {
         setAttendanceRecords(enrichedRecords);
         setShowAttendanceTable(enrichedRecords.length > 0);
       } else {
-        console.error('Failed to fetch attendance records:', response.status);
+        console.error("Failed to fetch attendance records:", response.status);
         setAttendanceRecords([]);
         setShowAttendanceTable(false);
       }
     } catch (error) {
-      console.error('Error fetching attendance records:', error);
+      console.error("Error fetching attendance records:", error);
       setAttendanceRecords([]);
       setShowAttendanceTable(false);
     }
@@ -965,15 +965,16 @@ const AttendanceMarking = () => {
           <div className="records-header">
             <h3>Today's Attendance Records</h3>
             <div className="records-date">
-              📅 {new Date().toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+              📅{" "}
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </div>
           </div>
-          
+
           <div className="attendance-table-container">
             <table className="attendance-table">
               <thead>
@@ -988,42 +989,43 @@ const AttendanceMarking = () => {
               <tbody>
                 {attendanceRecords.map((record, index) => (
                   <tr key={`${record.id}-${index}`}>
-                    <td className="student-name-cell">
-                      {record.studentName}
-                    </td>
+                    <td className="student-name-cell">{record.studentName}</td>
                     <td className="register-cell">
-                      {record.studentRegisterNumber || '-'}
+                      {record.studentRegisterNumber || "-"}
                     </td>
                     <td className={`status-cell status-${record.status}`}>
                       <span className={`status-badge ${record.status}`}>
-                        {record.status === 'present' && '✅ Present'}
-                        {record.status === 'absent' && '❌ Absent'}
-                        {record.status === 'late' && '⏰ Late'}
+                        {record.status === "present" && "✅ Present"}
+                        {record.status === "absent" && "❌ Absent"}
+                        {record.status === "late" && "⏰ Late"}
                       </span>
                     </td>
                     <td className="time-cell">
-                      {record.timestamp 
-                        ? new Date(record.timestamp).toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: true
-                          })
-                        : new Date(record.createdAt).toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: true
-                          })
-                      }
+                      {record.timestamp
+                        ? new Date(record.timestamp).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )
+                        : new Date(record.createdAt).toLocaleTimeString(
+                            "en-US",
+                            {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )}
                     </td>
-                    <td className="method-cell">
-                      {record.method || 'Manual'}
-                    </td>
+                    <td className="method-cell">{record.method || "Manual"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          
+
           {attendanceRecords.length === 0 && (
             <div className="no-records-message">
               <p>No attendance records found for today.</p>
