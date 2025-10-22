@@ -1148,3 +1148,118 @@
   margin: 0;
   font-size: 1.1rem;
 }
+
+/* Payment Status Styles */
+.payment-status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.payment-paid {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.payment-pending {
+  background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+  color: #333;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+}
+
+.payment-unpaid {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.payment-info {
+  margin-top: 5px;
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.attendance-and-payment-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-end;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.mark-payment-btn {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mark-payment-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #138496 0%, #0f6674 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
+.mark-payment-btn:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive adjustments for payment elements */
+@media (max-width: 768px) {
+  .attendance-and-payment-controls {
+    align-items: stretch;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .mark-payment-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .payment-status-badge {
+    margin-left: 0;
+    margin-top: 5px;
+    display: block;
+    text-align: center;
+    width: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .payment-info {
+    font-size: 0.8rem;
+  }
+}

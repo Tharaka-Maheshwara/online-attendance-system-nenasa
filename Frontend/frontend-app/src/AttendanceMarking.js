@@ -15,6 +15,8 @@ const AttendanceMarking = () => {
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [paymentStatuses, setPaymentStatuses] = useState([]);
+  const [markingPayment, setMarkingPayment] = useState(null);
   const [showAttendanceTable, setShowAttendanceTable] = useState(false);
   const [qrCode, setQrCode] = useState("");
   const [scanning, setScanning] = useState(false);
@@ -289,6 +291,111 @@ const AttendanceMarking = () => {
       console.error("Error fetching attendance records:", error);
       setAttendanceRecords([]);
       setShowAttendanceTable(false);
+    }
+  };
+
+  const fetchPaymentStatuses = async (classId) => {
+    try {
+      if (!classId) {
+        setPaymentStatuses([]);
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:8000/payment/class/${classId}/status`
+      );
+
+      if (response.ok) {
+        const paymentData = await response.json();
+        console.log("Payment statuses for class:", paymentData);
+        setPaymentStatuses(paymentData);
+      } else {
+        console.error("Failed to fetch payment statuses:", response.status);
+        setPaymentStatuses([]);
+      }
+    } catch (error) {
+      console.error("Error fetching payment statuses:", error);
+      setPaymentStatuses([]);
+    }
+  };
+
+  const markPaymentAsPaid = async (studentId) => {
+    try {
+      setMarkingPayment(studentId);
+      
+      // Immediately update the local payment status to show PAID
+      setPaymentStatuses(prevStatuses => 
+        prevStatuses.map(status => 
+          status.studentId === studentId 
+            ? { ...status, paymentStatus: 'paid', paidDate: new Date().toISOString() }
+            : status
+        )
+      );
+      
+      const currentUser = accounts[0];
+      const userEmail = currentUser.username || currentUser.name;
+
+      // Get current user info to get their ID
+      const userResponse = await fetch(
+        `http://localhost:8000/users/profile/${userEmail}`
+      );
+      
+      if (!userResponse.ok) {
+        alert("Failed to get user information");
+        // Revert the optimistic update on error
+        setPaymentStatuses(prevStatuses => 
+          prevStatuses.map(status => 
+            status.studentId === studentId 
+              ? { ...status, paymentStatus: 'pending', paidDate: null }
+              : status
+          )
+        );
+        return;
+      }
+
+      const userData = await userResponse.json();
+
+      const response = await fetch("http://localhost:8000/payment/mark-paid", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          studentId: parseInt(studentId),
+          classId: parseInt(selectedClass),
+          paidBy: userData.id,
+        }),
+      });
+
+      if (response.ok) {
+        const studentName = students.find(s => s.id === studentId)?.name || 'Student';
+        alert(`✅ Payment marked as paid for ${studentName}`);
+        // Keep the optimistic update - no need to refresh from server
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to mark payment as paid: ${errorData.message || "Unknown error"}`);
+        // Revert the optimistic update on error
+        setPaymentStatuses(prevStatuses => 
+          prevStatuses.map(status => 
+            status.studentId === studentId 
+              ? { ...status, paymentStatus: 'pending', paidDate: null }
+              : status
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error marking payment as paid:", error);
+      alert("Error updating payment status!");
+      // Revert the optimistic update on error
+      setPaymentStatuses(prevStatuses => 
+        prevStatuses.map(status => 
+          status.studentId === studentId 
+            ? { ...status, paymentStatus: 'pending', paidDate: null }
+            : status
+        )
+      );
+    } finally {
+      setMarkingPayment(null);
     }
   };
 
@@ -568,9 +675,11 @@ const AttendanceMarking = () => {
     setSelectedClass(classId);
     if (classId) {
       fetchStudents(classId);
+      fetchPaymentStatuses(classId);
       // fetchTodayAttendanceRecords will be called from fetchStudents
     } else {
       setAttendanceRecords([]);
+      setPaymentStatuses([]);
       setShowAttendanceTable(false);
     }
   };
@@ -878,80 +987,115 @@ const AttendanceMarking = () => {
                   >
                     💾 Save All Attendance
                   </button>
-                  {students.map((student) => (
-                    <div
-                      key={student.id}
-                      className={`student-row ${
-                        attendanceRecords.some(
-                          (record) => record.studentId === student.id
-                        )
-                          ? "already-marked"
-                          : ""
-                      }`}
-                    >
-                      <div className="student-info">
-                        <span className="student-name">
-                          {student.name || student.email}
-                          {attendanceRecords.some(
+                  {students.map((student) => {
+                    const paymentStatus = paymentStatuses.find(ps => ps.studentId === student.id);
+                    return (
+                      <div
+                        key={student.id}
+                        className={`student-row ${
+                          attendanceRecords.some(
                             (record) => record.studentId === student.id
-                          ) && (
-                            <span className="already-marked-badge">
-                              ✓ Already Marked
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                      <div className="attendance-options">
-                        <label>
-                          <input
-                            type="radio"
-                            name={`attendance-${student.id}`}
-                            value="present"
-                            checked={attendance[student.id] === "present"}
-                            onChange={(e) =>
-                              handleAttendanceChange(student.id, e.target.value)
-                            }
-                          />
-                          Present
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name={`attendance-${student.id}`}
-                            value="absent"
-                            checked={attendance[student.id] === "absent"}
-                            onChange={(e) =>
-                              handleAttendanceChange(student.id, e.target.value)
-                            }
-                          />
-                          Absent
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name={`attendance-${student.id}`}
-                            value="late"
-                            checked={attendance[student.id] === "late"}
-                            onChange={(e) =>
-                              handleAttendanceChange(student.id, e.target.value)
-                            }
-                          />
-                          Late
-                        </label>
-                      </div>
-                      <button
-                        onClick={() =>
-                          saveStudentAttendance(
-                            student.id,
-                            attendance[student.id]
                           )
-                        }
-                        className="save-student-attendance-btn"
+                            ? "already-marked"
+                            : ""
+                        }`}
                       >
-                        Save
-                      </button>
-                    </div>
-                  ))}
+                        <div className="student-info">
+                          <span className="student-name">
+                            {student.name || student.email}
+                            {attendanceRecords.some(
+                              (record) => record.studentId === student.id
+                            ) && (
+                              <span className="already-marked-badge">
+                                ✓ Already Marked
+                              </span>
+                            )}
+                            {/* Payment Status Badge */}
+                            <span className={`payment-status-badge ${
+                              paymentStatus?.paymentStatus === 'paid' ? 'payment-paid' : 
+                              paymentStatus?.paymentStatus === 'pending' ? 'payment-pending' : 'payment-unpaid'
+                            }`}>
+                              {paymentStatus?.paymentStatus === 'paid' ? '💰 Paid' : 
+                               paymentStatus?.paymentStatus === 'pending' ? '⏳ Pending' : '❌ Unpaid'}
+                            </span>
+                          </span>
+                          {/* Payment Information */}
+                          {paymentStatus && (
+                            <div className="payment-info">
+                              <small>
+                                Monthly Fee: Rs. {paymentStatus.monthlyFee} | 
+                                Due Date: {new Date(paymentStatus.dueDate).toLocaleDateString()}
+                                {paymentStatus.paidDate && ` | Paid: ${new Date(paymentStatus.paidDate).toLocaleDateString()}`}
+                              </small>
+                            </div>
+                          )}
+                        </div>
+                        <div className="attendance-and-payment-controls">
+                          <div className="attendance-options">
+                            <label>
+                              <input
+                                type="radio"
+                                name={`attendance-${student.id}`}
+                                value="present"
+                                checked={attendance[student.id] === "present"}
+                                onChange={(e) =>
+                                  handleAttendanceChange(student.id, e.target.value)
+                                }
+                              />
+                              Present
+                            </label>
+                            <label>
+                              <input
+                                type="radio"
+                                name={`attendance-${student.id}`}
+                                value="absent"
+                                checked={attendance[student.id] === "absent"}
+                                onChange={(e) =>
+                                  handleAttendanceChange(student.id, e.target.value)
+                                }
+                              />
+                              Absent
+                            </label>
+                            <label>
+                              <input
+                                type="radio"
+                                name={`attendance-${student.id}`}
+                                value="late"
+                                checked={attendance[student.id] === "late"}
+                                onChange={(e) =>
+                                  handleAttendanceChange(student.id, e.target.value)
+                                }
+                              />
+                              Late
+                            </label>
+                          </div>
+                          <div className="button-group">
+                            <button
+                              onClick={() =>
+                                saveStudentAttendance(
+                                  student.id,
+                                  attendance[student.id]
+                                )
+                              }
+                              className="save-student-attendance-btn"
+                            >
+                              Save
+                            </button>
+                            {/* Payment Mark as Paid Button */}
+                            {paymentStatus && paymentStatus.paymentStatus !== 'paid' && (
+                              <button
+                                onClick={() => markPaymentAsPaid(student.id)}
+                                className="mark-payment-btn"
+                                disabled={markingPayment === student.id}
+                              >
+                                {markingPayment === student.id ? 'Marking...' : 'Mark Payment'}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="no-students-message">

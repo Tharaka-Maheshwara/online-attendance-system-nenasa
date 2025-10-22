@@ -14,6 +14,7 @@ import { TeacherModule } from './teacher/teacher.module';
 import { CourseModule } from './course/course.module';
 import { AnnouncementModule } from './announcement/announcement.module';
 import { LectureNoteModule } from './lecture-notes/lecture-note.module';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LectureNoteModule } from './lecture-notes/lecture-note.module';
     CourseModule,
     AnnouncementModule,
     LectureNoteModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
