@@ -44,6 +44,10 @@
   flex: 1;
 }
 
+.form-group.full-width {
+  flex: 100%;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 5px;
@@ -52,12 +56,19 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+  font-family: inherit;
 }
 
 .form-actions {
@@ -152,9 +163,21 @@
   border: none;
 }
 
-.delete-btn4:hover {
+.delete-btn:hover {
   background-color: #c82333;
   transform: translateY(-1px);
+}
+
+/* Fee Display Styles */
+.fee-amount {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.no-fee {
+  color: #6c757d;
+  font-style: italic;
 }
 
 .classes-table td .action-buttons {

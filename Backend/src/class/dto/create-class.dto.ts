@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsEnum } from 'class-validator';
 
 export class CreateClassDto {
   @IsString()
@@ -28,4 +28,8 @@ export class CreateClassDto {
   @IsString()
   @IsOptional()
   endTime?: string;
+
+  @IsOptional()
+  @IsNumber()
+  monthlyFees?: number;
 }

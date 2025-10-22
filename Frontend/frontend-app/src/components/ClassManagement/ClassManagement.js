@@ -22,6 +22,7 @@ const ClassManagement = () => {
     dayOfWeek: "",
     startTime: "",
     endTime: "",
+    monthlyFees: "",
   });
 
   // Subject details modal state
@@ -121,6 +122,7 @@ const ClassManagement = () => {
       dayOfWeek: cls.dayOfWeek || "",
       startTime: cls.startTime || "",
       endTime: cls.endTime || "",
+      monthlyFees: cls.monthlyFees || "",
     });
 
     // Filter teachers if subject exists
@@ -162,6 +164,7 @@ const ClassManagement = () => {
       dayOfWeek: "",
       startTime: "",
       endTime: "",
+      monthlyFees: "",
     });
     setFilteredTeachers([]);
   };
@@ -348,6 +351,23 @@ const ClassManagement = () => {
                 />
               </div>
             </div>
+            
+            {/* Monthly Class Fees */}
+            <div className="form-row">
+              <div className="form-group">
+                <label>Monthly Class Fees (LKR)</label>
+                <input
+                  type="number"
+                  name="monthlyFees"
+                  value={formData.monthlyFees}
+                  onChange={handleInputChange}
+                  placeholder="Enter monthly class fees"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+            </div>
+
             <div className="form-actions">
               <button type="button" className="cancel-btn" onClick={resetForm}>
                 Cancel
@@ -449,6 +469,7 @@ const ClassManagement = () => {
                 <th>Day of Week</th>
                 <th>Start Time</th>
                 <th>End Time</th>
+                <th>Monthly Fees</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -467,6 +488,15 @@ const ClassManagement = () => {
                   <td>{cls.dayOfWeek || "-"}</td>
                   <td>{cls.startTime || "-"}</td>
                   <td>{cls.endTime || "-"}</td>
+                  <td>
+                    {cls.monthlyFees ? (
+                      <span className="fee-amount">
+                        LKR {parseFloat(cls.monthlyFees).toFixed(2)}
+                      </span>
+                    ) : (
+                      <span className="no-fee">-</span>
+                    )}
+                  </td>
                   <td>
                     <div className="action-buttons">
                       <button

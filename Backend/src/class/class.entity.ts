@@ -25,4 +25,7 @@ export class Class {
 
   @Column({ nullable: true })
   endTime: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  monthlyFees: number;
 }
