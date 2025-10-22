@@ -1,10 +1,7 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import "./AdminDashboard.css";
-import StudentAttendanceHistory from "../StudentAttendanceHistory/StudentAttendanceHistory";
 
 const AdminDashboard = () => {
-  const { pathname } = useLocation();
   const [users, setUsers] = React.useState([]);
   const [selectedUser, setSelectedUser] = React.useState(null);
   const [roleModalOpen, setRoleModalOpen] = React.useState(false);
@@ -14,8 +11,6 @@ const AdminDashboard = () => {
   const [notification, setNotification] = React.useState(null);
   const [searchTerm, setSearchTerm] = React.useState("");
   const [activeTab, setActiveTab] = React.useState("student"); // New state for tab selection
-  const [showAttendanceHistory, setShowAttendanceHistory] =
-    React.useState(false);
 
   // Class Management States
   const [classes, setClasses] = React.useState([]);
@@ -419,13 +414,6 @@ const AdminDashboard = () => {
                 </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Student Attendance History Section */}
-        {pathname === "/attendance-history" && (
-          <div className="attendance-history-section">
-            <StudentAttendanceHistory />
           </div>
         )}
 

@@ -19,6 +19,7 @@ import CourseManagement from "./components/Management/CourseManagement";
 import StudentCourseView from "./components/Student/StudentCourseView";
 import NotificationTest from "./components/Notification/NotificationTest";
 import RoleAssignment from "./components/RoleAssignment/RoleAssignment";
+import StudentAttendanceHistory from "./components/StudentAttendanceHistory/StudentAttendanceHistory";
 import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumberLookup";
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
@@ -201,7 +202,7 @@ function AppContent() {
               element={
                 <PrivateRoute
                   allowedRoles={["admin"]}
-                  element={<Dashboard />}
+                  element={<StudentAttendanceHistory />}
                 />
               }
             />
