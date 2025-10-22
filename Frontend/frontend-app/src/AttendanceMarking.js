@@ -200,7 +200,7 @@ const AttendanceMarking = () => {
 
         const initialAttendance = {};
         enrolledStudents.forEach((student) => {
-          initialAttendance[student.id] = "absent";
+          initialAttendance[student.id] = ""; // No default selection
         });
         setAttendance(initialAttendance);
       } else {
@@ -542,6 +542,14 @@ const AttendanceMarking = () => {
       return;
     }
 
+    // Check if all students have attendance status selected
+    const unselectedStudents = students.filter(student => !attendance[student.id]);
+    if (unselectedStudents.length > 0) {
+      const unselectedNames = unselectedStudents.map(s => s.name).join(', ');
+      alert(`Please select attendance status for all students. Missing: ${unselectedNames}`);
+      return;
+    }
+
     const attendanceData = {
       classId: selectedClass,
       grade: selectedGrade,
@@ -549,7 +557,7 @@ const AttendanceMarking = () => {
       date: new Date().toISOString().split("T")[0],
       attendance: students.map((student) => ({
         studentId: student.id,
-        status: attendance[student.id] || "absent",
+        status: attendance[student.id],
         timestamp: new Date().toISOString(),
       })),
     };
@@ -691,17 +699,22 @@ const AttendanceMarking = () => {
                       <div
                         key={student.id}
                         className={`student-status ${
-                          attendance[student.id] || "absent"
+                          attendance[student.id] || "not-selected"
                         }`}
                       >
                         <span className="status-icon">
-                          {attendance[student.id] === "present" ? "✅" : "⭕"}
+                          {attendance[student.id] === "present" ? "✅" : 
+                           attendance[student.id] ? "⭕" : "❓"}
                         </span>
                         <span className="student-name">{student.name}</span>
                         <span className="status-text">
                           {attendance[student.id] === "present"
                             ? "Present"
-                            : "Not Scanned"}
+                            : attendance[student.id] === "absent"
+                            ? "Absent"
+                            : attendance[student.id] === "late"
+                            ? "Late"
+                            : "Not Selected"}
                         </span>
                       </div>
                     ))}

@@ -780,6 +780,18 @@
   color: #721c24;
 }
 
+.student-status.late {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+}
+
+.student-status.not-selected {
+  background-color: #e2e3e5;
+  border-color: #d1d3d5;
+  color: #6c757d;
+}
+
 .status-icon {
   font-size: 1.2rem;
   margin-right: 12px;
