@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   HttpException,
   HttpStatus,
@@ -17,6 +18,11 @@ import { Attendance } from './attendance.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import {
+  AttendanceAnalysisResponseDto,
+  ChartDataResponseDto,
+  StudentPaymentStatusDto,
+} from './dto/attendance-analysis.dto';
 
 @Controller('attendance')
 // @UseGuards(JwtAuthGuard, RolesGuard) // Temporarily disabled for testing
@@ -29,8 +35,14 @@ export class AttendanceController {
     return this.attendanceService.getClassesByGrade(Number(grade));
   }
 
+  @Get('classes/all-with-grades')
+  // @Roles('teacher', 'admin') // Temporarily disabled for testing
+  async getAllClassesWithGrades(): Promise<any[]> {
+    return this.attendanceService.getAllClassesWithGrades();
+  }
+
   @Get('grades')
-  @Roles('teacher', 'admin')
+  // @Roles('teacher', 'admin') // Temporarily disabled for testing
   async getAvailableGrades(): Promise<number[]> {
     return this.attendanceService.getAvailableGrades();
   }
@@ -226,5 +238,117 @@ export class AttendanceController {
         error: error.message,
       };
     }
+  }
+
+  // ===== NEW ATTENDANCE ANALYSIS ENDPOINTS =====
+
+  @Get('analysis/subjects/:grade')
+  @Roles('teacher', 'admin')
+  async getSubjectsByGrade(@Param('grade') grade: number): Promise<string[]> {
+    return this.attendanceService.getSubjectsByGrade(Number(grade));
+  }
+
+  @Get('analysis/students/:grade/:subject')
+  @Roles('teacher', 'admin')
+  async getStudentsByGradeAndSubject(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+  ): Promise<any[]> {
+    return this.attendanceService.getStudentsByGradeAndSubject(
+      Number(grade),
+      decodeURIComponent(subject),
+    );
+  }
+
+  @Get('analysis/attendance/:grade/:subject')
+  @Roles('teacher', 'admin')
+  async getAttendanceAnalysis(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<AttendanceAnalysisResponseDto> {
+    return this.attendanceService.getAttendanceAnalysisByGradeAndSubject(
+      Number(grade),
+      decodeURIComponent(subject),
+      startDate,
+      endDate,
+    );
+  }
+
+  @Get('analysis/time-range/:grade/:subject/:timeRange')
+  @Roles('teacher', 'admin')
+  async getAttendanceAnalysisByTimeRange(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+    @Param('timeRange') timeRange: 'week' | 'month' | 'year',
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<AttendanceAnalysisResponseDto> {
+    return this.attendanceService.getAttendanceAnalysisByTimeRange(
+      Number(grade),
+      decodeURIComponent(subject),
+      timeRange,
+      startDate,
+      endDate,
+    );
+  }
+
+  @Get('analysis/payments/:grade/:subject')
+  @Roles('teacher', 'admin')
+  async getPaymentStatus(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+    @Query('month') month?: number,
+    @Query('year') year?: number,
+  ): Promise<StudentPaymentStatusDto[]> {
+    return this.attendanceService.getPaymentStatusByGradeAndSubject(
+      Number(grade),
+      decodeURIComponent(subject),
+      month ? Number(month) : undefined,
+      year ? Number(year) : undefined,
+    );
+  }
+
+  @Get('analysis/comprehensive/:grade/:subject')
+  @Roles('teacher', 'admin')
+  async getComprehensiveAnalysis(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+    @Query('timeRange') timeRange: 'week' | 'month' | 'year' = 'month',
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<AttendanceAnalysisResponseDto> {
+    return this.attendanceService.getComprehensiveAnalysis(
+      Number(grade),
+      decodeURIComponent(subject),
+      timeRange,
+      startDate,
+      endDate,
+    );
+  }
+
+  @Get('analysis/chart-data/:grade/:subject')
+  @Roles('teacher', 'admin')
+  async getAttendanceChartData(
+    @Param('grade') grade: number,
+    @Param('subject') subject: string,
+    @Query('timeRange') timeRange: 'week' | 'month' | 'year' = 'month',
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ): Promise<ChartDataResponseDto> {
+    const analysis = await this.attendanceService.getAttendanceAnalysisByTimeRange(
+      Number(grade),
+      decodeURIComponent(subject),
+      timeRange,
+      startDate,
+      endDate,
+    );
+    
+    return {
+      chartData: analysis.chartData,
+      summary: analysis.summary,
+      timeRange: analysis.timeRange,
+    };
   }
 }

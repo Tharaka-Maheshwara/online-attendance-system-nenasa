@@ -9,11 +9,12 @@ import { UserModule } from '../user/user.module';
 import { User } from '../user/user.entity';
 import { Student } from '../student/student.entity';
 import { Class } from '../class/class.entity';
+import { Payment } from '../payment/payment.entity';
 import { RolesGuard } from '../auth/roles.guard';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Attendance, User, Student, Class]),
+    TypeOrmModule.forFeature([Attendance, User, Student, Class, Payment]),
     NotificationModule,
     UserModule,
     JwtModule.register({
