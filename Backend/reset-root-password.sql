@@ -1,0 +1,2 @@
+﻿ALTER USER 'root'@'localhost' IDENTIFIED BY 'Nemika123#';
+FLUSH PRIVILEGES;
