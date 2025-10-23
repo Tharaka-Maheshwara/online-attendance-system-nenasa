@@ -35,7 +35,7 @@ const StudentAttendanceHistory = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("");
   const [attendanceHistory, setAttendanceHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -141,9 +141,8 @@ const StudentAttendanceHistory = () => {
     }
   }, [selectedGrade, selectedSubject]);
 
-  // Fetch students when component mounts
+  // Fetch grades when component mounts
   useEffect(() => {
-    fetchStudents();
     fetchGrades();
   }, [fetchGrades]);
 
@@ -151,10 +150,15 @@ const StudentAttendanceHistory = () => {
   useEffect(() => {
     if (selectedGrade) {
       fetchSubjects();
+      setSelectedSubject("");
+    } else {
+      setSubjects([]);
     }
   }, [selectedGrade, fetchSubjects]);
 
-  // Fetch attendance analysis when grade and subject are selected
+  
+
+  // Fetch attendance analysis and students when grade and subject are selected
   useEffect(() => {
     if (selectedGrade && selectedSubject) {
       fetchAttendanceAnalysis();
@@ -170,36 +174,29 @@ const StudentAttendanceHistory = () => {
 
   // Reset students when grade or subject changes
   useEffect(() => {
+    if (students.length === 0) {
+      setSelectedStudent(null);
+    }
+  }, [students]);
+
+  useEffect(() => {
     if (!selectedGrade || !selectedSubject) {
-      // If no grade/subject selected, show all students
-      fetchStudents();
+      // If no grade/subject selected, clear the students list
+      setStudents([]);
+      setAttendanceHistory([]);
+      setChartData(null);
+      setSubjectChartData(null);
+      setAttendanceStats({
+        totalClasses: 0,
+        attendedClasses: 0,
+        attendancePercentage: 0,
+        lateDays: 0,
+      });
+      setSearchTerm("");
     }
   }, [selectedGrade, selectedSubject]);
 
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const token = await getAccessToken();
-      const response = await fetch("http://localhost:8000/student", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const studentsData = await response.json();
-        setStudents(studentsData);
-      } else {
-        throw new Error("Failed to fetch students");
-      }
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      setError("Failed to load students");
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   const fetchStudentAttendanceHistory = async (studentId) => {
     try {
@@ -231,13 +228,17 @@ const StudentAttendanceHistory = () => {
     }
   };
 
-  const handleStudentSelect = (student) => {
-    setSelectedStudent(student);
-    setAttendanceHistory([]);
-    if (student) {
-      fetchStudentAttendanceHistory(student.id);
+  useEffect(() => {
+    if (!selectedStudent) {
+      setAttendanceHistory([]);
+    } else {
+      fetchStudentAttendanceHistory(selectedStudent.id);
+      setStatusFilter("all");
+      setDateFilter("");
     }
-  };
+  }, [selectedStudent]);
+
+  
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -300,16 +301,7 @@ const StudentAttendanceHistory = () => {
     return { total, present, absent, late, percentage };
   };
 
-  if (loading) {
-    return (
-      <div className="student-attendance-history">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading students...</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="student-attendance-history">
@@ -508,33 +500,43 @@ const StudentAttendanceHistory = () => {
           </div>
 
           <div className="students-list">
-            {filteredStudents.map((student) => (
-              <div
-                key={student.id}
-                className={`student-card ${
-                  selectedStudent?.id === student.id ? "selected" : ""
-                }`}
-                onClick={() => handleStudentSelect(student)}
-              >
-                <div className="student-info">
-                  <h4>{student.name}</h4>
-                  <p className="student-email">{student.email}</p>
-                  {student.registerNumber && (
-                    <p className="student-register">
-                      ID: {student.registerNumber}
-                    </p>
-                  )}
-                </div>
-                <div className="student-arrow">
-                  {selectedStudent?.id === student.id ? "📋" : "👁️"}
-                </div>
-              </div>
-            ))}
-
-            {filteredStudents.length === 0 && (
+            {!selectedGrade || !selectedSubject ? (
               <div className="no-students">
-                <p>No students found matching your search.</p>
+                <p>
+                  Please select a grade and subject to see the list of students.
+                </p>
               </div>
+            ) : (
+              <>
+                {filteredStudents.map((student) => (
+                  <div
+                    key={student.id}
+                    className={`student-card ${
+                      selectedStudent?.id === student.id ? "selected" : ""
+                    }`}
+                    onClick={() => setSelectedStudent(student)}
+                  >
+                    <div className="student-info">
+                      <h4>{student.name}</h4>
+                      <p className="student-email">{student.email}</p>
+                      {student.registerNumber && (
+                        <p className="student-register">
+                          ID: {student.registerNumber}
+                        </p>
+                      )}
+                    </div>
+                    <div className="student-arrow">
+                      {selectedStudent?.id === student.id ? "📋" : "👁️"}
+                    </div>
+                  </div>
+                ))}
+
+                {filteredStudents.length === 0 && students.length > 0 && (
+                  <div className="no-students">
+                    <p>No students found matching your search.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
