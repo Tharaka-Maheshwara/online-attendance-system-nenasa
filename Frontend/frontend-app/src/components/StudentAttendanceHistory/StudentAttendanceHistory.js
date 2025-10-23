@@ -1034,8 +1034,8 @@ const StudentAttendanceHistory = () => {
                         <span className="stat-value">
                           Rs.{" "}
                           {Object.values(paymentStatus)
-                            .reduce((sum, p) => sum + (p?.amount || 0), 0)
-                            .toLocaleString()}
+                            .reduce((sum, p) => sum + Number(p?.amount || 0), 0)
+                            .toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </span>
                       </div>
                     </div>
