@@ -73,4 +73,13 @@ export class PaymentController {
   getStudentPaymentHistory(@Param('studentId') studentId: string) {
     return this.paymentService.getStudentPaymentHistory(+studentId);
   }
+
+  @Get('status/:grade/:subject')
+  @Roles('admin', 'teacher')
+  getPaymentStatusForGradeAndSubject(
+    @Param('grade') grade: string,
+    @Param('subject') subject: string,
+  ) {
+    return this.paymentService.getPaymentStatusForGradeAndSubject(+grade, subject);
+  }
 }

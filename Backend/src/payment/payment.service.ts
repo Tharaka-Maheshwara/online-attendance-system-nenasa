@@ -160,28 +160,140 @@ export class PaymentService {
     return this.paymentRepository.save(payment);
   }
 
-  // Get payment history for a student
+  // Get payment history for a student with proper class and subject matching
   async getStudentPaymentHistory(studentId: number): Promise<any[]> {
-    const payments = await this.paymentRepository
-      .createQueryBuilder('payment')
-      .leftJoin('class', 'c', 'payment.classId = c.id')
-      .leftJoin('student', 's', 'payment.studentId = s.id')
-      .select([
-        'payment.id as paymentId',
-        'payment.amount as amount',
-        'payment.month as month',
-        'payment.year as year',
-        'payment.status as status',
-        'payment.paidDate as paidDate',
-        'payment.notes as notes',
-        'c.subject as subject',
-        's.name as studentName',
-      ])
-      .where('payment.studentId = :studentId', { studentId })
-      .orderBy('payment.year', 'DESC')
-      .addOrderBy('payment.month', 'DESC')
-      .getRawMany();
+    try {
+      console.log(`Fetching payment history for student ${studentId}`);
+      
+      // Get all payments for this student
+      const payments = await this.paymentRepository.find({
+        where: { studentId },
+        order: { year: 'DESC', month: 'DESC' },
+      });
 
-    return payments;
+      console.log(`Found ${payments.length} payments for student ${studentId}:`, payments);
+
+      // If we have payments, enrich them with class and student info
+      const enrichedPayments: any[] = [];
+      
+      for (const payment of payments) {
+        let classInfo: any = null;
+        let studentInfo: any = null;
+        
+        try {
+          // Get class information for this payment
+          classInfo = await this.classRepository.findOne({
+            where: { id: payment.classId },
+          });
+          console.log(`Class info for classId ${payment.classId}:`, classInfo);
+        } catch (err) {
+          console.error('Could not fetch class info:', err);
+        }
+        
+        try {
+          // Get student information
+          studentInfo = await this.studentRepository.findOne({
+            where: { id: payment.studentId },
+          });
+          console.log(`Student info for studentId ${payment.studentId}:`, studentInfo);
+        } catch (err) {
+          console.error('Could not fetch student info:', err);
+        }
+
+        const enrichedPayment = {
+          paymentId: payment.id,
+          amount: payment.amount,
+          month: payment.month,
+          year: payment.year,
+          status: payment.status,
+          paidDate: payment.paidDate,
+          notes: payment.notes,
+          classId: payment.classId,
+          subject: classInfo?.subject || 'Unknown',
+          studentName: studentInfo?.name || 'Unknown',
+          grade: classInfo?.grade || null,
+          // Add payment status mapping
+          isPaid: payment.status === 'paid',
+          paymentDate: payment.paidDate,
+          paymentMethod: 'Bank Transfer', // Default for now
+        };
+
+        enrichedPayments.push(enrichedPayment);
+        console.log('Enriched payment:', enrichedPayment);
+      }
+
+      return enrichedPayments;
+    } catch (error) {
+      console.error('Error in getStudentPaymentHistory:', error);
+      return [];
+    }
+  }
+
+  // New method to get payment status for a specific grade and subject
+  async getPaymentStatusForGradeAndSubject(grade: number, subject: string): Promise<any[]> {
+    try {
+      console.log(`Getting payment status for grade ${grade}, subject ${subject}`);
+      
+      // First, find all classes for this grade and subject
+      const classes = await this.classRepository.find({
+        where: { 
+          grade: grade,
+          subject: subject 
+        },
+      });
+
+      console.log(`Found ${classes.length} classes for grade ${grade}, subject ${subject}:`, classes);
+
+      if (classes.length === 0) {
+        return [];
+      }
+
+      const classIds = classes.map(c => c.id);
+      console.log('Class IDs:', classIds);
+
+      // Get all payments for these classes
+      const payments = await this.paymentRepository.find({
+        where: { 
+          classId: classIds.length === 1 ? classIds[0] : classIds as any // Handle single or multiple class IDs
+        },
+        order: { year: 'DESC', month: 'DESC' },
+      });
+
+      console.log(`Found ${payments.length} payments for these classes:`, payments);
+
+      // Enrich with student info
+      const paymentStatus: any[] = [];
+      
+      for (const payment of payments) {
+        try {
+          const studentInfo = await this.studentRepository.findOne({
+            where: { id: payment.studentId },
+          });
+
+          if (studentInfo) {
+            paymentStatus.push({
+              studentId: payment.studentId,
+              studentName: studentInfo.name,
+              paymentId: payment.id,
+              amount: payment.amount,
+              status: payment.status,
+              isPaid: payment.status === 'paid',
+              paidDate: payment.paidDate,
+              classId: payment.classId,
+              subject: subject,
+              grade: grade,
+            });
+          }
+        } catch (err) {
+          console.error(`Error getting student info for payment ${payment.id}:`, err);
+        }
+      }
+
+      console.log('Final payment status:', paymentStatus);
+      return paymentStatus;
+    } catch (error) {
+      console.error('Error in getPaymentStatusForGradeAndSubject:', error);
+      return [];
+    }
   }
 }
