@@ -156,8 +156,6 @@ const StudentAttendanceHistory = () => {
     }
   }, [selectedGrade, fetchSubjects]);
 
-  
-
   // Fetch attendance analysis and students when grade and subject are selected
   useEffect(() => {
     if (selectedGrade && selectedSubject) {
@@ -195,8 +193,6 @@ const StudentAttendanceHistory = () => {
       setSearchTerm("");
     }
   }, [selectedGrade, selectedSubject]);
-
-  
 
   const fetchStudentAttendanceHistory = async (studentId) => {
     try {
@@ -237,8 +233,6 @@ const StudentAttendanceHistory = () => {
       setDateFilter("");
     }
   }, [selectedStudent]);
-
-  
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -300,8 +294,6 @@ const StudentAttendanceHistory = () => {
 
     return { total, present, absent, late, percentage };
   };
-
-  
 
   return (
     <div className="student-attendance-history">
