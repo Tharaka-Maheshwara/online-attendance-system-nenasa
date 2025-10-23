@@ -1344,7 +1344,6 @@ const StudentAttendanceHistory = () => {
                           <tr>
                             <th>Date</th>
                             <th>Class Name</th>
-                            <th>Subject</th>
                             <th>Status</th>
                             <th>Marked At</th>
                             <th>Method</th>
@@ -1366,9 +1365,6 @@ const StudentAttendanceHistory = () => {
                               </td>
                               <td className="class-name">
                                 {record.className || "Unknown Class"}
-                              </td>
-                              <td className="subject">
-                                {record.classSubject || "N/A"}
                               </td>
                               <td>
                                 <span
