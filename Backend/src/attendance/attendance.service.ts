@@ -80,7 +80,7 @@ export class AttendanceService {
       }, {} as any);
 
       // Convert to array format
-      return Object.keys(classesGrouped).map(grade => ({
+      return Object.keys(classesGrouped).map((grade) => ({
         grade: Number(grade),
         classes: classesGrouped[grade],
       }));
@@ -411,7 +411,10 @@ export class AttendanceService {
   /**
    * Get students registered for a specific grade and subject
    */
-  async getStudentsByGradeAndSubject(grade: number, subject: string): Promise<any[]> {
+  async getStudentsByGradeAndSubject(
+    grade: number,
+    subject: string,
+  ): Promise<any[]> {
     try {
       const students = await this.studentRepository.find({
         where: { grade },
@@ -466,7 +469,7 @@ export class AttendanceService {
     try {
       // Get students for this grade and subject
       const students = await this.getStudentsByGradeAndSubject(grade, subject);
-      
+
       if (students.length === 0) {
         return {
           students: [],
@@ -513,9 +516,7 @@ export class AttendanceService {
         query = query.andWhere('a.date <= :endDate', { endDate });
       }
 
-      const attendanceRecords = await query
-        .orderBy('a.date', 'DESC')
-        .getMany();
+      const attendanceRecords = await query.orderBy('a.date', 'DESC').getMany();
 
       // Calculate attendance statistics for each student
       const studentAnalysis = students.map((student) => {
@@ -534,7 +535,8 @@ export class AttendanceService {
           (record) => record.status === 'late',
         ).length;
 
-        const attendanceRate = totalClasses > 0 ? (presentCount / totalClasses) * 100 : 0;
+        const attendanceRate =
+          totalClasses > 0 ? (presentCount / totalClasses) * 100 : 0;
 
         return {
           ...student,
@@ -550,12 +552,18 @@ export class AttendanceService {
       });
 
       // Generate chart data
-      const chartData = this.generateAttendanceChartData(attendanceRecords, students);
+      const chartData = this.generateAttendanceChartData(
+        attendanceRecords,
+        students,
+      );
 
       // Calculate overall summary
       const totalClasses = attendanceRecords.length;
-      const totalPresent = attendanceRecords.filter((r) => r.status === 'present').length;
-      const overallAttendanceRate = totalClasses > 0 ? (totalPresent / totalClasses) * 100 : 0;
+      const totalPresent = attendanceRecords.filter(
+        (r) => r.status === 'present',
+      ).length;
+      const overallAttendanceRate =
+        totalClasses > 0 ? (totalPresent / totalClasses) * 100 : 0;
 
       return {
         students: studentAnalysis,
@@ -582,7 +590,10 @@ export class AttendanceService {
   /**
    * Generate chart data for attendance visualization
    */
-  private generateAttendanceChartData(attendanceRecords: Attendance[], students: any[]): any[] {
+  private generateAttendanceChartData(
+    attendanceRecords: Attendance[],
+    students: any[],
+  ): any[] {
     // Group by date
     const dateGroups = attendanceRecords.reduce((acc, record) => {
       if (!acc[record.date]) {
@@ -594,16 +605,17 @@ export class AttendanceService {
           total: 0,
         };
       }
-      
+
       acc[record.date][record.status]++;
       acc[record.date].total++;
-      
+
       return acc;
     }, {} as any);
 
     // Convert to array and sort by date
-    return Object.values(dateGroups).sort((a: any, b: any) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+    return Object.values(dateGroups).sort(
+      (a: any, b: any) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
   }
 
@@ -626,34 +638,34 @@ export class AttendanceService {
         endDate = customEndDate;
       } else {
         const now = new Date();
-        
+
         switch (timeRange) {
           case 'week':
             const weekStart = new Date(now);
             weekStart.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 6); // End of week (Saturday)
-            
+
             startDate = weekStart.toISOString().split('T')[0];
             endDate = weekEnd.toISOString().split('T')[0];
             break;
-            
+
           case 'month':
             const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
             const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-            
+
             startDate = monthStart.toISOString().split('T')[0];
             endDate = monthEnd.toISOString().split('T')[0];
             break;
-            
+
           case 'year':
             const yearStart = new Date(now.getFullYear(), 0, 1);
             const yearEnd = new Date(now.getFullYear(), 11, 31);
-            
+
             startDate = yearStart.toISOString().split('T')[0];
             endDate = yearEnd.toISOString().split('T')[0];
             break;
-            
+
           default:
             throw new Error('Invalid time range');
         }
@@ -692,7 +704,7 @@ export class AttendanceService {
     try {
       // Get students for this grade and subject
       const students = await this.getStudentsByGradeAndSubject(grade, subject);
-      
+
       if (students.length === 0) {
         return [];
       }
@@ -728,19 +740,21 @@ export class AttendanceService {
       // Map payment status to students
       return students.map((student) => {
         const payment = payments.find((p) => p.studentId === student.id);
-        
+
         return {
           ...student,
           paymentStatus: payment?.status || 'pending',
           monthlyFee: classInfo.monthlyFees || 0,
-          paymentDetails: payment ? {
-            id: payment.id,
-            amount: payment.amount,
-            month: payment.month,
-            year: payment.year,
-            paidDate: payment.paidDate,
-            notes: payment.notes,
-          } : null,
+          paymentDetails: payment
+            ? {
+                id: payment.id,
+                amount: payment.amount,
+                month: payment.month,
+                year: payment.year,
+                paidDate: payment.paidDate,
+                notes: payment.notes,
+              }
+            : null,
         };
       });
     } catch (error) {
@@ -770,27 +784,40 @@ export class AttendanceService {
       );
 
       // Get payment status
-      const paymentStatus = await this.getPaymentStatusByGradeAndSubject(grade, subject);
+      const paymentStatus = await this.getPaymentStatusByGradeAndSubject(
+        grade,
+        subject,
+      );
 
       // Merge attendance and payment data
-      const studentsWithCompleteData = attendanceAnalysis.students.map((student: any) => {
-        const paymentInfo = paymentStatus.find((p) => p.id === student.id);
-        
-        return {
-          ...student,
-          paymentStatus: paymentInfo?.paymentStatus || 'pending',
-          monthlyFee: paymentInfo?.monthlyFee || 0,
-          paymentDetails: paymentInfo?.paymentDetails || null,
-        };
-      });
+      const studentsWithCompleteData = attendanceAnalysis.students.map(
+        (student: any) => {
+          const paymentInfo = paymentStatus.find((p) => p.id === student.id);
+
+          return {
+            ...student,
+            paymentStatus: paymentInfo?.paymentStatus || 'pending',
+            monthlyFee: paymentInfo?.monthlyFee || 0,
+            paymentDetails: paymentInfo?.paymentDetails || null,
+          };
+        },
+      );
 
       // Calculate payment summary
       const paymentSummary = {
         totalStudents: paymentStatus.length,
-        paidStudents: paymentStatus.filter((p) => p.paymentStatus === 'paid').length,
-        pendingStudents: paymentStatus.filter((p) => p.paymentStatus === 'pending').length,
-        overdueStudents: paymentStatus.filter((p) => p.paymentStatus === 'overdue').length,
-        totalMonthlyRevenue: paymentStatus.reduce((sum, p) => sum + (p.monthlyFee || 0), 0),
+        paidStudents: paymentStatus.filter((p) => p.paymentStatus === 'paid')
+          .length,
+        pendingStudents: paymentStatus.filter(
+          (p) => p.paymentStatus === 'pending',
+        ).length,
+        overdueStudents: paymentStatus.filter(
+          (p) => p.paymentStatus === 'overdue',
+        ).length,
+        totalMonthlyRevenue: paymentStatus.reduce(
+          (sum, p) => sum + (p.monthlyFee || 0),
+          0,
+        ),
         collectedRevenue: paymentStatus
           .filter((p) => p.paymentStatus === 'paid')
           .reduce((sum, p) => sum + (p.paymentDetails?.amount || 0), 0),

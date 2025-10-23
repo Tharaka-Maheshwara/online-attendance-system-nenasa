@@ -1,500 +1,640 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Student Attendance Analysis</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .loading {
-            display: none;
-        }
-        .loading.show {
-            display: block;
-        }
-        .error {
-            display: none;
-        }
-        .error.show {
-            display: block;
-        }
+      .loading {
+        display: none;
+      }
+      .loading.show {
+        display: block;
+      }
+      .error {
+        display: none;
+      }
+      .error.show {
+        display: block;
+      }
     </style>
-</head>
-<body class="bg-gray-50">
+  </head>
+  <body class="bg-gray-50">
     <div class="container mx-auto p-6">
-        <h1 class="text-4xl font-bold mb-8 text-gray-800">Student Attendance History Analysis</h1>
+      <h1 class="text-4xl font-bold mb-8 text-gray-800">
+        Student Attendance History Analysis
+      </h1>
 
-        <!-- Error Display -->
-        <div id="errorDisplay" class="error bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-            <p class="font-medium">Error:</p>
-            <p id="errorMessage"></p>
+      <!-- Error Display -->
+      <div
+        id="errorDisplay"
+        class="error bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6"
+      >
+        <p class="font-medium">Error:</p>
+        <p id="errorMessage"></p>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+          Select Grade and Subject
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <!-- Grade Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Grade *</label
+            >
+            <select
+              id="gradeSelect"
+              class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">Select Grade</option>
+            </select>
+          </div>
+
+          <!-- Subject Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Subject *</label
+            >
+            <select
+              id="subjectSelect"
+              class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              disabled
+            >
+              <option value="">Select Subject</option>
+            </select>
+          </div>
+
+          <!-- Class Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Class (Optional)</label
+            >
+            <select
+              id="classSelect"
+              class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              disabled
+            >
+              <option value="">All Classes</option>
+            </select>
+          </div>
+
+          <!-- Time Range Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Time Range</label
+            >
+            <select
+              id="timeRangeSelect"
+              class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingDisplay" class="loading text-center py-12">
+        <div
+          class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+        ></div>
+        <p class="mt-4 text-gray-600 text-lg">Loading attendance analysis...</p>
+      </div>
+
+      <!-- Summary Cards -->
+      <div
+        id="summaryCards"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+        style="display: none"
+      >
+        <div
+          class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg text-white"
+        >
+          <h3 class="text-sm font-medium text-blue-100">Total Students</h3>
+          <p id="totalStudents" class="text-3xl font-bold">0</p>
+        </div>
+        <div
+          class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg text-white"
+        >
+          <h3 class="text-sm font-medium text-green-100">Overall Attendance</h3>
+          <p id="overallAttendance" class="text-3xl font-bold">0%</p>
+        </div>
+        <div
+          class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-lg text-white"
+        >
+          <h3 class="text-sm font-medium text-purple-100">Total Classes</h3>
+          <p id="totalClasses" class="text-3xl font-bold">0</p>
+        </div>
+        <div
+          class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6 rounded-lg text-white"
+        >
+          <h3 class="text-sm font-medium text-yellow-100">Monthly Fee</h3>
+          <p id="monthlyFee" class="text-3xl font-bold">Rs. 0</p>
+        </div>
+      </div>
+
+      <!-- Payment Summary -->
+      <div
+        id="paymentSummary"
+        class="bg-white p-6 rounded-lg shadow-lg mb-8"
+        style="display: none"
+      >
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+          Payment Summary
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="text-center p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-600 mb-1">Paid Students</p>
+            <p id="paidStudents" class="text-2xl font-bold text-green-600">
+              0 / 0
+            </p>
+          </div>
+          <div class="text-center p-4 bg-yellow-50 rounded-lg">
+            <p class="text-sm text-gray-600 mb-1">Pending Payments</p>
+            <p id="pendingStudents" class="text-2xl font-bold text-yellow-600">
+              0
+            </p>
+          </div>
+          <div class="text-center p-4 bg-red-50 rounded-lg">
+            <p class="text-sm text-gray-600 mb-1">Overdue Payments</p>
+            <p id="overdueStudents" class="text-2xl font-bold text-red-600">
+              0
+            </p>
+          </div>
+          <div class="text-center p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-600 mb-1">Revenue Collected</p>
+            <p id="collectedRevenue" class="text-2xl font-bold text-blue-600">
+              Rs. 0
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div
+        id="chartsContainer"
+        class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8"
+        style="display: none"
+      >
+        <!-- Bar Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">
+            Daily Attendance Chart
+          </h2>
+          <canvas id="attendanceChart" width="400" height="200"></canvas>
         </div>
 
-        <!-- Filters -->
-        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Select Grade and Subject</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- Grade Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Grade *</label>
-                    <select id="gradeSelect" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
-                        <option value="">Select Grade</option>
-                    </select>
-                </div>
-
-                <!-- Subject Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
-                    <select id="subjectSelect" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
-                        <option value="">Select Subject</option>
-                    </select>
-                </div>
-
-                <!-- Class Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Class (Optional)</label>
-                    <select id="classSelect" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
-                        <option value="">All Classes</option>
-                    </select>
-                </div>
-
-                <!-- Time Range Selection -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
-                    <select id="timeRangeSelect" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="week">This Week</option>
-                        <option value="month" selected>This Month</option>
-                        <option value="year">This Year</option>
-                    </select>
-                </div>
-            </div>
+        <!-- Pie Chart -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">
+            Attendance Distribution
+          </h2>
+          <canvas id="pieChart" width="400" height="200"></canvas>
         </div>
+      </div>
 
-        <!-- Loading State -->
-        <div id="loadingDisplay" class="loading text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p class="mt-4 text-gray-600 text-lg">Loading attendance analysis...</p>
+      <!-- Student Details Table -->
+      <div
+        id="studentTable"
+        class="bg-white p-6 rounded-lg shadow-lg"
+        style="display: none"
+      >
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+          Student Details
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Student
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Attendance Rate
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Present/Total
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Payment Status
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="studentTableBody"
+              class="bg-white divide-y divide-gray-200"
+            >
+              <!-- Student rows will be populated here -->
+            </tbody>
+          </table>
         </div>
-
-        <!-- Summary Cards -->
-        <div id="summaryCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" style="display: none;">
-            <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg text-white">
-                <h3 class="text-sm font-medium text-blue-100">Total Students</h3>
-                <p id="totalStudents" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg text-white">
-                <h3 class="text-sm font-medium text-green-100">Overall Attendance</h3>
-                <p id="overallAttendance" class="text-3xl font-bold">0%</p>
-            </div>
-            <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-lg text-white">
-                <h3 class="text-sm font-medium text-purple-100">Total Classes</h3>
-                <p id="totalClasses" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 p-6 rounded-lg text-white">
-                <h3 class="text-sm font-medium text-yellow-100">Monthly Fee</h3>
-                <p id="monthlyFee" class="text-3xl font-bold">Rs. 0</p>
-            </div>
-        </div>
-
-        <!-- Payment Summary -->
-        <div id="paymentSummary" class="bg-white p-6 rounded-lg shadow-lg mb-8" style="display: none;">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Payment Summary</h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="text-center p-4 bg-green-50 rounded-lg">
-                    <p class="text-sm text-gray-600 mb-1">Paid Students</p>
-                    <p id="paidStudents" class="text-2xl font-bold text-green-600">0 / 0</p>
-                </div>
-                <div class="text-center p-4 bg-yellow-50 rounded-lg">
-                    <p class="text-sm text-gray-600 mb-1">Pending Payments</p>
-                    <p id="pendingStudents" class="text-2xl font-bold text-yellow-600">0</p>
-                </div>
-                <div class="text-center p-4 bg-red-50 rounded-lg">
-                    <p class="text-sm text-gray-600 mb-1">Overdue Payments</p>
-                    <p id="overdueStudents" class="text-2xl font-bold text-red-600">0</p>
-                </div>
-                <div class="text-center p-4 bg-blue-50 rounded-lg">
-                    <p class="text-sm text-gray-600 mb-1">Revenue Collected</p>
-                    <p id="collectedRevenue" class="text-2xl font-bold text-blue-600">Rs. 0</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Charts -->
-        <div id="chartsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8" style="display: none;">
-            <!-- Bar Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Daily Attendance Chart</h2>
-                <canvas id="attendanceChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Pie Chart -->
-            <div class="bg-white p-6 rounded-lg shadow-lg">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800">Attendance Distribution</h2>
-                <canvas id="pieChart" width="400" height="200"></canvas>
-            </div>
-        </div>
-
-        <!-- Student Details Table -->
-        <div id="studentTable" class="bg-white p-6 rounded-lg shadow-lg" style="display: none;">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">Student Details</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendance Rate</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Present/Total</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentTableBody" class="bg-white divide-y divide-gray-200">
-                        <!-- Student rows will be populated here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        // Configuration
-        const API_BASE = 'http://localhost:8000/attendance'; // Update this to your backend URL
+      // Configuration
+      const API_BASE = "http://localhost:8000/attendance"; // Update this to your backend URL
 
-        // Global variables
-        let attendanceChart = null;
-        let pieChart = null;
+      // Global variables
+      let attendanceChart = null;
+      let pieChart = null;
 
-        // DOM elements
-        const gradeSelect = document.getElementById('gradeSelect');
-        const subjectSelect = document.getElementById('subjectSelect');
-        const classSelect = document.getElementById('classSelect');
-        const timeRangeSelect = document.getElementById('timeRangeSelect');
-        const loadingDisplay = document.getElementById('loadingDisplay');
-        const errorDisplay = document.getElementById('errorDisplay');
-        const errorMessage = document.getElementById('errorMessage');
+      // DOM elements
+      const gradeSelect = document.getElementById("gradeSelect");
+      const subjectSelect = document.getElementById("subjectSelect");
+      const classSelect = document.getElementById("classSelect");
+      const timeRangeSelect = document.getElementById("timeRangeSelect");
+      const loadingDisplay = document.getElementById("loadingDisplay");
+      const errorDisplay = document.getElementById("errorDisplay");
+      const errorMessage = document.getElementById("errorMessage");
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchGrades();
-            setupEventListeners();
+      // Initialize the page
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchGrades();
+        setupEventListeners();
+      });
+
+      function setupEventListeners() {
+        gradeSelect.addEventListener("change", onGradeChange);
+        subjectSelect.addEventListener("change", onSubjectChange);
+        timeRangeSelect.addEventListener("change", onTimeRangeChange);
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorDisplay.classList.add("show");
+      }
+
+      function hideError() {
+        errorDisplay.classList.remove("show");
+      }
+
+      function showLoading() {
+        loadingDisplay.classList.add("show");
+      }
+
+      function hideLoading() {
+        loadingDisplay.classList.remove("show");
+      }
+
+      async function fetchGrades() {
+        try {
+          hideError();
+          const response = await fetch(`${API_BASE}/grades`);
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch grades: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const grades = await response.json();
+          console.log("Fetched grades:", grades);
+
+          // Clear existing options
+          gradeSelect.innerHTML = '<option value="">Select Grade</option>';
+
+          // Add grade options
+          grades.forEach((grade) => {
+            const option = document.createElement("option");
+            option.value = grade;
+            option.textContent = `Grade ${grade}`;
+            gradeSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching grades:", error);
+          showError(
+            `Failed to load grades: ${error.message}. Please check if the backend is running on ${API_BASE}`
+          );
+        }
+      }
+
+      async function fetchSubjects(grade) {
+        try {
+          const response = await fetch(
+            `${API_BASE}/analysis/subjects/${grade}`
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch subjects: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const subjects = await response.json();
+          console.log("Fetched subjects:", subjects);
+
+          // Clear existing options
+          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+          // Add subject options
+          subjects.forEach((subject) => {
+            const option = document.createElement("option");
+            option.value = subject;
+            option.textContent = subject;
+            subjectSelect.appendChild(option);
+          });
+
+          subjectSelect.disabled = false;
+        } catch (error) {
+          console.error("Error fetching subjects:", error);
+          showError(`Failed to load subjects: ${error.message}`);
+        }
+      }
+
+      async function fetchClasses(grade) {
+        try {
+          const response = await fetch(`${API_BASE}/classes/by-grade/${grade}`);
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch classes: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const classes = await response.json();
+          console.log("Fetched classes:", classes);
+
+          // Clear existing options
+          classSelect.innerHTML = '<option value="">All Classes</option>';
+
+          // Add class options
+          classes.forEach((classItem) => {
+            const option = document.createElement("option");
+            option.value = classItem.id;
+            option.textContent = `${classItem.subject} - ${
+              classItem.teacherName || "No Teacher"
+            }`;
+            classSelect.appendChild(option);
+          });
+
+          classSelect.disabled = false;
+        } catch (error) {
+          console.error("Error fetching classes:", error);
+        }
+      }
+
+      async function fetchAnalysis() {
+        const grade = gradeSelect.value;
+        const subject = subjectSelect.value;
+        const timeRange = timeRangeSelect.value;
+
+        if (!grade || !subject) return;
+
+        try {
+          showLoading();
+          hideError();
+
+          const url = `${API_BASE}/analysis/comprehensive/${grade}/${encodeURIComponent(
+            subject
+          )}?timeRange=${timeRange}`;
+          console.log("Fetching analysis from:", url);
+
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch analysis: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const data = await response.json();
+          console.log("Fetched analysis data:", data);
+
+          displayAnalysis(data);
+        } catch (error) {
+          console.error("Error fetching analysis:", error);
+          showError(`Failed to load attendance analysis: ${error.message}`);
+          hideAnalysis();
+        } finally {
+          hideLoading();
+        }
+      }
+
+      function displayAnalysis(data) {
+        // Display summary cards
+        if (data.summary) {
+          document.getElementById("totalStudents").textContent =
+            data.summary.totalStudents || 0;
+          document.getElementById("overallAttendance").textContent = `${
+            data.summary.overallAttendanceRate || 0
+          }%`;
+          document.getElementById("totalClasses").textContent =
+            data.summary.totalClasses || 0;
+          document.getElementById("monthlyFee").textContent = `Rs. ${
+            data.summary.classInfo?.monthlyFees || 0
+          }`;
+          document.getElementById("summaryCards").style.display = "grid";
+        }
+
+        // Display payment summary
+        if (data.paymentSummary) {
+          document.getElementById(
+            "paidStudents"
+          ).textContent = `${data.paymentSummary.paidStudents} / ${data.paymentSummary.totalStudents}`;
+          document.getElementById("pendingStudents").textContent =
+            data.paymentSummary.pendingStudents;
+          document.getElementById("overdueStudents").textContent =
+            data.paymentSummary.overdueStudents;
+          document.getElementById(
+            "collectedRevenue"
+          ).textContent = `Rs. ${data.paymentSummary.collectedRevenue}`;
+          document.getElementById("paymentSummary").style.display = "block";
+        }
+
+        // Display charts
+        if (data.chartData && data.chartData.length > 0) {
+          displayCharts(data);
+          document.getElementById("chartsContainer").style.display = "grid";
+        }
+
+        // Display student table
+        if (data.students && data.students.length > 0) {
+          displayStudentTable(data.students);
+          document.getElementById("studentTable").style.display = "block";
+        }
+      }
+
+      function displayCharts(data) {
+        const chartData = data.chartData;
+
+        // Prepare data for charts
+        const labels = chartData.map((item) => {
+          const date = new Date(item.date);
+          return date.toLocaleDateString("en-GB", {
+            month: "short",
+            day: "numeric",
+          });
         });
 
-        function setupEventListeners() {
-            gradeSelect.addEventListener('change', onGradeChange);
-            subjectSelect.addEventListener('change', onSubjectChange);
-            timeRangeSelect.addEventListener('change', onTimeRangeChange);
+        // Bar Chart
+        const ctx1 = document
+          .getElementById("attendanceChart")
+          .getContext("2d");
+        if (attendanceChart) {
+          attendanceChart.destroy();
         }
 
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorDisplay.classList.add('show');
-        }
-
-        function hideError() {
-            errorDisplay.classList.remove('show');
-        }
-
-        function showLoading() {
-            loadingDisplay.classList.add('show');
-        }
-
-        function hideLoading() {
-            loadingDisplay.classList.remove('show');
-        }
-
-        async function fetchGrades() {
-            try {
-                hideError();
-                const response = await fetch(`${API_BASE}/grades`);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch grades: ${response.status} ${response.statusText}`);
-                }
-                
-                const grades = await response.json();
-                console.log('Fetched grades:', grades);
-                
-                // Clear existing options
-                gradeSelect.innerHTML = '<option value="">Select Grade</option>';
-                
-                // Add grade options
-                grades.forEach(grade => {
-                    const option = document.createElement('option');
-                    option.value = grade;
-                    option.textContent = `Grade ${grade}`;
-                    gradeSelect.appendChild(option);
-                });
-                
-            } catch (error) {
-                console.error('Error fetching grades:', error);
-                showError(`Failed to load grades: ${error.message}. Please check if the backend is running on ${API_BASE}`);
-            }
-        }
-
-        async function fetchSubjects(grade) {
-            try {
-                const response = await fetch(`${API_BASE}/analysis/subjects/${grade}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch subjects: ${response.status} ${response.statusText}`);
-                }
-                
-                const subjects = await response.json();
-                console.log('Fetched subjects:', subjects);
-                
-                // Clear existing options
-                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-                
-                // Add subject options
-                subjects.forEach(subject => {
-                    const option = document.createElement('option');
-                    option.value = subject;
-                    option.textContent = subject;
-                    subjectSelect.appendChild(option);
-                });
-                
-                subjectSelect.disabled = false;
-                
-            } catch (error) {
-                console.error('Error fetching subjects:', error);
-                showError(`Failed to load subjects: ${error.message}`);
-            }
-        }
-
-        async function fetchClasses(grade) {
-            try {
-                const response = await fetch(`${API_BASE}/classes/by-grade/${grade}`);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch classes: ${response.status} ${response.statusText}`);
-                }
-                
-                const classes = await response.json();
-                console.log('Fetched classes:', classes);
-                
-                // Clear existing options
-                classSelect.innerHTML = '<option value="">All Classes</option>';
-                
-                // Add class options
-                classes.forEach(classItem => {
-                    const option = document.createElement('option');
-                    option.value = classItem.id;
-                    option.textContent = `${classItem.subject} - ${classItem.teacherName || 'No Teacher'}`;
-                    classSelect.appendChild(option);
-                });
-                
-                classSelect.disabled = false;
-                
-            } catch (error) {
-                console.error('Error fetching classes:', error);
-            }
-        }
-
-        async function fetchAnalysis() {
-            const grade = gradeSelect.value;
-            const subject = subjectSelect.value;
-            const timeRange = timeRangeSelect.value;
-            
-            if (!grade || !subject) return;
-            
-            try {
-                showLoading();
-                hideError();
-                
-                const url = `${API_BASE}/analysis/comprehensive/${grade}/${encodeURIComponent(subject)}?timeRange=${timeRange}`;
-                console.log('Fetching analysis from:', url);
-                
-                const response = await fetch(url);
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch analysis: ${response.status} ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('Fetched analysis data:', data);
-                
-                displayAnalysis(data);
-                
-            } catch (error) {
-                console.error('Error fetching analysis:', error);
-                showError(`Failed to load attendance analysis: ${error.message}`);
-                hideAnalysis();
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function displayAnalysis(data) {
-            // Display summary cards
-            if (data.summary) {
-                document.getElementById('totalStudents').textContent = data.summary.totalStudents || 0;
-                document.getElementById('overallAttendance').textContent = `${data.summary.overallAttendanceRate || 0}%`;
-                document.getElementById('totalClasses').textContent = data.summary.totalClasses || 0;
-                document.getElementById('monthlyFee').textContent = `Rs. ${data.summary.classInfo?.monthlyFees || 0}`;
-                document.getElementById('summaryCards').style.display = 'grid';
-            }
-
-            // Display payment summary
-            if (data.paymentSummary) {
-                document.getElementById('paidStudents').textContent = `${data.paymentSummary.paidStudents} / ${data.paymentSummary.totalStudents}`;
-                document.getElementById('pendingStudents').textContent = data.paymentSummary.pendingStudents;
-                document.getElementById('overdueStudents').textContent = data.paymentSummary.overdueStudents;
-                document.getElementById('collectedRevenue').textContent = `Rs. ${data.paymentSummary.collectedRevenue}`;
-                document.getElementById('paymentSummary').style.display = 'block';
-            }
-
-            // Display charts
-            if (data.chartData && data.chartData.length > 0) {
-                displayCharts(data);
-                document.getElementById('chartsContainer').style.display = 'grid';
-            }
-
-            // Display student table
-            if (data.students && data.students.length > 0) {
-                displayStudentTable(data.students);
-                document.getElementById('studentTable').style.display = 'block';
-            }
-        }
-
-        function displayCharts(data) {
-            const chartData = data.chartData;
-            
-            // Prepare data for charts
-            const labels = chartData.map(item => {
-                const date = new Date(item.date);
-                return date.toLocaleDateString('en-GB', {
-                    month: 'short',
-                    day: 'numeric'
-                });
-            });
-
-            // Bar Chart
-            const ctx1 = document.getElementById('attendanceChart').getContext('2d');
-            if (attendanceChart) {
-                attendanceChart.destroy();
-            }
-            
-            attendanceChart = new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Present',
-                            data: chartData.map(item => item.present),
-                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                            borderColor: 'rgba(34, 197, 94, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Absent',
-                            data: chartData.map(item => item.absent),
-                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Late',
-                            data: chartData.map(item => item.late),
-                            backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                            borderColor: 'rgba(245, 158, 11, 1)',
-                            borderWidth: 1
-                        }
-                    ]
+        attendanceChart = new Chart(ctx1, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Present",
+                data: chartData.map((item) => item.present),
+                backgroundColor: "rgba(34, 197, 94, 0.8)",
+                borderColor: "rgba(34, 197, 94, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Absent",
+                data: chartData.map((item) => item.absent),
+                backgroundColor: "rgba(239, 68, 68, 0.8)",
+                borderColor: "rgba(239, 68, 68, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Late",
+                data: chartData.map((item) => item.late),
+                backgroundColor: "rgba(245, 158, 11, 0.8)",
+                borderColor: "rgba(245, 158, 11, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: `Attendance Analysis - ${subjectSelect.value} (Grade ${gradeSelect.value})`,
+              },
+              legend: {
+                position: "top",
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Number of Students",
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `Attendance Analysis - ${subjectSelect.value} (Grade ${gradeSelect.value})`
-                        },
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Students'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Pie Chart
-            const ctx2 = document.getElementById('pieChart').getContext('2d');
-            if (pieChart) {
-                pieChart.destroy();
-            }
-
-            const totalPresent = data.students.reduce((sum, student) => sum + (student.attendanceStats?.presentCount || 0), 0);
-            const totalAbsent = data.students.reduce((sum, student) => sum + (student.attendanceStats?.absentCount || 0), 0);
-            const totalLate = data.students.reduce((sum, student) => sum + (student.attendanceStats?.lateCount || 0), 0);
-
-            pieChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Present', 'Absent', 'Late'],
-                    datasets: [{
-                        data: [totalPresent, totalAbsent, totalLate],
-                        backgroundColor: [
-                            'rgba(34, 197, 94, 0.8)',
-                            'rgba(239, 68, 68, 0.8)',
-                            'rgba(245, 158, 11, 0.8)'
-                        ],
-                        borderColor: [
-                            'rgba(34, 197, 94, 1)',
-                            'rgba(239, 68, 68, 1)',
-                            'rgba(245, 158, 11, 1)'
-                        ],
-                        borderWidth: 2
-                    }]
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: "Date",
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Overall Attendance Distribution'
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
+              },
+            },
+          },
+        });
+
+        // Pie Chart
+        const ctx2 = document.getElementById("pieChart").getContext("2d");
+        if (pieChart) {
+          pieChart.destroy();
         }
 
-        function displayStudentTable(students) {
-            const tbody = document.getElementById('studentTableBody');
-            tbody.innerHTML = '';
+        const totalPresent = data.students.reduce(
+          (sum, student) => sum + (student.attendanceStats?.presentCount || 0),
+          0
+        );
+        const totalAbsent = data.students.reduce(
+          (sum, student) => sum + (student.attendanceStats?.absentCount || 0),
+          0
+        );
+        const totalLate = data.students.reduce(
+          (sum, student) => sum + (student.attendanceStats?.lateCount || 0),
+          0
+        );
 
-            students.forEach(student => {
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-gray-50';
+        pieChart = new Chart(ctx2, {
+          type: "doughnut",
+          data: {
+            labels: ["Present", "Absent", "Late"],
+            datasets: [
+              {
+                data: [totalPresent, totalAbsent, totalLate],
+                backgroundColor: [
+                  "rgba(34, 197, 94, 0.8)",
+                  "rgba(239, 68, 68, 0.8)",
+                  "rgba(245, 158, 11, 0.8)",
+                ],
+                borderColor: [
+                  "rgba(34, 197, 94, 1)",
+                  "rgba(239, 68, 68, 1)",
+                  "rgba(245, 158, 11, 1)",
+                ],
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "Overall Attendance Distribution",
+              },
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+      }
 
-                const attendanceRate = student.attendanceStats?.attendanceRate || 0;
-                const rateColor = attendanceRate >= 80 ? 'text-green-600' : attendanceRate >= 60 ? 'text-yellow-600' : 'text-red-600';
-                
-                const paymentStatus = student.paymentStatus || 'pending';
-                const statusColor = paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
-                                  paymentStatus === 'overdue' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800';
+      function displayStudentTable(students) {
+        const tbody = document.getElementById("studentTableBody");
+        tbody.innerHTML = "";
 
-                row.innerHTML = `
+        students.forEach((student) => {
+          const row = document.createElement("tr");
+          row.className = "hover:bg-gray-50";
+
+          const attendanceRate = student.attendanceStats?.attendanceRate || 0;
+          const rateColor =
+            attendanceRate >= 80
+              ? "text-green-600"
+              : attendanceRate >= 60
+              ? "text-yellow-600"
+              : "text-red-600";
+
+          const paymentStatus = student.paymentStatus || "pending";
+          const statusColor =
+            paymentStatus === "paid"
+              ? "bg-green-100 text-green-800"
+              : paymentStatus === "overdue"
+              ? "bg-red-100 text-red-800"
+              : "bg-yellow-100 text-yellow-800";
+
+          row.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div>
-                            <div class="text-sm font-medium text-gray-900">${student.name}</div>
-                            <div class="text-sm text-gray-500">${student.registerNumber}</div>
+                            <div class="text-sm font-medium text-gray-900">${
+                              student.name
+                            }</div>
+                            <div class="text-sm text-gray-500">${
+                              student.registerNumber
+                            }</div>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -503,7 +643,9 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${student.attendanceStats?.presentCount || 0} / ${student.attendanceStats?.totalClasses || 0}
+                        ${student.attendanceStats?.presentCount || 0} / ${
+            student.attendanceStats?.totalClasses || 0
+          }
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full ${statusColor}">
@@ -512,47 +654,47 @@
                     </td>
                 `;
 
-                tbody.appendChild(row);
-            });
-        }
+          tbody.appendChild(row);
+        });
+      }
 
-        function hideAnalysis() {
-            document.getElementById('summaryCards').style.display = 'none';
-            document.getElementById('paymentSummary').style.display = 'none';
-            document.getElementById('chartsContainer').style.display = 'none';
-            document.getElementById('studentTable').style.display = 'none';
-        }
+      function hideAnalysis() {
+        document.getElementById("summaryCards").style.display = "none";
+        document.getElementById("paymentSummary").style.display = "none";
+        document.getElementById("chartsContainer").style.display = "none";
+        document.getElementById("studentTable").style.display = "none";
+      }
 
-        function onGradeChange() {
-            const grade = gradeSelect.value;
-            
-            // Reset subject and class selections
-            subjectSelect.innerHTML = '<option value="">Select Subject</option>';
-            subjectSelect.disabled = true;
-            classSelect.innerHTML = '<option value="">All Classes</option>';
-            classSelect.disabled = true;
-            
-            hideAnalysis();
-            
-            if (grade) {
-                fetchSubjects(grade);
-                fetchClasses(grade);
-            }
-        }
+      function onGradeChange() {
+        const grade = gradeSelect.value;
 
-        function onSubjectChange() {
-            hideAnalysis();
-            
-            if (subjectSelect.value && gradeSelect.value) {
-                fetchAnalysis();
-            }
-        }
+        // Reset subject and class selections
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+        subjectSelect.disabled = true;
+        classSelect.innerHTML = '<option value="">All Classes</option>';
+        classSelect.disabled = true;
 
-        function onTimeRangeChange() {
-            if (subjectSelect.value && gradeSelect.value) {
-                fetchAnalysis();
-            }
+        hideAnalysis();
+
+        if (grade) {
+          fetchSubjects(grade);
+          fetchClasses(grade);
         }
+      }
+
+      function onSubjectChange() {
+        hideAnalysis();
+
+        if (subjectSelect.value && gradeSelect.value) {
+          fetchAnalysis();
+        }
+      }
+
+      function onTimeRangeChange() {
+        if (subjectSelect.value && gradeSelect.value) {
+          fetchAnalysis();
+        }
+      }
     </script>
-</body>
+  </body>
 </html>

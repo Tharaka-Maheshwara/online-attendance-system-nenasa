@@ -12,8 +12,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-} from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
+} from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -63,7 +63,7 @@ const StudentAttendanceHistory = () => {
 
       if (response.ok) {
         const classData = await response.json();
-        const uniqueGrades = [...new Set(classData.map(c => c.grade))].sort();
+        const uniqueGrades = [...new Set(classData.map((c) => c.grade))].sort();
         setGrades(uniqueGrades);
       }
     } catch (error) {
@@ -74,12 +74,15 @@ const StudentAttendanceHistory = () => {
   const fetchSubjects = useCallback(async () => {
     try {
       const token = await getAccessToken();
-      const response = await fetch(`http://localhost:8000/attendance/analysis/subjects/${selectedGrade}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/attendance/analysis/subjects/${selectedGrade}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const subjectData = await response.json();
@@ -157,7 +160,13 @@ const StudentAttendanceHistory = () => {
       fetchAttendanceAnalysis();
       fetchStudentsByGradeAndSubject();
     }
-  }, [selectedGrade, selectedSubject, analysisType, fetchAttendanceAnalysis, fetchStudentsByGradeAndSubject]);
+  }, [
+    selectedGrade,
+    selectedSubject,
+    analysisType,
+    fetchAttendanceAnalysis,
+    fetchStudentsByGradeAndSubject,
+  ]);
 
   // Reset students when grade or subject changes
   useEffect(() => {
@@ -377,19 +386,25 @@ const StudentAttendanceHistory = () => {
       {chartData && subjectChartData && (
         <div className="charts-section">
           <div className="chart-container">
-            <h3>📈 Attendance Analysis - {analysisType.charAt(0).toUpperCase() + analysisType.slice(1)}</h3>
+            <h3>
+              📈 Attendance Analysis -{" "}
+              {analysisType.charAt(0).toUpperCase() + analysisType.slice(1)}
+            </h3>
             <div className="chart-wrapper">
-              <Bar 
+              <Bar
                 data={chartData}
                 options={{
                   responsive: true,
                   plugins: {
                     legend: {
-                      position: 'top',
+                      position: "top",
                     },
                     title: {
                       display: true,
-                      text: `${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} Attendance for Grade ${selectedGrade} - ${selectedSubject}`
+                      text: `${
+                        analysisType.charAt(0).toUpperCase() +
+                        analysisType.slice(1)
+                      } Attendance for Grade ${selectedGrade} - ${selectedSubject}`,
                     },
                   },
                   scales: {
@@ -397,12 +412,12 @@ const StudentAttendanceHistory = () => {
                       beginAtZero: true,
                       max: 100,
                       ticks: {
-                        callback: function(value) {
-                          return value + '%';
-                        }
-                      }
-                    }
-                  }
+                        callback: function (value) {
+                          return value + "%";
+                        },
+                      },
+                    },
+                  },
                 }}
               />
             </div>
@@ -411,17 +426,17 @@ const StudentAttendanceHistory = () => {
           <div className="chart-container">
             <h3>🥧 Subject Distribution</h3>
             <div className="chart-wrapper small-chart">
-              <Doughnut 
+              <Doughnut
                 data={subjectChartData}
                 options={{
                   responsive: true,
                   plugins: {
                     legend: {
-                      position: 'bottom',
+                      position: "bottom",
                     },
                     title: {
                       display: true,
-                      text: 'Attendance Distribution by Status'
+                      text: "Attendance Distribution by Status",
                     },
                   },
                 }}
@@ -449,7 +464,9 @@ const StudentAttendanceHistory = () => {
               <div className="stat-icon">📊</div>
               <div className="stat-info">
                 <h4>Attendance Rate</h4>
-                <p className="stat-value">{attendanceStats.attendancePercentage}%</p>
+                <p className="stat-value">
+                  {attendanceStats.attendancePercentage}%
+                </p>
               </div>
             </div>
             <div className="stat-card">
@@ -479,7 +496,7 @@ const StudentAttendanceHistory = () => {
               <input
                 type="text"
                 placeholder={
-                  selectedGrade && selectedSubject 
+                  selectedGrade && selectedSubject
                     ? `Search students in Grade ${selectedGrade} - ${selectedSubject}...`
                     : "Search students..."
                 }

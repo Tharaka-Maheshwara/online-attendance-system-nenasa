@@ -337,14 +337,15 @@ export class AttendanceController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ): Promise<ChartDataResponseDto> {
-    const analysis = await this.attendanceService.getAttendanceAnalysisByTimeRange(
-      Number(grade),
-      decodeURIComponent(subject),
-      timeRange,
-      startDate,
-      endDate,
-    );
-    
+    const analysis =
+      await this.attendanceService.getAttendanceAnalysisByTimeRange(
+        Number(grade),
+        decodeURIComponent(subject),
+        timeRange,
+        startDate,
+        endDate,
+      );
+
     return {
       chartData: analysis.chartData,
       summary: analysis.summary,
