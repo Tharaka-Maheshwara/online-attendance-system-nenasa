@@ -164,22 +164,25 @@ export class PaymentService {
   async getStudentPaymentHistory(studentId: number): Promise<any[]> {
     try {
       console.log(`Fetching payment history for student ${studentId}`);
-      
+
       // Get all payments for this student
       const payments = await this.paymentRepository.find({
         where: { studentId },
         order: { year: 'DESC', month: 'DESC' },
       });
 
-      console.log(`Found ${payments.length} payments for student ${studentId}:`, payments);
+      console.log(
+        `Found ${payments.length} payments for student ${studentId}:`,
+        payments,
+      );
 
       // If we have payments, enrich them with class and student info
       const enrichedPayments: any[] = [];
-      
+
       for (const payment of payments) {
         let classInfo: any = null;
         let studentInfo: any = null;
-        
+
         try {
           // Get class information for this payment
           classInfo = await this.classRepository.findOne({
@@ -189,13 +192,16 @@ export class PaymentService {
         } catch (err) {
           console.error('Could not fetch class info:', err);
         }
-        
+
         try {
           // Get student information
           studentInfo = await this.studentRepository.findOne({
             where: { id: payment.studentId },
           });
-          console.log(`Student info for studentId ${payment.studentId}:`, studentInfo);
+          console.log(
+            `Student info for studentId ${payment.studentId}:`,
+            studentInfo,
+          );
         } catch (err) {
           console.error('Could not fetch student info:', err);
         }
@@ -230,40 +236,51 @@ export class PaymentService {
   }
 
   // New method to get payment status for a specific grade and subject
-  async getPaymentStatusForGradeAndSubject(grade: number, subject: string): Promise<any[]> {
+  async getPaymentStatusForGradeAndSubject(
+    grade: number,
+    subject: string,
+  ): Promise<any[]> {
     try {
-      console.log(`Getting payment status for grade ${grade}, subject ${subject}`);
-      
+      console.log(
+        `Getting payment status for grade ${grade}, subject ${subject}`,
+      );
+
       // First, find all classes for this grade and subject
       const classes = await this.classRepository.find({
-        where: { 
+        where: {
           grade: grade,
-          subject: subject 
+          subject: subject,
         },
       });
 
-      console.log(`Found ${classes.length} classes for grade ${grade}, subject ${subject}:`, classes);
+      console.log(
+        `Found ${classes.length} classes for grade ${grade}, subject ${subject}:`,
+        classes,
+      );
 
       if (classes.length === 0) {
         return [];
       }
 
-      const classIds = classes.map(c => c.id);
+      const classIds = classes.map((c) => c.id);
       console.log('Class IDs:', classIds);
 
       // Get all payments for these classes
       const payments = await this.paymentRepository.find({
-        where: { 
-          classId: classIds.length === 1 ? classIds[0] : classIds as any // Handle single or multiple class IDs
+        where: {
+          classId: classIds.length === 1 ? classIds[0] : (classIds as any), // Handle single or multiple class IDs
         },
         order: { year: 'DESC', month: 'DESC' },
       });
 
-      console.log(`Found ${payments.length} payments for these classes:`, payments);
+      console.log(
+        `Found ${payments.length} payments for these classes:`,
+        payments,
+      );
 
       // Enrich with student info
       const paymentStatus: any[] = [];
-      
+
       for (const payment of payments) {
         try {
           const studentInfo = await this.studentRepository.findOne({
@@ -285,7 +302,10 @@ export class PaymentService {
             });
           }
         } catch (err) {
-          console.error(`Error getting student info for payment ${payment.id}:`, err);
+          console.error(
+            `Error getting student info for payment ${payment.id}:`,
+            err,
+          );
         }
       }
 

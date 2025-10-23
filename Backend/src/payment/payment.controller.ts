@@ -80,6 +80,9 @@ export class PaymentController {
     @Param('grade') grade: string,
     @Param('subject') subject: string,
   ) {
-    return this.paymentService.getPaymentStatusForGradeAndSubject(+grade, subject);
+    return this.paymentService.getPaymentStatusForGradeAndSubject(
+      +grade,
+      subject,
+    );
   }
 }

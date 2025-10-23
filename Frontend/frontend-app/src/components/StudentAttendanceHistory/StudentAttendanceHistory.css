@@ -809,11 +809,11 @@
   .group-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .students-analytics-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .student-stats {
     grid-template-columns: 1fr;
   }
