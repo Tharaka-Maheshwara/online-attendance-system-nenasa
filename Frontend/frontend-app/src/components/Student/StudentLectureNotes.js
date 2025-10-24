@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import "../Dashboard/StudentDashboard.css"; // Reuse styles from StudentDashboard
+import "./StudentLectureNotes.css"; // Custom styles for lecture notes
 
 const StudentLectureNotes = () => {
   const { accounts } = useMsal();
@@ -104,63 +105,39 @@ const StudentLectureNotes = () => {
           {lectureNotesLoading ? (
             <div className="loading-message">Loading lecture notes...</div>
           ) : lectureNotes.length > 0 ? (
-            <div className="lecture-notes-list">
+            <div className="lecture-notes-grid">
               {lectureNotes.map((note) => (
-                <div key={note.id} className="lecture-note-card">
-                  <div className="lecture-note-header">
-                    <div className="note-title-section">
-                      <h4 className="lecture-note-title">{note.title}</h4>
-                      <span className="note-file-name">
-                        📄 {note.fileName}
+                <div key={note.id} className="lecture-note-compact-card">
+                  <div className="note-card-header">
+                    <div className="file-icon">📄</div>
+                    <div className="note-info">
+                      <h4 className="note-title">{note.title}</h4>
+                      <span className="note-subject">
+                        {note.classInfo?.subject || "Unknown Subject"}
                       </span>
                     </div>
-                    <div className="note-meta">
-                      <span className="note-date">
-                        {formatAnnouncementDate(note.createdAt)}
-                      </span>
+                    <span className="note-time">{formatAnnouncementDate(note.createdAt)}</span>
+                  </div>
+                  
+                  <div className="note-card-body">
+                    <div className="class-meta">
+                      <span className="grade-tag">Grade {note.classInfo?.grade || "N/A"}</span>
+                      <span className="teacher-name">👨‍🏫 {note.classInfo?.teacherName || "Unknown Teacher"}</span>
+                    </div>
+                    
+                    <div className="file-details">
+                      <span className="file-name">{note.fileName}</span>
+                      <span className="file-size">{formatFileSize(note.fileSize)}</span>
                     </div>
                   </div>
-                  <div className="lecture-note-class-info">
-                    <span className="class-subject">
-                      📚 {note.classInfo?.subject || "Unknown Subject"}
-                    </span>
-                    <span className="class-details">
-                      Grade {note.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
-                      {note.classInfo?.teacherName || "Unknown Teacher"}
-                    </span>
-                  </div>
-                  {note.description && (
-                    <div className="lecture-note-description">
-                      <p>{note.description}</p>
-                    </div>
-                  )}
-                  <div className="lecture-note-details">
-                    <div className="note-detail-item">
-                      <span className="detail-label">File Size:</span>
-                      <span className="detail-value">
-                        {formatFileSize(note.fileSize)}
-                      </span>
-                    </div>
-                    <div className="note-detail-item">
-                      <span className="detail-label">Uploaded:</span>
-                      <span className="detail-value">
-                        {formatAnnouncementTime(note.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="lecture-note-actions">
+                  
+                  <div className="note-card-footer">
                     <button
-                      className="download-btn"
-                      onClick={() =>
-                        handleDownloadNote(note.id, note.fileName)
-                      }
+                      className="download-btn-compact"
+                      onClick={() => handleDownloadNote(note.id, note.fileName)}
                     >
-                      <span className="btn-icon">⬇️</span>
-                      Download PDF
+                      ⬇️ Download PDF
                     </button>
-                    <small className="teacher-attribution">
-                      Shared by: {note.teacherEmail}
-                    </small>
                   </div>
                 </div>
               ))}
