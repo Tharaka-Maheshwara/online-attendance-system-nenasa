@@ -216,7 +216,7 @@ export class StudentService {
 
       return todayClasses;
     } catch (error) {
-      console.error('Error fetching today\'s classes for student:', error);
+      console.error("Error fetching today's classes for student:", error);
       return [];
     }
   }
@@ -235,7 +235,10 @@ export class StudentService {
       // Use the existing method with the student ID
       return await this.getTodayClassesForStudent(student.id);
     } catch (error) {
-      console.error('Error fetching today\'s classes for student by email:', error);
+      console.error(
+        "Error fetching today's classes for student by email:",
+        error,
+      );
       return [];
     }
   }

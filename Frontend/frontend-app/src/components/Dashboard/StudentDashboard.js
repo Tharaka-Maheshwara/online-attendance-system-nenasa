@@ -13,24 +13,26 @@ const StudentDashboard = () => {
 
       try {
         setLoading(true);
-        
+
         // Get current user email
         const userEmail = accounts[0].username;
-        
+
         // Fetch today's classes for this student
         const response = await fetch(
-          `http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/classes/today`
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/classes/today`
         );
-        
+
         if (response.ok) {
           const classes = await response.json();
           setTodayClasses(classes);
         } else {
-          console.error('Failed to fetch today\'s classes');
+          console.error("Failed to fetch today's classes");
           setTodayClasses([]);
         }
       } catch (error) {
-        console.error('Error fetching today\'s classes:', error);
+        console.error("Error fetching today's classes:", error);
         setTodayClasses([]);
       } finally {
         setLoading(false);
@@ -41,49 +43,57 @@ const StudentDashboard = () => {
   }, [accounts]);
 
   const formatTime = (timeString) => {
-    if (!timeString) return '';
-    const [hour, minute] = timeString.split(':');
+    if (!timeString) return "";
+    const [hour, minute] = timeString.split(":");
     const hourNum = parseInt(hour, 10);
-    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const ampm = hourNum >= 12 ? "PM" : "AM";
     const formattedHour = hourNum % 12 || 12;
     return `${formattedHour}:${minute} ${ampm}`;
   };
 
   const getClassStatus = (startTime, endTime) => {
-    if (!startTime || !endTime) return 'upcoming';
-    
+    if (!startTime || !endTime) return "upcoming";
+
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
-    
-    const [startHour, startMinute] = startTime.split(':').map(Number);
-    const [endHour, endMinute] = endTime.split(':').map(Number);
-    
+
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+
     const classStart = startHour * 60 + startMinute;
     const classEnd = endHour * 60 + endMinute;
-    
+
     if (currentTime >= classStart && currentTime <= classEnd) {
-      return 'current';
+      return "current";
     } else if (currentTime > classEnd) {
-      return 'completed';
+      return "completed";
     }
-    return 'upcoming';
+    return "upcoming";
   };
 
   const getStatusBadgeClass = (status) => {
     switch (status) {
-      case 'completed': return 'status-badge present';
-      case 'current': return 'status-badge current';
-      case 'upcoming': return 'status-badge upcoming';
-      default: return 'status-badge upcoming';
+      case "completed":
+        return "status-badge present";
+      case "current":
+        return "status-badge current";
+      case "upcoming":
+        return "status-badge upcoming";
+      default:
+        return "status-badge upcoming";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'completed': return 'Completed';
-      case 'current': return 'In Progress';
-      case 'upcoming': return 'Upcoming';
-      default: return 'Upcoming';
+      case "completed":
+        return "Completed";
+      case "current":
+        return "In Progress";
+      case "upcoming":
+        return "Upcoming";
+      default:
+        return "Upcoming";
     }
   };
   return (
@@ -132,13 +142,13 @@ const StudentDashboard = () => {
                 return (
                   <div className={`schedule-item ${status}`} key={cls.id}>
                     <div className="time-slot">
-                      {cls.startTime ? formatTime(cls.startTime) : 'TBA'}
+                      {cls.startTime ? formatTime(cls.startTime) : "TBA"}
                       {cls.endTime && ` - ${formatTime(cls.endTime)}`}
                     </div>
                     <div className="class-info">
                       <h4>{cls.subject}</h4>
-                      <p>Grade: {cls.grade || 'N/A'}</p>
-                      <p>Teacher: {cls.teacherName || 'TBA'}</p>
+                      <p>Grade: {cls.grade || "N/A"}</p>
+                      <p>Teacher: {cls.teacherName || "TBA"}</p>
                     </div>
                     <div className="attendance-status">
                       <span className={getStatusBadgeClass(status)}>

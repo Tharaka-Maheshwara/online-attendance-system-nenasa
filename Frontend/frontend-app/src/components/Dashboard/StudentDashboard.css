@@ -487,43 +487,43 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .stat-card {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .schedule-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .attendance-status {
     align-self: flex-end;
   }
-  
+
   .calendar-days {
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
   }
-  
+
   .day-status {
     width: 30px;
     height: 30px;
     font-size: 0.8rem;
   }
-  
+
   .subject-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .subject-progress {
     width: 100%;
   }
