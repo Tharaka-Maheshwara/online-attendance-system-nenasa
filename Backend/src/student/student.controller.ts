@@ -193,4 +193,22 @@ export class StudentController {
       email,
     );
   }
+
+  @Get(':studentId/announcements')
+  async getAnnouncementsForStudentClasses(
+    @Param('studentId') studentId: string,
+  ) {
+    return await this.studentService.getAnnouncementsForStudentClasses(
+      +studentId,
+    );
+  }
+
+  @Get('email/:email/announcements')
+  async getAnnouncementsForStudentClassesByEmail(
+    @Param('email') email: string,
+  ) {
+    return await this.studentService.getAnnouncementsForStudentClassesByEmail(
+      email,
+    );
+  }
 }

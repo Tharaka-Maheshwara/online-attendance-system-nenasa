@@ -6,6 +6,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UserService } from '../user/user.service';
 import { Class } from '../class/class.entity';
 import { Payment } from '../payment/payment.entity';
+import { Announcement } from '../announcement/announcement.entity';
 import * as QRCode from 'qrcode';
 
 @Injectable()
@@ -17,6 +18,8 @@ export class StudentService {
     private classRepository: Repository<Class>,
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    @InjectRepository(Announcement)
+    private announcementRepository: Repository<Announcement>,
     private userService: UserService,
   ) {}
 
@@ -364,6 +367,71 @@ export class StudentService {
         'Error fetching classes with payment status by email:',
         error,
       );
+      return [];
+    }
+  }
+
+  async getAnnouncementsForStudentClasses(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const studentClasses = await this.getAllClassesForStudent(studentId);
+      
+      if (studentClasses.length === 0) {
+        return [];
+      }
+
+      // Get class IDs
+      const classIds = studentClasses.map(cls => cls.id);
+
+      // Get announcements for these classes where the student is included
+      const announcements = await this.announcementRepository
+        .createQueryBuilder('announcement')
+        .where('announcement.classId IN (:...classIds)', { classIds })
+        .andWhere('JSON_CONTAINS(announcement.studentIds, :studentId)', {
+          studentId: JSON.stringify(studentId)
+        })
+        .orderBy('announcement.createdAt', 'DESC')
+        .getMany();
+
+      // Enrich announcements with class information
+      const enrichedAnnouncements = announcements.map(announcement => {
+        const classInfo = studentClasses.find(cls => cls.id === announcement.classId);
+        return {
+          ...announcement,
+          classInfo: {
+            id: classInfo?.id,
+            subject: classInfo?.subject,
+            grade: classInfo?.grade,
+            teacherName: classInfo?.teacherName,
+            dayOfWeek: classInfo?.dayOfWeek,
+            startTime: classInfo?.startTime,
+            endTime: classInfo?.endTime
+          }
+        };
+      });
+
+      return enrichedAnnouncements;
+    } catch (error) {
+      console.error('Error fetching announcements for student classes:', error);
+      return [];
+    }
+  }
+
+  async getAnnouncementsForStudentClassesByEmail(email: string): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getAnnouncementsForStudentClasses(student.id);
+    } catch (error) {
+      console.error('Error fetching announcements for student classes by email:', error);
       return [];
     }
   }

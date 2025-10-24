@@ -7,9 +7,11 @@ const StudentDashboard = () => {
   const [todayClasses, setTodayClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
   const [classesWithPaymentStatus, setClassesWithPaymentStatus] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
   const [paymentStatusLoading, setPaymentStatusLoading] = useState(true);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -19,6 +21,7 @@ const StudentDashboard = () => {
         setLoading(true);
         setAllClassesLoading(true);
         setPaymentStatusLoading(true);
+        setAnnouncementsLoading(true);
 
         // Get current user email
         const userEmail = accounts[0].username;
@@ -67,15 +70,32 @@ const StudentDashboard = () => {
           console.error("Failed to fetch payment status");
           setClassesWithPaymentStatus([]);
         }
+
+        // Fetch announcements for enrolled classes
+        const announcementsResponse = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/announcements`
+        );
+
+        if (announcementsResponse.ok) {
+          const announcementsData = await announcementsResponse.json();
+          setAnnouncements(announcementsData);
+        } else {
+          console.error("Failed to fetch announcements");
+          setAnnouncements([]);
+        }
       } catch (error) {
         console.error("Error fetching classes:", error);
         setTodayClasses([]);
         setAllClasses([]);
         setClassesWithPaymentStatus([]);
+        setAnnouncements([]);
       } finally {
         setLoading(false);
         setAllClassesLoading(false);
         setPaymentStatusLoading(false);
+        setAnnouncementsLoading(false);
       }
     };
 
@@ -187,6 +207,39 @@ const StudentDashboard = () => {
       "December",
     ];
     return months[monthNumber - 1] || "Unknown";
+  };
+
+  const getPriorityText = (priority) => {
+    const priorityTexts = {
+      low: "Low",
+      normal: "Normal",
+      high: "High"
+    };
+    return priorityTexts[priority] || "Normal";
+  };
+
+  const formatAnnouncementDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+      return "Today";
+    } else if (diffDays === 2) {
+      return "Yesterday";
+    } else if (diffDays <= 7) {
+      return `${diffDays - 1} days ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
+
+  const formatAnnouncementTime = (dateString) => {
+    return new Date(dateString).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
@@ -403,6 +456,63 @@ const StudentDashboard = () => {
                 <p>💳 No payment information available!</p>
                 <span>
                   Please contact your administrator for payment details.
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Announcements */}
+        <div className="announcements-section">
+          <h2>Class Announcements</h2>
+          <div className="announcements-content">
+            {announcementsLoading ? (
+              <div className="loading-message">Loading announcements...</div>
+            ) : announcements.length > 0 ? (
+              <div className="announcements-list">
+                {announcements.map((announcement) => (
+                  <div key={announcement.id} className="announcement-card">
+                    <div className="announcement-header">
+                      <div className="announcement-title-section">
+                        <h4 className="announcement-title">{announcement.title}</h4>
+                        <span className={`announcement-priority ${announcement.priority}`}>
+                          {getPriorityText(announcement.priority)}
+                        </span>
+                      </div>
+                      <div className="announcement-meta">
+                        <span className="announcement-date">
+                          {formatAnnouncementDate(announcement.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="announcement-class-info">
+                      <span className="class-subject">
+                        📚 {announcement.classInfo?.subject || 'Unknown Subject'}
+                      </span>
+                      <span className="class-details">
+                        Grade {announcement.classInfo?.grade || 'N/A'} • 
+                        👨‍🏫 {announcement.classInfo?.teacherName || 'Unknown Teacher'}
+                      </span>
+                    </div>
+                    <div className="announcement-message">
+                      <p>{announcement.message}</p>
+                    </div>
+                    <div className="announcement-footer">
+                      <small className="teacher-email">
+                        From: {announcement.teacherEmail}
+                      </small>
+                      <small className="announcement-time">
+                        {formatAnnouncementTime(announcement.createdAt)}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="no-announcements-message">
+                <p>📢 No announcements yet!</p>
+                <span>
+                  Your teachers will post important updates and announcements here.
                 </span>
               </div>
             )}

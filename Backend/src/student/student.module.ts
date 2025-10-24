@@ -6,11 +6,12 @@ import { StudentService } from './student.service';
 import { Student } from './student.entity';
 import { Class } from '../class/class.entity';
 import { Payment } from '../payment/payment.entity';
+import { Announcement } from '../announcement/announcement.entity';
 import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student, Class, Payment]),
+    TypeOrmModule.forFeature([Student, Class, Payment, Announcement]),
     UserModule,
     MulterModule.register({
       dest: './uploads/student-images',

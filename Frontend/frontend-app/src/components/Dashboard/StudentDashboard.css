@@ -871,3 +871,222 @@
     font-size: 1rem;
   }
 }
+
+/* Announcements Section */
+.announcements-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+}
+
+.announcements-section h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-bottom: 2px solid #9b59b6;
+  padding-bottom: 10px;
+}
+
+.announcements-content {
+  min-height: 200px;
+}
+
+.announcements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.announcement-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  border-left: 4px solid #ddd;
+}
+
+.announcement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.announcement-card.high {
+  border-left-color: #e74c3c;
+  background: #fff5f5;
+}
+
+.announcement-card.normal {
+  border-left-color: #3498db;
+  background: #f8fcff;
+}
+
+.announcement-card.low {
+  border-left-color: #95a5a6;
+  background: #f8f9fa;
+}
+
+.announcement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.announcement-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.announcement-title {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.announcement-priority {
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+}
+
+.announcement-priority.high {
+  background: #e74c3c;
+  color: white;
+}
+
+.announcement-priority.normal {
+  background: #3498db;
+  color: white;
+}
+
+.announcement-priority.low {
+  background: #95a5a6;
+  color: white;
+}
+
+.announcement-meta {
+  text-align: right;
+}
+
+.announcement-date {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.announcement-class-info {
+  background: rgba(52, 152, 219, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.class-subject {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.class-details {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.announcement-message {
+  margin-bottom: 15px;
+}
+
+.announcement-message p {
+  color: #2c3e50;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.announcement-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.teacher-email {
+  font-style: italic;
+}
+
+.announcement-time {
+  font-weight: 500;
+}
+
+.no-announcements-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #7f8c8d;
+}
+
+.no-announcements-message p {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.no-announcements-message span {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments for announcements */
+@media (max-width: 768px) {
+  .announcement-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .announcement-meta {
+    text-align: left;
+    align-self: flex-end;
+  }
+  
+  .announcement-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcements-section {
+    padding: 15px;
+  }
+  
+  .announcement-card {
+    padding: 15px;
+  }
+  
+  .announcement-title {
+    font-size: 1rem;
+  }
+  
+  .announcement-class-info {
+    padding: 8px;
+  }
+}
