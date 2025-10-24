@@ -211,4 +211,22 @@ export class StudentController {
       email,
     );
   }
+
+  @Get(':studentId/lecture-notes')
+  async getLectureNotesForStudentClasses(
+    @Param('studentId') studentId: string,
+  ) {
+    return await this.studentService.getLectureNotesForStudentClasses(
+      +studentId,
+    );
+  }
+
+  @Get('email/:email/lecture-notes')
+  async getLectureNotesForStudentClassesByEmail(
+    @Param('email') email: string,
+  ) {
+    return await this.studentService.getLectureNotesForStudentClassesByEmail(
+      email,
+    );
+  }
 }

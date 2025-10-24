@@ -7,6 +7,7 @@ import { UserService } from '../user/user.service';
 import { Class } from '../class/class.entity';
 import { Payment } from '../payment/payment.entity';
 import { Announcement } from '../announcement/announcement.entity';
+import { LectureNote } from '../lecture-notes/lecture-note.entity';
 import * as QRCode from 'qrcode';
 
 @Injectable()
@@ -20,6 +21,8 @@ export class StudentService {
     private paymentRepository: Repository<Payment>,
     @InjectRepository(Announcement)
     private announcementRepository: Repository<Announcement>,
+    @InjectRepository(LectureNote)
+    private lectureNoteRepository: Repository<LectureNote>,
     private userService: UserService,
   ) {}
 
@@ -439,6 +442,71 @@ export class StudentService {
         'Error fetching announcements for student classes by email:',
         error,
       );
+      return [];
+    }
+  }
+
+  async getLectureNotesForStudentClasses(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const studentClasses = await this.getAllClassesForStudent(studentId);
+      
+      if (studentClasses.length === 0) {
+        return [];
+      }
+
+      // Get class IDs
+      const classIds = studentClasses.map(cls => cls.id);
+
+      // Get lecture notes for these classes where the student is included
+      const lectureNotes = await this.lectureNoteRepository
+        .createQueryBuilder('lectureNote')
+        .where('lectureNote.classId IN (:...classIds)', { classIds })
+        .andWhere('JSON_CONTAINS(lectureNote.studentIds, :studentId)', {
+          studentId: JSON.stringify(studentId)
+        })
+        .orderBy('lectureNote.createdAt', 'DESC')
+        .getMany();
+
+      // Enrich lecture notes with class information
+      const enrichedLectureNotes = lectureNotes.map(lectureNote => {
+        const classInfo = studentClasses.find(cls => cls.id === lectureNote.classId);
+        return {
+          ...lectureNote,
+          classInfo: {
+            id: classInfo?.id,
+            subject: classInfo?.subject,
+            grade: classInfo?.grade,
+            teacherName: classInfo?.teacherName,
+            dayOfWeek: classInfo?.dayOfWeek,
+            startTime: classInfo?.startTime,
+            endTime: classInfo?.endTime
+          }
+        };
+      });
+
+      return enrichedLectureNotes;
+    } catch (error) {
+      console.error('Error fetching lecture notes for student classes:', error);
+      return [];
+    }
+  }
+
+  async getLectureNotesForStudentClassesByEmail(email: string): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getLectureNotesForStudentClasses(student.id);
+    } catch (error) {
+      console.error('Error fetching lecture notes for student classes by email:', error);
       return [];
     }
   }

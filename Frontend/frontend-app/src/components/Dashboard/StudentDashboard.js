@@ -8,10 +8,12 @@ const StudentDashboard = () => {
   const [allClasses, setAllClasses] = useState([]);
   const [classesWithPaymentStatus, setClassesWithPaymentStatus] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
+  const [lectureNotes, setLectureNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
   const [paymentStatusLoading, setPaymentStatusLoading] = useState(true);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [lectureNotesLoading, setLectureNotesLoading] = useState(true);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -22,6 +24,7 @@ const StudentDashboard = () => {
         setAllClassesLoading(true);
         setPaymentStatusLoading(true);
         setAnnouncementsLoading(true);
+        setLectureNotesLoading(true);
 
         // Get current user email
         const userEmail = accounts[0].username;
@@ -85,17 +88,34 @@ const StudentDashboard = () => {
           console.error("Failed to fetch announcements");
           setAnnouncements([]);
         }
+
+        // Fetch lecture notes for enrolled classes
+        const lectureNotesResponse = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/lecture-notes`
+        );
+
+        if (lectureNotesResponse.ok) {
+          const lectureNotesData = await lectureNotesResponse.json();
+          setLectureNotes(lectureNotesData);
+        } else {
+          console.error("Failed to fetch lecture notes");
+          setLectureNotes([]);
+        }
       } catch (error) {
         console.error("Error fetching classes:", error);
         setTodayClasses([]);
         setAllClasses([]);
         setClassesWithPaymentStatus([]);
         setAnnouncements([]);
+        setLectureNotes([]);
       } finally {
         setLoading(false);
         setAllClassesLoading(false);
         setPaymentStatusLoading(false);
         setAnnouncementsLoading(false);
+        setLectureNotesLoading(false);
       }
     };
 
@@ -240,6 +260,37 @@ const StudentDashboard = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleDownloadNote = async (noteId, fileName) => {
+    try {
+      const response = await fetch(`http://localhost:8000/lecture-notes/download/${noteId}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } else {
+        console.error('Failed to download lecture note');
+        alert('Failed to download the file. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error downloading lecture note:', error);
+      alert('Error downloading the file. Please try again.');
+    }
   };
 
   return (
@@ -520,6 +571,77 @@ const StudentDashboard = () => {
                 <span>
                   Your teachers will post important updates and announcements
                   here.
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Lecture Notes */}
+        <div className="lecture-notes-section">
+          <h2>Class Lecture Notes</h2>
+          <div className="lecture-notes-content">
+            {lectureNotesLoading ? (
+              <div className="loading-message">Loading lecture notes...</div>
+            ) : lectureNotes.length > 0 ? (
+              <div className="lecture-notes-list">
+                {lectureNotes.map((note) => (
+                  <div key={note.id} className="lecture-note-card">
+                    <div className="lecture-note-header">
+                      <div className="note-title-section">
+                        <h4 className="lecture-note-title">{note.title}</h4>
+                        <span className="note-file-name">📄 {note.fileName}</span>
+                      </div>
+                      <div className="note-meta">
+                        <span className="note-date">
+                          {formatAnnouncementDate(note.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="lecture-note-class-info">
+                      <span className="class-subject">
+                        📚 {note.classInfo?.subject || 'Unknown Subject'}
+                      </span>
+                      <span className="class-details">
+                        Grade {note.classInfo?.grade || 'N/A'} • 
+                        👨‍🏫 {note.classInfo?.teacherName || 'Unknown Teacher'}
+                      </span>
+                    </div>
+                    {note.description && (
+                      <div className="lecture-note-description">
+                        <p>{note.description}</p>
+                      </div>
+                    )}
+                    <div className="lecture-note-details">
+                      <div className="note-detail-item">
+                        <span className="detail-label">File Size:</span>
+                        <span className="detail-value">{formatFileSize(note.fileSize)}</span>
+                      </div>
+                      <div className="note-detail-item">
+                        <span className="detail-label">Uploaded:</span>
+                        <span className="detail-value">{formatAnnouncementTime(note.createdAt)}</span>
+                      </div>
+                    </div>
+                    <div className="lecture-note-actions">
+                      <button 
+                        className="download-btn"
+                        onClick={() => handleDownloadNote(note.id, note.fileName)}
+                      >
+                        <span className="btn-icon">⬇️</span>
+                        Download PDF
+                      </button>
+                      <small className="teacher-attribution">
+                        Shared by: {note.teacherEmail}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="no-lecture-notes-message">
+                <p>📚 No lecture notes available!</p>
+                <span>
+                  Your teachers will share study materials and lecture notes here.
                 </span>
               </div>
             )}
