@@ -29,11 +29,15 @@ const StudentLectureNotes = () => {
           const lectureNotesData = await lectureNotesResponse.json();
           setLectureNotes(lectureNotesData);
           setFilteredNotes(lectureNotesData);
-          
+
           // Extract unique subjects for filter
-          const subjects = [...new Set(lectureNotesData.map(note => 
-            note.classInfo?.subject || "Unknown Subject"
-          ))].sort();
+          const subjects = [
+            ...new Set(
+              lectureNotesData.map(
+                (note) => note.classInfo?.subject || "Unknown Subject"
+              )
+            ),
+          ].sort();
           setAvailableSubjects(subjects);
         } else {
           console.error("Failed to fetch lecture notes");
@@ -57,8 +61,9 @@ const StudentLectureNotes = () => {
     if (selectedSubject === "All") {
       setFilteredNotes(lectureNotes);
     } else {
-      const filtered = lectureNotes.filter(note => 
-        (note.classInfo?.subject || "Unknown Subject") === selectedSubject
+      const filtered = lectureNotes.filter(
+        (note) =>
+          (note.classInfo?.subject || "Unknown Subject") === selectedSubject
       );
       setFilteredNotes(filtered);
     }
@@ -149,7 +154,7 @@ const StudentLectureNotes = () => {
             </select>
           </div>
         </div>
-        
+
         <div className="lecture-notes-content">
           {lectureNotesLoading ? (
             <div className="loading-message">Loading lecture notes...</div>
@@ -205,7 +210,8 @@ const StudentLectureNotes = () => {
                 <>
                   <p>📚 No lecture notes available!</p>
                   <span>
-                    Your teachers will share study materials and lecture notes here.
+                    Your teachers will share study materials and lecture notes
+                    here.
                   </span>
                 </>
               ) : (

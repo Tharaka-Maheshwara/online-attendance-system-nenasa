@@ -233,42 +233,42 @@
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .lecture-notes-header h2 {
     font-size: 20px;
   }
-  
+
   .filter-section {
     width: 100%;
     justify-content: space-between;
     padding: 10px 14px;
   }
-  
+
   .subject-filter-dropdown {
     min-width: 120px;
     flex: 1;
     max-width: 200px;
   }
-  
+
   .lecture-notes-grid {
     grid-template-columns: 1fr;
     gap: 16px;
     padding: 16px 0;
   }
-  
+
   .lecture-note-compact-card {
     padding: 16px;
   }
-  
+
   .note-card-header {
     gap: 10px;
     margin-bottom: 12px;
   }
-  
+
   .note-title {
     font-size: 15px;
   }
-  
+
   .class-meta {
     gap: 8px;
     margin-bottom: 10px;
@@ -279,46 +279,46 @@
   .lecture-notes-header h2 {
     font-size: 18px;
   }
-  
+
   .filter-section {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  
+
   .filter-label {
     text-align: center;
   }
-  
+
   .subject-filter-dropdown {
     min-width: auto;
     max-width: none;
   }
-  
+
   .lecture-notes-grid {
     gap: 12px;
   }
-  
+
   .lecture-note-compact-card {
     padding: 14px;
   }
-  
+
   .file-icon {
     font-size: 20px;
     padding: 6px;
     min-width: 32px;
   }
-  
+
   .note-title {
     font-size: 14px;
   }
-  
+
   .class-meta {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
   }
-}/* Loading and Empty States */
+} /* Loading and Empty States */
 .loading-message,
 .no-lecture-notes-message {
   text-align: center;
