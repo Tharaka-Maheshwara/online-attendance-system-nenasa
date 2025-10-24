@@ -6,10 +6,8 @@ const StudentDashboard = () => {
   const { accounts } = useMsal();
   const [todayClasses, setTodayClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
-  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
-  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -18,7 +16,6 @@ const StudentDashboard = () => {
       try {
         setLoading(true);
         setAllClassesLoading(true);
-        setAnnouncementsLoading(true);
 
         // Get current user email
         const userEmail = accounts[0].username;
@@ -55,31 +52,16 @@ const StudentDashboard = () => {
 
         
 
-        // Fetch announcements for enrolled classes
-        const announcementsResponse = await fetch(
-          `http://localhost:8000/student/email/${encodeURIComponent(
-            userEmail
-          )}/announcements`
-        );
-
-        if (announcementsResponse.ok) {
-          const announcementsData = await announcementsResponse.json();
-          setAnnouncements(announcementsData);
-        } else {
-          console.error("Failed to fetch announcements");
-          setAnnouncements([]);
-        }
+        
 
         
       } catch (error) {
         console.error("Error fetching classes:", error);
         setTodayClasses([]);
         setAllClasses([]);
-        setAnnouncements([]);
       } finally {
         setLoading(false);
         setAllClassesLoading(false);
-        setAnnouncementsLoading(false);
       }
     };
 
@@ -166,39 +148,6 @@ const StudentDashboard = () => {
     ];
   };
 
-  const getPriorityText = (priority) => {
-    const priorityTexts = {
-      low: "Low",
-      normal: "Normal",
-      high: "High",
-    };
-    return priorityTexts[priority] || "Normal";
-  };
-
-  const formatAnnouncementDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) {
-      return "Today";
-    } else if (diffDays === 2) {
-      return "Yesterday";
-    } else if (diffDays <= 7) {
-      return `${diffDays - 1} days ago`;
-    } else {
-      return date.toLocaleDateString();
-    }
-  };
-
-  const formatAnnouncementTime = (dateString) => {
-    return new Date(dateString).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <div className="student-dashboard">
       <div className="dashboard-grid">
@@ -277,60 +226,57 @@ const StudentDashboard = () => {
             {allClassesLoading ? (
               <div className="loading-message">Loading your classes...</div>
             ) : allClasses.length > 0 ? (
-              <div className="classes-by-day">
+              <div className="classes-cards-grid">
                 {getDayOrder().map((day) => {
                   const dayClasses = allClasses.filter(
                     (cls) => cls.dayOfWeek === day
                   );
                   if (dayClasses.length === 0) return null;
 
-                  return (
-                    <div key={day} className="day-schedule">
-                      <h3 className="day-header">
-                        <span className="day-name">{getDayName(day)}</span>
-                        <span className="day-full-name">{day}</span>
-                      </h3>
-                      <div className="day-classes">
-                        {dayClasses.map((cls) => (
-                          <div key={cls.id} className="class-card">
-                            <div className="class-header">
-                              <h4 className="subject-title">{cls.subject}</h4>
-                              <span className="class-time">
-                                {cls.startTime
-                                  ? formatTime(cls.startTime)
-                                  : "TBA"}
-                                {cls.endTime && ` - ${formatTime(cls.endTime)}`}
-                              </span>
-                            </div>
-                            <div className="class-details">
-                              <div className="class-detail-item">
-                                <span className="detail-label">Grade:</span>
-                                <span className="detail-value">
-                                  {cls.grade || "N/A"}
-                                </span>
-                              </div>
-                              <div className="class-detail-item">
-                                <span className="detail-label">Teacher:</span>
-                                <span className="detail-value">
-                                  {cls.teacherName || "TBA"}
-                                </span>
-                              </div>
-                              {cls.monthlyFees && (
-                                <div className="class-detail-item">
-                                  <span className="detail-label">
-                                    Monthly Fee:
-                                  </span>
-                                  <span className="detail-value">
-                                    Rs. {cls.monthlyFees}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+                  return dayClasses.map((cls) => (
+                    <div key={cls.id} className="class-card">
+                      <div className="card-header">
+                        <div className="day-badge">
+                          <span className="day-short">{getDayName(day)}</span>
+                          <span className="day-full">{day}</span>
+                        </div>
+                        <div className="time-badge">
+                          {cls.startTime ? formatTime(cls.startTime) : "TBA"}
+                          {cls.endTime && ` - ${formatTime(cls.endTime)}`}
+                        </div>
+                      </div>
+                      
+                      <div className="card-content">
+                        <h3 className="subject-title">{cls.subject}</h3>
+                        
+                        <div className="class-details">
+                          <div className="detail-row">
+                            <span className="detail-label">Grade:</span>
+                            <span className="grade-badge">{cls.grade || "N/A"}</span>
                           </div>
-                        ))}
+                          
+                          <div className="detail-row">
+                            <span className="detail-label">Teacher:</span>
+                            <span className="detail-value">{cls.teacherName || "TBA"}</span>
+                          </div>
+                          
+                          <div className="detail-row">
+                            <span className="detail-label">Monthly Fee:</span>
+                            <span className="fee-value">
+                              {cls.monthlyFees ? `Rs. ${cls.monthlyFees}` : "N/A"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="card-footer">
+                        <div className="class-status">
+                          <span className="status-dot active"></span>
+                          <span className="status-text">Active</span>
+                        </div>
                       </div>
                     </div>
-                  );
+                  ));
                 })}
               </div>
             ) : (
@@ -346,69 +292,7 @@ const StudentDashboard = () => {
 
         
 
-        {/* Announcements */}
-        <div className="announcements-section">
-          <h2>Class Announcements</h2>
-          <div className="announcements-content">
-            {announcementsLoading ? (
-              <div className="loading-message">Loading announcements...</div>
-            ) : announcements.length > 0 ? (
-              <div className="announcements-list">
-                {announcements.map((announcement) => (
-                  <div key={announcement.id} className="announcement-card">
-                    <div className="announcement-header">
-                      <div className="announcement-title-section">
-                        <h4 className="announcement-title">
-                          {announcement.title}
-                        </h4>
-                        <span
-                          className={`announcement-priority ${announcement.priority}`}
-                        >
-                          {getPriorityText(announcement.priority)}
-                        </span>
-                      </div>
-                      <div className="announcement-meta">
-                        <span className="announcement-date">
-                          {formatAnnouncementDate(announcement.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="announcement-class-info">
-                      <span className="class-subject">
-                        📚{" "}
-                        {announcement.classInfo?.subject || "Unknown Subject"}
-                      </span>
-                      <span className="class-details">
-                        Grade {announcement.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
-                        {announcement.classInfo?.teacherName ||
-                          "Unknown Teacher"}
-                      </span>
-                    </div>
-                    <div className="announcement-message">
-                      <p>{announcement.message}</p>
-                    </div>
-                    <div className="announcement-footer">
-                      <small className="teacher-email">
-                        From: {announcement.teacherEmail}
-                      </small>
-                      <small className="announcement-time">
-                        {formatAnnouncementTime(announcement.createdAt)}
-                      </small>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-announcements-message">
-                <p>📢 No announcements yet!</p>
-                <span>
-                  Your teachers will post important updates and announcements
-                  here.
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+        
 
         
 

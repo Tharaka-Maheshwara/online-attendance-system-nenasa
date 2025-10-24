@@ -107,6 +107,14 @@ const Navbar = () => {
                 >
                   Lecture Notes
                 </Link>
+                <Link
+                  to="/announcements"
+                  className={`nav-link ${
+                    isActive("/announcements") ? "active" : ""
+                  }`}
+                >
+                  Announcements
+                </Link>
               </>
             )}
 
