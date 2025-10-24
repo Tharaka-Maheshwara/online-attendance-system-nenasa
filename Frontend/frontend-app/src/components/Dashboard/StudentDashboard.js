@@ -119,21 +119,21 @@ const StudentDashboard = () => {
 
   const getDayName = (dayOfWeek) => {
     const days = {
-      'Sunday': 'Sun',
-      'Monday': 'Mon', 
-      'Tuesday': 'Tue',
-      'Wednesday': 'Wed',
-      'Thursday': 'Thu',
-      'Friday': 'Fri',
-      'Saturday': 'Sat'
+      Sunday: "Sun",
+      Monday: "Mon",
+      Tuesday: "Tue",
+      Wednesday: "Wed",
+      Thursday: "Thu",
+      Friday: "Fri",
+      Saturday: "Sat",
     };
     return days[dayOfWeek] || dayOfWeek;
   };
 
   const groupClassesByDay = (classes) => {
     const grouped = {};
-    classes.forEach(cls => {
-      const day = cls.dayOfWeek || 'TBA';
+    classes.forEach((cls) => {
+      const day = cls.dayOfWeek || "TBA";
       if (!grouped[day]) {
         grouped[day] = [];
       }
@@ -143,7 +143,15 @@ const StudentDashboard = () => {
   };
 
   const getDayOrder = () => {
-    return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    return [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
   };
   return (
     <div className="student-dashboard">
@@ -224,10 +232,12 @@ const StudentDashboard = () => {
               <div className="loading-message">Loading your classes...</div>
             ) : allClasses.length > 0 ? (
               <div className="classes-by-day">
-                {getDayOrder().map(day => {
-                  const dayClasses = allClasses.filter(cls => cls.dayOfWeek === day);
+                {getDayOrder().map((day) => {
+                  const dayClasses = allClasses.filter(
+                    (cls) => cls.dayOfWeek === day
+                  );
                   if (dayClasses.length === 0) return null;
-                  
+
                   return (
                     <div key={day} className="day-schedule">
                       <h3 className="day-header">
@@ -235,28 +245,38 @@ const StudentDashboard = () => {
                         <span className="day-full-name">{day}</span>
                       </h3>
                       <div className="day-classes">
-                        {dayClasses.map(cls => (
+                        {dayClasses.map((cls) => (
                           <div key={cls.id} className="class-card">
                             <div className="class-header">
                               <h4 className="subject-title">{cls.subject}</h4>
                               <span className="class-time">
-                                {cls.startTime ? formatTime(cls.startTime) : 'TBA'}
+                                {cls.startTime
+                                  ? formatTime(cls.startTime)
+                                  : "TBA"}
                                 {cls.endTime && ` - ${formatTime(cls.endTime)}`}
                               </span>
                             </div>
                             <div className="class-details">
                               <div className="class-detail-item">
                                 <span className="detail-label">Grade:</span>
-                                <span className="detail-value">{cls.grade || 'N/A'}</span>
+                                <span className="detail-value">
+                                  {cls.grade || "N/A"}
+                                </span>
                               </div>
                               <div className="class-detail-item">
                                 <span className="detail-label">Teacher:</span>
-                                <span className="detail-value">{cls.teacherName || 'TBA'}</span>
+                                <span className="detail-value">
+                                  {cls.teacherName || "TBA"}
+                                </span>
                               </div>
                               {cls.monthlyFees && (
                                 <div className="class-detail-item">
-                                  <span className="detail-label">Monthly Fee:</span>
-                                  <span className="detail-value">Rs. {cls.monthlyFees}</span>
+                                  <span className="detail-label">
+                                    Monthly Fee:
+                                  </span>
+                                  <span className="detail-value">
+                                    Rs. {cls.monthlyFees}
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -270,7 +290,9 @@ const StudentDashboard = () => {
             ) : (
               <div className="no-classes-message">
                 <p>📚 No classes found!</p>
-                <span>Please contact your administrator to enroll in classes.</span>
+                <span>
+                  Please contact your administrator to enroll in classes.
+                </span>
               </div>
             )}
           </div>

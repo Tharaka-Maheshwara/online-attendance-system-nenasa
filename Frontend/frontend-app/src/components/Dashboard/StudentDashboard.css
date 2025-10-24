@@ -532,17 +532,17 @@
   .day-classes {
     grid-template-columns: 1fr;
   }
-  
+
   .class-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .class-time {
     align-self: flex-start;
   }
-  
+
   .class-detail-item {
     flex-direction: column;
     align-items: flex-start;
