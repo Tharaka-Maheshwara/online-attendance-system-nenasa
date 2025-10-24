@@ -6,6 +6,9 @@ import "./StudentLectureNotes.css"; // Custom styles for lecture notes
 const StudentLectureNotes = () => {
   const { accounts } = useMsal();
   const [lectureNotes, setLectureNotes] = useState([]);
+  const [filteredNotes, setFilteredNotes] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("All");
+  const [availableSubjects, setAvailableSubjects] = useState([]);
   const [lectureNotesLoading, setLectureNotesLoading] = useState(true);
 
   useEffect(() => {
@@ -25,13 +28,22 @@ const StudentLectureNotes = () => {
         if (lectureNotesResponse.ok) {
           const lectureNotesData = await lectureNotesResponse.json();
           setLectureNotes(lectureNotesData);
+          setFilteredNotes(lectureNotesData);
+          
+          // Extract unique subjects for filter
+          const subjects = [...new Set(lectureNotesData.map(note => 
+            note.classInfo?.subject || "Unknown Subject"
+          ))].sort();
+          setAvailableSubjects(subjects);
         } else {
           console.error("Failed to fetch lecture notes");
           setLectureNotes([]);
+          setFilteredNotes([]);
         }
       } catch (error) {
         console.error("Error fetching lecture notes:", error);
         setLectureNotes([]);
+        setFilteredNotes([]);
       } finally {
         setLectureNotesLoading(false);
       }
@@ -39,6 +51,22 @@ const StudentLectureNotes = () => {
 
     fetchLectureNotes();
   }, [accounts]);
+
+  // Filter notes when selected subject changes
+  useEffect(() => {
+    if (selectedSubject === "All") {
+      setFilteredNotes(lectureNotes);
+    } else {
+      const filtered = lectureNotes.filter(note => 
+        (note.classInfo?.subject || "Unknown Subject") === selectedSubject
+      );
+      setFilteredNotes(filtered);
+    }
+  }, [selectedSubject, lectureNotes]);
+
+  const handleSubjectChange = (event) => {
+    setSelectedSubject(event.target.value);
+  };
 
   const formatAnnouncementDate = (dateString) => {
     const date = new Date(dateString);
@@ -100,13 +128,34 @@ const StudentLectureNotes = () => {
   return (
     <div className="student-dashboard">
       <div className="lecture-notes-section">
-        <h2>Class Lecture Notes</h2>
+        <div className="lecture-notes-header">
+          <h2>Class Lecture Notes</h2>
+          <div className="filter-section">
+            <label htmlFor="subject-filter" className="filter-label">
+              📚 Filter by Subject:
+            </label>
+            <select
+              id="subject-filter"
+              value={selectedSubject}
+              onChange={handleSubjectChange}
+              className="subject-filter-dropdown"
+            >
+              <option value="All">All Subjects</option>
+              {availableSubjects.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
         <div className="lecture-notes-content">
           {lectureNotesLoading ? (
             <div className="loading-message">Loading lecture notes...</div>
-          ) : lectureNotes.length > 0 ? (
+          ) : filteredNotes.length > 0 ? (
             <div className="lecture-notes-grid">
-              {lectureNotes.map((note) => (
+              {filteredNotes.map((note) => (
                 <div key={note.id} className="lecture-note-compact-card">
                   <div className="note-card-header">
                     <div className="file-icon">📄</div>
@@ -152,10 +201,21 @@ const StudentLectureNotes = () => {
             </div>
           ) : (
             <div className="no-lecture-notes-message">
-              <p>📚 No lecture notes available!</p>
-              <span>
-                Your teachers will share study materials and lecture notes here.
-              </span>
+              {selectedSubject === "All" ? (
+                <>
+                  <p>📚 No lecture notes available!</p>
+                  <span>
+                    Your teachers will share study materials and lecture notes here.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <p>📚 No lecture notes found for {selectedSubject}!</p>
+                  <span>
+                    Try selecting a different subject or check back later.
+                  </span>
+                </>
+              )}
             </div>
           )}
         </div>
