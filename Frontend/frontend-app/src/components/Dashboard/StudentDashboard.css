@@ -116,68 +116,191 @@
   gap: 15px;
 }
 
-.schedule-item {
+.today-class-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.today-class-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.today-class-card.completed {
+  border-color: #27ae60;
+  background: linear-gradient(135deg, #d5f4e6 0%, #a8e6cf 100%);
+}
+
+.today-class-card.current {
+  border-color: #f39c12;
+  background: linear-gradient(135deg, #fef5e7 0%, #fce4ba 100%);
+  box-shadow: 0 4px 20px rgba(243, 156, 18, 0.3);
+}
+
+.today-class-card.upcoming {
+  border-color: #3498db;
+  background: linear-gradient(135deg, #ebf3fd 0%, #d6eaff 100%);
+}
+
+.class-time-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time-display {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
-  border-radius: 10px;
-  border-left: 4px solid #ecf0f1;
-  background: #f8f9fa;
-  transition: all 0.2s ease;
+  gap: 8px;
+  color: white;
 }
 
-.schedule-item.completed {
-  border-left-color: #27ae60;
-  background: #d5f4e6;
+.start-time, .end-time {
+  font-weight: 700;
+  font-size: 1rem;
 }
 
-.schedule-item.current {
-  border-left-color: #f39c12;
-  background: #fef5e7;
-  box-shadow: 0 2px 10px rgba(243, 156, 18, 0.2);
-}
-
-.schedule-item.upcoming {
-  border-left-color: #3498db;
-  background: #ebf3fd;
-}
-
-.time-slot {
-  font-weight: 600;
-  color: #2c3e50;
-  min-width: 80px;
-  font-size: 0.9rem;
-}
-
-.class-info {
-  flex: 1;
-}
-
-.class-info h4 {
-  margin: 0 0 5px 0;
-  color: #2c3e50;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.class-info p {
-  margin: 2px 0;
-  color: #7f8c8d;
-  font-size: 0.9rem;
-}
-
-.attendance-status {
-  min-width: 100px;
-  text-align: right;
+.time-separator {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.completed {
+  background: #27ae60;
+  color: white;
+}
+
+.status-badge.current {
+  background: #f39c12;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.status-badge.upcoming {
+  background: #3498db;
+  color: white;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.class-details-section {
+  padding: 20px;
+}
+
+.subject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.subject-name {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.grade-badge {
+  background: #e74c3c;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  text-transform: uppercase;
+}
+
+.teacher-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-label {
+  color: #7f8c8d;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.teacher-name {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.no-classes-message {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.no-classes-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.no-classes-title {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.no-classes-subtitle {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Responsive Design for Today's Classes */
+@media (max-width: 768px) {
+  .todays-schedule {
+    padding: 15px;
+  }
+  
+  .class-time-section {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 15px;
+  }
+  
+  .status-badge {
+    align-self: flex-end;
+  }
+  
+  .class-details-section {
+    padding: 15px;
+  }
+  
+  .subject-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .grade-badge {
+    align-self: flex-end;
+  }
 }
 
 .status-badge.present {

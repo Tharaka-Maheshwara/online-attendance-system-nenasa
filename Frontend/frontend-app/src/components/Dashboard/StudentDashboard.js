@@ -186,28 +186,41 @@ const StudentDashboard = () => {
               todayClasses.map((cls) => {
                 const status = getClassStatus(cls.startTime, cls.endTime);
                 return (
-                  <div className={`schedule-item ${status}`} key={cls.id}>
-                    <div className="time-slot">
-                      {cls.startTime ? formatTime(cls.startTime) : "TBA"}
-                      {cls.endTime && ` - ${formatTime(cls.endTime)}`}
-                    </div>
-                    <div className="class-info">
-                      <h4>{cls.subject}</h4>
-                      <p>Grade: {cls.grade || "N/A"}</p>
-                      <p>Teacher: {cls.teacherName || "TBA"}</p>
-                    </div>
-                    <div className="attendance-status">
-                      <span className={getStatusBadgeClass(status)}>
+                  <div className={`today-class-card ${status}`} key={cls.id}>
+                    <div className="class-time-section">
+                      <div className="time-display">
+                        <span className="start-time">
+                          {cls.startTime ? formatTime(cls.startTime) : "TBA"}
+                        </span>
+                        <span className="time-separator">-</span>
+                        <span className="end-time">
+                          {cls.endTime ? formatTime(cls.endTime) : "TBA"}
+                        </span>
+                      </div>
+                      <div className={`status-badge ${status}`}>
                         {getStatusText(status)}
-                      </span>
+                      </div>
+                    </div>
+                    
+                    <div className="class-details-section">
+                      <div className="subject-header">
+                        <h3 className="subject-name">{cls.subject}</h3>
+                        <span className="grade-badge">Grade {cls.grade || "N/A"}</span>
+                      </div>
+                      
+                      <div className="teacher-info">
+                        <span className="teacher-label">Teacher:</span>
+                        <span className="teacher-name">{cls.teacherName || "TBA"}</span>
+                      </div>
                     </div>
                   </div>
                 );
               })
             ) : (
               <div className="no-classes-message">
-                <p>🎉 No classes scheduled for today!</p>
-                <span>Enjoy your free day or catch up on your studies.</span>
+                <div className="no-classes-icon">🎉</div>
+                <p className="no-classes-title">No classes scheduled for today!</p>
+                <span className="no-classes-subtitle">Enjoy your free day or catch up on your studies.</span>
               </div>
             )}
           </div>
