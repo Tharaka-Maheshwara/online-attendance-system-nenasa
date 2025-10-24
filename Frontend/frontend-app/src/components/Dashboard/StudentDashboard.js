@@ -213,7 +213,7 @@ const StudentDashboard = () => {
     const priorityTexts = {
       low: "Low",
       normal: "Normal",
-      high: "High"
+      high: "High",
     };
     return priorityTexts[priority] || "Normal";
   };
@@ -237,8 +237,8 @@ const StudentDashboard = () => {
 
   const formatAnnouncementTime = (dateString) => {
     return new Date(dateString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit'
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -474,8 +474,12 @@ const StudentDashboard = () => {
                   <div key={announcement.id} className="announcement-card">
                     <div className="announcement-header">
                       <div className="announcement-title-section">
-                        <h4 className="announcement-title">{announcement.title}</h4>
-                        <span className={`announcement-priority ${announcement.priority}`}>
+                        <h4 className="announcement-title">
+                          {announcement.title}
+                        </h4>
+                        <span
+                          className={`announcement-priority ${announcement.priority}`}
+                        >
                           {getPriorityText(announcement.priority)}
                         </span>
                       </div>
@@ -487,11 +491,13 @@ const StudentDashboard = () => {
                     </div>
                     <div className="announcement-class-info">
                       <span className="class-subject">
-                        📚 {announcement.classInfo?.subject || 'Unknown Subject'}
+                        📚{" "}
+                        {announcement.classInfo?.subject || "Unknown Subject"}
                       </span>
                       <span className="class-details">
-                        Grade {announcement.classInfo?.grade || 'N/A'} • 
-                        👨‍🏫 {announcement.classInfo?.teacherName || 'Unknown Teacher'}
+                        Grade {announcement.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
+                        {announcement.classInfo?.teacherName ||
+                          "Unknown Teacher"}
                       </span>
                     </div>
                     <div className="announcement-message">
@@ -512,7 +518,8 @@ const StudentDashboard = () => {
               <div className="no-announcements-message">
                 <p>📢 No announcements yet!</p>
                 <span>
-                  Your teachers will post important updates and announcements here.
+                  Your teachers will post important updates and announcements
+                  here.
                 </span>
               </div>
             )}

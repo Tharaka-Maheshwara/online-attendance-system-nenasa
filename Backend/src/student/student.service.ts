@@ -375,27 +375,29 @@ export class StudentService {
     try {
       // Get all classes the student is enrolled in
       const studentClasses = await this.getAllClassesForStudent(studentId);
-      
+
       if (studentClasses.length === 0) {
         return [];
       }
 
       // Get class IDs
-      const classIds = studentClasses.map(cls => cls.id);
+      const classIds = studentClasses.map((cls) => cls.id);
 
       // Get announcements for these classes where the student is included
       const announcements = await this.announcementRepository
         .createQueryBuilder('announcement')
         .where('announcement.classId IN (:...classIds)', { classIds })
         .andWhere('JSON_CONTAINS(announcement.studentIds, :studentId)', {
-          studentId: JSON.stringify(studentId)
+          studentId: JSON.stringify(studentId),
         })
         .orderBy('announcement.createdAt', 'DESC')
         .getMany();
 
       // Enrich announcements with class information
-      const enrichedAnnouncements = announcements.map(announcement => {
-        const classInfo = studentClasses.find(cls => cls.id === announcement.classId);
+      const enrichedAnnouncements = announcements.map((announcement) => {
+        const classInfo = studentClasses.find(
+          (cls) => cls.id === announcement.classId,
+        );
         return {
           ...announcement,
           classInfo: {
@@ -405,8 +407,8 @@ export class StudentService {
             teacherName: classInfo?.teacherName,
             dayOfWeek: classInfo?.dayOfWeek,
             startTime: classInfo?.startTime,
-            endTime: classInfo?.endTime
-          }
+            endTime: classInfo?.endTime,
+          },
         };
       });
 
@@ -417,7 +419,9 @@ export class StudentService {
     }
   }
 
-  async getAnnouncementsForStudentClassesByEmail(email: string): Promise<any[]> {
+  async getAnnouncementsForStudentClassesByEmail(
+    email: string,
+  ): Promise<any[]> {
     try {
       // Find student by email
       const student = await this.studentRepository.findOne({
@@ -431,7 +435,10 @@ export class StudentService {
       // Use the existing method with the student ID
       return await this.getAnnouncementsForStudentClasses(student.id);
     } catch (error) {
-      console.error('Error fetching announcements for student classes by email:', error);
+      console.error(
+        'Error fetching announcements for student classes by email:',
+        error,
+      );
       return [];
     }
   }

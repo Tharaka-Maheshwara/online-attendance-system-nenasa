@@ -1060,12 +1060,12 @@
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .announcement-meta {
     text-align: left;
     align-self: flex-end;
   }
-  
+
   .announcement-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -1077,15 +1077,15 @@
   .announcements-section {
     padding: 15px;
   }
-  
+
   .announcement-card {
     padding: 15px;
   }
-  
+
   .announcement-title {
     font-size: 1rem;
   }
-  
+
   .announcement-class-info {
     padding: 8px;
   }
