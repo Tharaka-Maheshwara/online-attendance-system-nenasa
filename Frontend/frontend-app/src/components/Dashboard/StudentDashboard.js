@@ -268,13 +268,6 @@ const StudentDashboard = () => {
                           </div>
                         </div>
                       </div>
-
-                      <div className="card-footer">
-                        <div className="class-status">
-                          <span className="status-dot active"></span>
-                          <span className="status-text">Active</span>
-                        </div>
-                      </div>
                     </div>
                   ));
                 })}

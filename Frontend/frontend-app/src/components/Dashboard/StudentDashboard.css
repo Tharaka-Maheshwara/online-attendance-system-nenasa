@@ -719,39 +719,6 @@
   font-size: 1rem;
 }
 
-.card-footer {
-  background: #f8f9fa;
-  padding: 12px 20px;
-  border-top: 1px solid #e9ecef;
-}
-
-.class-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #27ae60;
-}
-
-.status-dot.active {
-  background: #27ae60;
-  box-shadow: 0 0 8px rgba(39, 174, 96, 0.4);
-}
-
-.status-text {
-  color: #27ae60;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 /* Responsive Design for Cards */
 @media (max-width: 768px) {
   .enrolled-classes {
