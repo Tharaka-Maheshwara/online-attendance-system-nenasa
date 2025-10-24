@@ -49,12 +49,6 @@ const StudentDashboard = () => {
           console.error("Failed to fetch all classes");
           setAllClasses([]);
         }
-
-        
-
-        
-
-        
       } catch (error) {
         console.error("Error fetching classes:", error);
         setTodayClasses([]);
@@ -245,30 +239,36 @@ const StudentDashboard = () => {
                           {cls.endTime && ` - ${formatTime(cls.endTime)}`}
                         </div>
                       </div>
-                      
+
                       <div className="card-content">
                         <h3 className="subject-title">{cls.subject}</h3>
-                        
+
                         <div className="class-details">
                           <div className="detail-row">
                             <span className="detail-label">Grade:</span>
-                            <span className="grade-badge">{cls.grade || "N/A"}</span>
+                            <span className="grade-badge">
+                              {cls.grade || "N/A"}
+                            </span>
                           </div>
-                          
+
                           <div className="detail-row">
                             <span className="detail-label">Teacher:</span>
-                            <span className="detail-value">{cls.teacherName || "TBA"}</span>
+                            <span className="detail-value">
+                              {cls.teacherName || "TBA"}
+                            </span>
                           </div>
-                          
+
                           <div className="detail-row">
                             <span className="detail-label">Monthly Fee:</span>
                             <span className="fee-value">
-                              {cls.monthlyFees ? `Rs. ${cls.monthlyFees}` : "N/A"}
+                              {cls.monthlyFees
+                                ? `Rs. ${cls.monthlyFees}`
+                                : "N/A"}
                             </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="card-footer">
                         <div className="class-status">
                           <span className="status-dot active"></span>
@@ -289,12 +289,6 @@ const StudentDashboard = () => {
             )}
           </div>
         </div>
-
-        
-
-        
-
-        
 
         {/* Quick Actions */}
         <div className="student-actions">

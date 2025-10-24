@@ -757,27 +757,27 @@
   .enrolled-classes {
     padding: 15px;
   }
-  
+
   .classes-cards-grid {
     grid-template-columns: 1fr;
     gap: 15px;
   }
-  
+
   .card-header {
     padding: 12px 15px;
     flex-direction: column;
     gap: 8px;
     align-items: flex-start;
   }
-  
+
   .time-badge {
     align-self: flex-end;
   }
-  
+
   .card-content {
     padding: 15px;
   }
-  
+
   .subject-title {
     font-size: 1.1rem;
   }
@@ -787,19 +787,19 @@
   .classes-cards-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .class-card {
     margin: 0 5px;
   }
-  
+
   .card-header {
     padding: 10px 15px;
   }
-  
+
   .card-content {
     padding: 12px;
   }
-  
+
   .detail-row {
     padding: 6px 0;
   }
