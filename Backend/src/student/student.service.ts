@@ -306,7 +306,7 @@ export class StudentService {
     try {
       // Get all classes the student is enrolled in
       const classes = await this.getAllClassesForStudent(studentId);
-      
+
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentYear = currentDate.getFullYear();
@@ -334,7 +334,7 @@ export class StudentService {
             currentMonth,
             currentYear,
           };
-        })
+        }),
       );
 
       return classesWithPaymentStatus;
@@ -344,7 +344,9 @@ export class StudentService {
     }
   }
 
-  async getStudentClassesWithPaymentStatusByEmail(email: string): Promise<any[]> {
+  async getStudentClassesWithPaymentStatusByEmail(
+    email: string,
+  ): Promise<any[]> {
     try {
       // Find student by email
       const student = await this.studentRepository.findOne({
@@ -358,7 +360,10 @@ export class StudentService {
       // Use the existing method with the student ID
       return await this.getStudentClassesWithPaymentStatus(student.id);
     } catch (error) {
-      console.error('Error fetching classes with payment status by email:', error);
+      console.error(
+        'Error fetching classes with payment status by email:',
+        error,
+      );
       return [];
     }
   }

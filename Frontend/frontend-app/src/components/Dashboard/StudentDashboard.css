@@ -846,13 +846,13 @@
   .payment-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .payment-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .payment-status {
     align-self: flex-end;
   }
@@ -862,11 +862,11 @@
   .payment-status-section {
     padding: 15px;
   }
-  
+
   .payment-card {
     padding: 15px;
   }
-  
+
   .payment-subject {
     font-size: 1rem;
   }
