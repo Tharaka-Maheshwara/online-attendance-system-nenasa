@@ -116,21 +116,29 @@ const StudentLectureNotes = () => {
                         {note.classInfo?.subject || "Unknown Subject"}
                       </span>
                     </div>
-                    <span className="note-time">{formatAnnouncementDate(note.createdAt)}</span>
+                    <span className="note-time">
+                      {formatAnnouncementDate(note.createdAt)}
+                    </span>
                   </div>
-                  
+
                   <div className="note-card-body">
                     <div className="class-meta">
-                      <span className="grade-tag">Grade {note.classInfo?.grade || "N/A"}</span>
-                      <span className="teacher-name">👨‍🏫 {note.classInfo?.teacherName || "Unknown Teacher"}</span>
+                      <span className="grade-tag">
+                        Grade {note.classInfo?.grade || "N/A"}
+                      </span>
+                      <span className="teacher-name">
+                        👨‍🏫 {note.classInfo?.teacherName || "Unknown Teacher"}
+                      </span>
                     </div>
-                    
+
                     <div className="file-details">
                       <span className="file-name">{note.fileName}</span>
-                      <span className="file-size">{formatFileSize(note.fileSize)}</span>
+                      <span className="file-size">
+                        {formatFileSize(note.fileSize)}
+                      </span>
                     </div>
                   </div>
-                  
+
                   <div className="note-card-footer">
                     <button
                       className="download-btn-compact"
@@ -146,8 +154,7 @@ const StudentLectureNotes = () => {
             <div className="no-lecture-notes-message">
               <p>📚 No lecture notes available!</p>
               <span>
-                Your teachers will share study materials and lecture notes
-                here.
+                Your teachers will share study materials and lecture notes here.
               </span>
             </div>
           )}

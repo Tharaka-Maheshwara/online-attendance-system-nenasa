@@ -171,20 +171,20 @@
     gap: 16px;
     padding: 16px 0;
   }
-  
+
   .lecture-note-compact-card {
     padding: 16px;
   }
-  
+
   .note-card-header {
     gap: 10px;
     margin-bottom: 12px;
   }
-  
+
   .note-title {
     font-size: 15px;
   }
-  
+
   .class-meta {
     gap: 8px;
     margin-bottom: 10px;
@@ -195,21 +195,21 @@
   .lecture-notes-grid {
     gap: 12px;
   }
-  
+
   .lecture-note-compact-card {
     padding: 14px;
   }
-  
+
   .file-icon {
     font-size: 20px;
     padding: 6px;
     min-width: 32px;
   }
-  
+
   .note-title {
     font-size: 14px;
   }
-  
+
   .class-meta {
     flex-direction: column;
     align-items: flex-start;
