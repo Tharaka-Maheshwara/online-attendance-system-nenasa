@@ -165,4 +165,14 @@ export class StudentController {
   async getTodayClassesForStudentByEmail(@Param('email') email: string) {
     return await this.studentService.getTodayClassesForStudentByEmail(email);
   }
+
+  @Get(':studentId/classes/all')
+  async getAllClassesForStudent(@Param('studentId') studentId: string) {
+    return await this.studentService.getAllClassesForStudent(+studentId);
+  }
+
+  @Get('email/:email/classes/all')
+  async getAllClassesForStudentByEmail(@Param('email') email: string) {
+    return await this.studentService.getAllClassesForStudentByEmail(email);
+  }
 }

@@ -242,4 +242,60 @@ export class StudentService {
       return [];
     }
   }
+
+  async getAllClassesForStudent(studentId: number): Promise<Class[]> {
+    try {
+      // Get student details
+      const student = await this.findOne(studentId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Get student's subjects
+      const studentSubjects = [
+        student.sub_1,
+        student.sub_2,
+        student.sub_3,
+        student.sub_4,
+        student.sub_5,
+        student.sub_6,
+      ].filter((subject) => subject && subject.trim() !== '');
+
+      if (studentSubjects.length === 0) {
+        return [];
+      }
+
+      // Find all classes for student's subjects
+      const allClasses = await this.classRepository
+        .createQueryBuilder('class')
+        .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .orderBy('class.dayOfWeek', 'ASC')
+        .addOrderBy('class.startTime', 'ASC')
+        .getMany();
+
+      return allClasses;
+    } catch (error) {
+      console.error('Error fetching all classes for student:', error);
+      return [];
+    }
+  }
+
+  async getAllClassesForStudentByEmail(email: string): Promise<Class[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getAllClassesForStudent(student.id);
+    } catch (error) {
+      console.error('Error fetching all classes for student by email:', error);
+      return [];
+    }
+  }
 }

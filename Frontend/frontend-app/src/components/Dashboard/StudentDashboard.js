@@ -5,41 +5,61 @@ import "./StudentDashboard.css";
 const StudentDashboard = () => {
   const { accounts } = useMsal();
   const [todayClasses, setTodayClasses] = useState([]);
+  const [allClasses, setAllClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [allClassesLoading, setAllClassesLoading] = useState(true);
 
   useEffect(() => {
-    const fetchTodayClasses = async () => {
+    const fetchClasses = async () => {
       if (!accounts || accounts.length === 0) return;
 
       try {
         setLoading(true);
+        setAllClassesLoading(true);
 
         // Get current user email
         const userEmail = accounts[0].username;
 
         // Fetch today's classes for this student
-        const response = await fetch(
+        const todayResponse = await fetch(
           `http://localhost:8000/student/email/${encodeURIComponent(
             userEmail
           )}/classes/today`
         );
 
-        if (response.ok) {
-          const classes = await response.json();
-          setTodayClasses(classes);
+        if (todayResponse.ok) {
+          const todayClassesData = await todayResponse.json();
+          setTodayClasses(todayClassesData);
         } else {
           console.error("Failed to fetch today's classes");
           setTodayClasses([]);
         }
+
+        // Fetch all classes for this student
+        const allResponse = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/classes/all`
+        );
+
+        if (allResponse.ok) {
+          const allClassesData = await allResponse.json();
+          setAllClasses(allClassesData);
+        } else {
+          console.error("Failed to fetch all classes");
+          setAllClasses([]);
+        }
       } catch (error) {
-        console.error("Error fetching today's classes:", error);
+        console.error("Error fetching classes:", error);
         setTodayClasses([]);
+        setAllClasses([]);
       } finally {
         setLoading(false);
+        setAllClassesLoading(false);
       }
     };
 
-    fetchTodayClasses();
+    fetchClasses();
   }, [accounts]);
 
   const formatTime = (timeString) => {
@@ -95,6 +115,35 @@ const StudentDashboard = () => {
       default:
         return "Upcoming";
     }
+  };
+
+  const getDayName = (dayOfWeek) => {
+    const days = {
+      'Sunday': 'Sun',
+      'Monday': 'Mon', 
+      'Tuesday': 'Tue',
+      'Wednesday': 'Wed',
+      'Thursday': 'Thu',
+      'Friday': 'Fri',
+      'Saturday': 'Sat'
+    };
+    return days[dayOfWeek] || dayOfWeek;
+  };
+
+  const groupClassesByDay = (classes) => {
+    const grouped = {};
+    classes.forEach(cls => {
+      const day = cls.dayOfWeek || 'TBA';
+      if (!grouped[day]) {
+        grouped[day] = [];
+      }
+      grouped[day].push(cls);
+    });
+    return grouped;
+  };
+
+  const getDayOrder = () => {
+    return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   };
   return (
     <div className="student-dashboard">
@@ -162,6 +211,66 @@ const StudentDashboard = () => {
               <div className="no-classes-message">
                 <p>🎉 No classes scheduled for today!</p>
                 <span>Enjoy your free day or catch up on your studies.</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* All Enrolled Classes */}
+        <div className="enrolled-classes">
+          <h2>My Enrolled Classes</h2>
+          <div className="classes-content">
+            {allClassesLoading ? (
+              <div className="loading-message">Loading your classes...</div>
+            ) : allClasses.length > 0 ? (
+              <div className="classes-by-day">
+                {getDayOrder().map(day => {
+                  const dayClasses = allClasses.filter(cls => cls.dayOfWeek === day);
+                  if (dayClasses.length === 0) return null;
+                  
+                  return (
+                    <div key={day} className="day-schedule">
+                      <h3 className="day-header">
+                        <span className="day-name">{getDayName(day)}</span>
+                        <span className="day-full-name">{day}</span>
+                      </h3>
+                      <div className="day-classes">
+                        {dayClasses.map(cls => (
+                          <div key={cls.id} className="class-card">
+                            <div className="class-header">
+                              <h4 className="subject-title">{cls.subject}</h4>
+                              <span className="class-time">
+                                {cls.startTime ? formatTime(cls.startTime) : 'TBA'}
+                                {cls.endTime && ` - ${formatTime(cls.endTime)}`}
+                              </span>
+                            </div>
+                            <div className="class-details">
+                              <div className="class-detail-item">
+                                <span className="detail-label">Grade:</span>
+                                <span className="detail-value">{cls.grade || 'N/A'}</span>
+                              </div>
+                              <div className="class-detail-item">
+                                <span className="detail-label">Teacher:</span>
+                                <span className="detail-value">{cls.teacherName || 'TBA'}</span>
+                              </div>
+                              {cls.monthlyFees && (
+                                <div className="class-detail-item">
+                                  <span className="detail-label">Monthly Fee:</span>
+                                  <span className="detail-value">Rs. {cls.monthlyFees}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="no-classes-message">
+                <p>📚 No classes found!</p>
+                <span>Please contact your administrator to enroll in classes.</span>
               </div>
             )}
           </div>
