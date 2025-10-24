@@ -134,8 +134,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .announcement-meta {
@@ -226,46 +231,46 @@
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .announcements-header h2 {
     font-size: 20px;
   }
-  
+
   .filter-section {
     width: 100%;
     justify-content: space-between;
     padding: 10px 14px;
   }
-  
+
   .subject-filter-dropdown {
     min-width: 120px;
     flex: 1;
     max-width: 200px;
   }
-  
+
   .announcement-card {
     padding: 16px;
   }
-  
+
   .announcement-header {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .announcement-meta {
     align-items: flex-start;
   }
-  
+
   .announcement-title {
     font-size: 16px;
   }
-  
+
   .class-details {
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
   }
-  
+
   .announcement-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -277,39 +282,39 @@
   .announcements-header h2 {
     font-size: 18px;
   }
-  
+
   .filter-section {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  
+
   .filter-label {
     text-align: center;
   }
-  
+
   .subject-filter-dropdown {
     min-width: auto;
     max-width: none;
   }
-  
+
   .announcement-card {
     padding: 14px;
   }
-  
+
   .announcement-title {
     font-size: 15px;
   }
-  
+
   .class-subject {
     font-size: 13px;
     padding: 3px 10px;
   }
-  
+
   .announcement-message {
     padding: 12px;
   }
-  
+
   .announcement-message p {
     font-size: 13px;
   }

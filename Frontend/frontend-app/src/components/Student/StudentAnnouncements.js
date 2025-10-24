@@ -29,11 +29,16 @@ const StudentAnnouncements = () => {
           const announcementsData = await announcementsResponse.json();
           setAnnouncements(announcementsData);
           setFilteredAnnouncements(announcementsData);
-          
+
           // Extract unique subjects for filter
-          const subjects = [...new Set(announcementsData.map(announcement => 
-            announcement.classInfo?.subject || "Unknown Subject"
-          ))].sort();
+          const subjects = [
+            ...new Set(
+              announcementsData.map(
+                (announcement) =>
+                  announcement.classInfo?.subject || "Unknown Subject"
+              )
+            ),
+          ].sort();
           setAvailableSubjects(subjects);
         } else {
           console.error("Failed to fetch announcements");
@@ -57,8 +62,10 @@ const StudentAnnouncements = () => {
     if (selectedSubject === "All") {
       setFilteredAnnouncements(announcements);
     } else {
-      const filtered = announcements.filter(announcement => 
-        (announcement.classInfo?.subject || "Unknown Subject") === selectedSubject
+      const filtered = announcements.filter(
+        (announcement) =>
+          (announcement.classInfo?.subject || "Unknown Subject") ===
+          selectedSubject
       );
       setFilteredAnnouncements(filtered);
     }
@@ -125,7 +132,7 @@ const StudentAnnouncements = () => {
             </select>
           </div>
         </div>
-        
+
         <div className="announcements-content">
           {announcementsLoading ? (
             <div className="loading-message">Loading announcements...</div>
@@ -152,13 +159,11 @@ const StudentAnnouncements = () => {
                   </div>
                   <div className="announcement-class-info">
                     <span className="class-subject">
-                      📚{" "}
-                      {announcement.classInfo?.subject || "Unknown Subject"}
+                      📚 {announcement.classInfo?.subject || "Unknown Subject"}
                     </span>
                     <span className="class-details">
                       Grade {announcement.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
-                      {announcement.classInfo?.teacherName ||
-                        "Unknown Teacher"}
+                      {announcement.classInfo?.teacherName || "Unknown Teacher"}
                     </span>
                   </div>
                   <div className="announcement-message">
@@ -181,7 +186,8 @@ const StudentAnnouncements = () => {
                 <>
                   <p>📢 No announcements yet!</p>
                   <span>
-                    Your teachers will post important updates and announcements here.
+                    Your teachers will post important updates and announcements
+                    here.
                   </span>
                 </>
               ) : (
