@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
 import "../Dashboard/StudentDashboard.css"; // Reuse styles from StudentDashboard
+import "./StudentAnnouncements.css"; // Custom styles for announcements
 
 const StudentAnnouncements = () => {
   const { accounts } = useMsal();
   const [announcements, setAnnouncements] = useState([]);
+  const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("All");
+  const [availableSubjects, setAvailableSubjects] = useState([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,13 +28,22 @@ const StudentAnnouncements = () => {
         if (announcementsResponse.ok) {
           const announcementsData = await announcementsResponse.json();
           setAnnouncements(announcementsData);
+          setFilteredAnnouncements(announcementsData);
+          
+          // Extract unique subjects for filter
+          const subjects = [...new Set(announcementsData.map(announcement => 
+            announcement.classInfo?.subject || "Unknown Subject"
+          ))].sort();
+          setAvailableSubjects(subjects);
         } else {
           console.error("Failed to fetch announcements");
           setAnnouncements([]);
+          setFilteredAnnouncements([]);
         }
       } catch (error) {
         console.error("Error fetching announcements:", error);
         setAnnouncements([]);
+        setFilteredAnnouncements([]);
       } finally {
         setAnnouncementsLoading(false);
       }
@@ -38,6 +51,22 @@ const StudentAnnouncements = () => {
 
     fetchAnnouncements();
   }, [accounts]);
+
+  // Filter announcements when selected subject changes
+  useEffect(() => {
+    if (selectedSubject === "All") {
+      setFilteredAnnouncements(announcements);
+    } else {
+      const filtered = announcements.filter(announcement => 
+        (announcement.classInfo?.subject || "Unknown Subject") === selectedSubject
+      );
+      setFilteredAnnouncements(filtered);
+    }
+  }, [selectedSubject, announcements]);
+
+  const handleSubjectChange = (event) => {
+    setSelectedSubject(event.target.value);
+  };
 
   const getPriorityText = (priority) => {
     const priorityTexts = {
@@ -75,13 +104,34 @@ const StudentAnnouncements = () => {
   return (
     <div className="student-dashboard">
       <div className="announcements-section">
-        <h2>Class Announcements</h2>
+        <div className="announcements-header">
+          <h2>Class Announcements</h2>
+          <div className="filter-section">
+            <label htmlFor="subject-filter" className="filter-label">
+              📚 Filter by Subject:
+            </label>
+            <select
+              id="subject-filter"
+              value={selectedSubject}
+              onChange={handleSubjectChange}
+              className="subject-filter-dropdown"
+            >
+              <option value="All">All Subjects</option>
+              {availableSubjects.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
         <div className="announcements-content">
           {announcementsLoading ? (
             <div className="loading-message">Loading announcements...</div>
-          ) : announcements.length > 0 ? (
+          ) : filteredAnnouncements.length > 0 ? (
             <div className="announcements-list">
-              {announcements.map((announcement) => (
+              {filteredAnnouncements.map((announcement) => (
                 <div key={announcement.id} className="announcement-card">
                   <div className="announcement-header">
                     <div className="announcement-title-section">
@@ -127,11 +177,21 @@ const StudentAnnouncements = () => {
             </div>
           ) : (
             <div className="no-announcements-message">
-              <p>📢 No announcements yet!</p>
-              <span>
-                Your teachers will post important updates and announcements
-                here.
-              </span>
+              {selectedSubject === "All" ? (
+                <>
+                  <p>📢 No announcements yet!</p>
+                  <span>
+                    Your teachers will post important updates and announcements here.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <p>📢 No announcements found for {selectedSubject}!</p>
+                  <span>
+                    Try selecting a different subject or check back later.
+                  </span>
+                </>
+              )}
             </div>
           )}
         </div>

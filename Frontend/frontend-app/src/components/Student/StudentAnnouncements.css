@@ -1,0 +1,335 @@
+/* Student Announcements Styles */
+
+/* Header and Filter Section */
+.announcements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.announcements-header h2 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  white-space: nowrap;
+}
+
+.subject-filter-dropdown {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDE0IDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDFMNyA3TDEzIDEiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 36px;
+  appearance: none;
+}
+
+.subject-filter-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.subject-filter-dropdown:hover {
+  border-color: #667eea;
+}
+
+/* Announcements List Styles */
+.announcements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.announcement-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.announcement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3182ce;
+}
+
+.announcement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.announcement-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.announcement-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.announcement-priority {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.announcement-priority.low {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.announcement-priority.normal {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+}
+
+.announcement-priority.high {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.announcement-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.announcement-date {
+  font-size: 12px;
+  color: #718096;
+  font-weight: 500;
+  background: #f7fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.announcement-class-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.class-subject {
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 600;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.class-details {
+  font-size: 12px;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.announcement-message {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin-bottom: 16px;
+}
+
+.announcement-message p {
+  margin: 0;
+  color: #2d3748;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.announcement-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  gap: 12px;
+}
+
+.teacher-email {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.announcement-time {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .announcements-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .announcements-header h2 {
+    font-size: 20px;
+  }
+  
+  .filter-section {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 14px;
+  }
+  
+  .subject-filter-dropdown {
+    min-width: 120px;
+    flex: 1;
+    max-width: 200px;
+  }
+  
+  .announcement-card {
+    padding: 16px;
+  }
+  
+  .announcement-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .announcement-meta {
+    align-items: flex-start;
+  }
+  
+  .announcement-title {
+    font-size: 16px;
+  }
+  
+  .class-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  
+  .announcement-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .announcements-header h2 {
+    font-size: 18px;
+  }
+  
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .filter-label {
+    text-align: center;
+  }
+  
+  .subject-filter-dropdown {
+    min-width: auto;
+    max-width: none;
+  }
+  
+  .announcement-card {
+    padding: 14px;
+  }
+  
+  .announcement-title {
+    font-size: 15px;
+  }
+  
+  .class-subject {
+    font-size: 13px;
+    padding: 3px 10px;
+  }
+  
+  .announcement-message {
+    padding: 12px;
+  }
+  
+  .announcement-message p {
+    font-size: 13px;
+  }
+}
+
+/* Loading and Empty States */
+.loading-message,
+.no-announcements-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+}
+
+.no-announcements-message p {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #4a5568;
+}
+
+.no-announcements-message span {
+  font-size: 14px;
+  color: #718096;
+}
