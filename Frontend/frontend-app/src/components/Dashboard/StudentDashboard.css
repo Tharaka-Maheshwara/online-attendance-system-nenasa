@@ -707,3 +707,167 @@
   color: #2c3e50;
   font-weight: 600;
 }
+
+/* Payment Status Section */
+.payment-status-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+}
+
+.payment-status-section h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.payment-content {
+  min-height: 200px;
+}
+
+.payment-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.payment-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  border-left: 4px solid #ddd;
+}
+
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.payment-card.paid {
+  border-left-color: #27ae60;
+  background: #f8fff9;
+}
+
+.payment-card.pending {
+  border-left-color: #f39c12;
+  background: #fffcf8;
+}
+
+.payment-card.overdue {
+  border-left-color: #e74c3c;
+  background: #fff8f8;
+}
+
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.payment-subject {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.payment-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-status.paid {
+  background: #27ae60;
+  color: white;
+}
+
+.payment-status.pending {
+  background: #f39c12;
+  color: white;
+}
+
+.payment-status.overdue {
+  background: #e74c3c;
+  color: white;
+}
+
+.payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.payment-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.payment-detail-item .detail-label {
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+.payment-detail-item .detail-value {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.payment-actions {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+.payment-note {
+  display: block;
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Responsive adjustments for payment cards */
+@media (max-width: 768px) {
+  .payment-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .payment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .payment-status {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-status-section {
+    padding: 15px;
+  }
+  
+  .payment-card {
+    padding: 15px;
+  }
+  
+  .payment-subject {
+    font-size: 1rem;
+  }
+}

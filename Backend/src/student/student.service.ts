@@ -5,6 +5,7 @@ import { Student } from './student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UserService } from '../user/user.service';
 import { Class } from '../class/class.entity';
+import { Payment } from '../payment/payment.entity';
 import * as QRCode from 'qrcode';
 
 @Injectable()
@@ -14,6 +15,8 @@ export class StudentService {
     private studentRepository: Repository<Student>,
     @InjectRepository(Class)
     private classRepository: Repository<Class>,
+    @InjectRepository(Payment)
+    private paymentRepository: Repository<Payment>,
     private userService: UserService,
   ) {}
 
@@ -295,6 +298,67 @@ export class StudentService {
       return await this.getAllClassesForStudent(student.id);
     } catch (error) {
       console.error('Error fetching all classes for student by email:', error);
+      return [];
+    }
+  }
+
+  async getStudentClassesWithPaymentStatus(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const classes = await this.getAllClassesForStudent(studentId);
+      
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
+
+      // Get payment status for each class
+      const classesWithPaymentStatus = await Promise.all(
+        classes.map(async (classInfo) => {
+          // Check if payment exists for current month
+          const payment = await this.paymentRepository.findOne({
+            where: {
+              studentId,
+              classId: classInfo.id,
+              month: currentMonth,
+              year: currentYear,
+            },
+          });
+
+          return {
+            ...classInfo,
+            paymentStatus: payment?.status || 'pending',
+            paymentAmount: payment?.amount || classInfo.monthlyFees || 0,
+            paymentDate: payment?.paidDate || null,
+            paymentId: payment?.id || null,
+            monthlyFee: classInfo.monthlyFees || 0,
+            currentMonth,
+            currentYear,
+          };
+        })
+      );
+
+      return classesWithPaymentStatus;
+    } catch (error) {
+      console.error('Error fetching classes with payment status:', error);
+      return [];
+    }
+  }
+
+  async getStudentClassesWithPaymentStatusByEmail(email: string): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getStudentClassesWithPaymentStatus(student.id);
+    } catch (error) {
+      console.error('Error fetching classes with payment status by email:', error);
       return [];
     }
   }
