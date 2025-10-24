@@ -161,7 +161,8 @@
   color: white;
 }
 
-.start-time, .end-time {
+.start-time,
+.end-time {
   font-weight: 700;
   font-size: 1rem;
 }
@@ -197,8 +198,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .class-details-section {
@@ -277,27 +283,27 @@
   .todays-schedule {
     padding: 15px;
   }
-  
+
   .class-time-section {
     flex-direction: column;
     gap: 10px;
     padding: 12px 15px;
   }
-  
+
   .status-badge {
     align-self: flex-end;
   }
-  
+
   .class-details-section {
     padding: 15px;
   }
-  
+
   .subject-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .grade-badge {
     align-self: flex-end;
   }

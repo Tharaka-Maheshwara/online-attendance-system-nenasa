@@ -201,16 +201,20 @@ const StudentDashboard = () => {
                         {getStatusText(status)}
                       </div>
                     </div>
-                    
+
                     <div className="class-details-section">
                       <div className="subject-header">
                         <h3 className="subject-name">{cls.subject}</h3>
-                        <span className="grade-badge">Grade {cls.grade || "N/A"}</span>
+                        <span className="grade-badge">
+                          Grade {cls.grade || "N/A"}
+                        </span>
                       </div>
-                      
+
                       <div className="teacher-info">
                         <span className="teacher-label">Teacher:</span>
-                        <span className="teacher-name">{cls.teacherName || "TBA"}</span>
+                        <span className="teacher-name">
+                          {cls.teacherName || "TBA"}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -219,8 +223,12 @@ const StudentDashboard = () => {
             ) : (
               <div className="no-classes-message">
                 <div className="no-classes-icon">🎉</div>
-                <p className="no-classes-title">No classes scheduled for today!</p>
-                <span className="no-classes-subtitle">Enjoy your free day or catch up on your studies.</span>
+                <p className="no-classes-title">
+                  No classes scheduled for today!
+                </p>
+                <span className="no-classes-subtitle">
+                  Enjoy your free day or catch up on your studies.
+                </span>
               </div>
             )}
           </div>
