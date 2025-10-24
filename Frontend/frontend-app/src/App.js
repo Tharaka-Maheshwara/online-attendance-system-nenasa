@@ -24,6 +24,8 @@ import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumb
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
 import TeacherLectureNotes from "./components/LectureNotes/TeacherLectureNotes";
+import StudentPaymentStatus from "./components/Student/StudentPaymentStatus";
+import StudentLectureNotes from "./components/Student/StudentLectureNotes";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -181,6 +183,28 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["student"]}
                   element={<StudentCourseView />}
+                />
+              }
+            />
+
+            {/* Student Payment Status: students only */}
+            <Route
+              path="/payment-status"
+              element={
+                <PrivateRoute
+                  allowedRoles={["student"]}
+                  element={<StudentPaymentStatus />}
+                />
+              }
+            />
+
+            {/* Student Lecture Notes: students only */}
+            <Route
+              path="/lecture-notes"
+              element={
+                <PrivateRoute
+                  allowedRoles={["student"]}
+                  element={<StudentLectureNotes />}
                 />
               }
             />

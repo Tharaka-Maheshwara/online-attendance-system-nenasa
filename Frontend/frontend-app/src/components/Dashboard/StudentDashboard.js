@@ -6,14 +6,10 @@ const StudentDashboard = () => {
   const { accounts } = useMsal();
   const [todayClasses, setTodayClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
-  const [classesWithPaymentStatus, setClassesWithPaymentStatus] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
-  const [lectureNotes, setLectureNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
-  const [paymentStatusLoading, setPaymentStatusLoading] = useState(true);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
-  const [lectureNotesLoading, setLectureNotesLoading] = useState(true);
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -22,9 +18,7 @@ const StudentDashboard = () => {
       try {
         setLoading(true);
         setAllClassesLoading(true);
-        setPaymentStatusLoading(true);
         setAnnouncementsLoading(true);
-        setLectureNotesLoading(true);
 
         // Get current user email
         const userEmail = accounts[0].username;
@@ -59,20 +53,7 @@ const StudentDashboard = () => {
           setAllClasses([]);
         }
 
-        // Fetch classes with payment status
-        const paymentResponse = await fetch(
-          `http://localhost:8000/student/email/${encodeURIComponent(
-            userEmail
-          )}/classes/payment-status`
-        );
-
-        if (paymentResponse.ok) {
-          const paymentData = await paymentResponse.json();
-          setClassesWithPaymentStatus(paymentData);
-        } else {
-          console.error("Failed to fetch payment status");
-          setClassesWithPaymentStatus([]);
-        }
+        
 
         // Fetch announcements for enrolled classes
         const announcementsResponse = await fetch(
@@ -89,33 +70,16 @@ const StudentDashboard = () => {
           setAnnouncements([]);
         }
 
-        // Fetch lecture notes for enrolled classes
-        const lectureNotesResponse = await fetch(
-          `http://localhost:8000/student/email/${encodeURIComponent(
-            userEmail
-          )}/lecture-notes`
-        );
-
-        if (lectureNotesResponse.ok) {
-          const lectureNotesData = await lectureNotesResponse.json();
-          setLectureNotes(lectureNotesData);
-        } else {
-          console.error("Failed to fetch lecture notes");
-          setLectureNotes([]);
-        }
+        
       } catch (error) {
         console.error("Error fetching classes:", error);
         setTodayClasses([]);
         setAllClasses([]);
-        setClassesWithPaymentStatus([]);
         setAnnouncements([]);
-        setLectureNotes([]);
       } finally {
         setLoading(false);
         setAllClassesLoading(false);
-        setPaymentStatusLoading(false);
         setAnnouncementsLoading(false);
-        setLectureNotesLoading(false);
       }
     };
 
@@ -202,33 +166,6 @@ const StudentDashboard = () => {
     ];
   };
 
-  const getPaymentStatusText = (status) => {
-    const statusTexts = {
-      pending: "Pending",
-      paid: "Paid",
-      overdue: "Overdue",
-    };
-    return statusTexts[status] || "Unknown";
-  };
-
-  const getMonthName = (monthNumber) => {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    return months[monthNumber - 1] || "Unknown";
-  };
-
   const getPriorityText = (priority) => {
     const priorityTexts = {
       low: "Low",
@@ -260,39 +197,6 @@ const StudentDashboard = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const handleDownloadNote = async (noteId, fileName) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/lecture-notes/download/${noteId}`
-      );
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      } else {
-        console.error("Failed to download lecture note");
-        alert("Failed to download the file. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error downloading lecture note:", error);
-      alert("Error downloading the file. Please try again.");
-    }
   };
 
   return (
@@ -440,80 +344,7 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Payment Status */}
-        <div className="payment-status-section">
-          <h2>Payment Status</h2>
-          <div className="payment-content">
-            {paymentStatusLoading ? (
-              <div className="loading-message">Loading payment status...</div>
-            ) : classesWithPaymentStatus.length > 0 ? (
-              <div className="payment-cards">
-                {classesWithPaymentStatus.map((cls) => (
-                  <div key={cls.id} className="payment-card">
-                    <div className="payment-header">
-                      <h4 className="payment-subject">{cls.subject}</h4>
-                      <span className={`payment-status ${cls.paymentStatus}`}>
-                        {getPaymentStatusText(cls.paymentStatus)}
-                      </span>
-                    </div>
-                    <div className="payment-details">
-                      <div className="payment-detail-item">
-                        <span className="detail-label">Grade:</span>
-                        <span className="detail-value">
-                          {cls.grade || "N/A"}
-                        </span>
-                      </div>
-                      <div className="payment-detail-item">
-                        <span className="detail-label">Monthly Fee:</span>
-                        <span className="detail-value">
-                          Rs. {cls.monthlyFee || 0}
-                        </span>
-                      </div>
-                      <div className="payment-detail-item">
-                        <span className="detail-label">Month:</span>
-                        <span className="detail-value">
-                          {getMonthName(cls.currentMonth)} {cls.currentYear}
-                        </span>
-                      </div>
-                      {cls.paymentDate && (
-                        <div className="payment-detail-item">
-                          <span className="detail-label">Paid Date:</span>
-                          <span className="detail-value">
-                            {new Date(cls.paymentDate).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="payment-actions">
-                      {cls.paymentStatus === "pending" && (
-                        <small className="payment-note">
-                          💡 Please contact administration for payment
-                        </small>
-                      )}
-                      {cls.paymentStatus === "paid" && (
-                        <small className="payment-note">
-                          ✅ Payment confirmed
-                        </small>
-                      )}
-                      {cls.paymentStatus === "overdue" && (
-                        <small className="payment-note">
-                          ⚠️ Payment overdue - please pay immediately
-                        </small>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-classes-message">
-                <p>💳 No payment information available!</p>
-                <span>
-                  Please contact your administrator for payment details.
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+        
 
         {/* Announcements */}
         <div className="announcements-section">
@@ -579,85 +410,7 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Lecture Notes */}
-        <div className="lecture-notes-section">
-          <h2>Class Lecture Notes</h2>
-          <div className="lecture-notes-content">
-            {lectureNotesLoading ? (
-              <div className="loading-message">Loading lecture notes...</div>
-            ) : lectureNotes.length > 0 ? (
-              <div className="lecture-notes-list">
-                {lectureNotes.map((note) => (
-                  <div key={note.id} className="lecture-note-card">
-                    <div className="lecture-note-header">
-                      <div className="note-title-section">
-                        <h4 className="lecture-note-title">{note.title}</h4>
-                        <span className="note-file-name">
-                          📄 {note.fileName}
-                        </span>
-                      </div>
-                      <div className="note-meta">
-                        <span className="note-date">
-                          {formatAnnouncementDate(note.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="lecture-note-class-info">
-                      <span className="class-subject">
-                        📚 {note.classInfo?.subject || "Unknown Subject"}
-                      </span>
-                      <span className="class-details">
-                        Grade {note.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
-                        {note.classInfo?.teacherName || "Unknown Teacher"}
-                      </span>
-                    </div>
-                    {note.description && (
-                      <div className="lecture-note-description">
-                        <p>{note.description}</p>
-                      </div>
-                    )}
-                    <div className="lecture-note-details">
-                      <div className="note-detail-item">
-                        <span className="detail-label">File Size:</span>
-                        <span className="detail-value">
-                          {formatFileSize(note.fileSize)}
-                        </span>
-                      </div>
-                      <div className="note-detail-item">
-                        <span className="detail-label">Uploaded:</span>
-                        <span className="detail-value">
-                          {formatAnnouncementTime(note.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="lecture-note-actions">
-                      <button
-                        className="download-btn"
-                        onClick={() =>
-                          handleDownloadNote(note.id, note.fileName)
-                        }
-                      >
-                        <span className="btn-icon">⬇️</span>
-                        Download PDF
-                      </button>
-                      <small className="teacher-attribution">
-                        Shared by: {note.teacherEmail}
-                      </small>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="no-lecture-notes-message">
-                <p>📚 No lecture notes available!</p>
-                <span>
-                  Your teachers will share study materials and lecture notes
-                  here.
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
+        
 
         {/* Quick Actions */}
         <div className="student-actions">

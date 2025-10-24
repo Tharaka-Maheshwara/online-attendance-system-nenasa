@@ -82,14 +82,32 @@ const Navbar = () => {
 
             {/* Course Catalog - available for students only */}
             {userRole === "student" && (
-              <Link
-                to="/course-catalog"
-                className={`nav-link ${
-                  isActive("/course-catalog") ? "active" : ""
-                }`}
-              >
-                Course Catalog
-              </Link>
+              <>
+                <Link
+                  to="/course-catalog"
+                  className={`nav-link ${
+                    isActive("/course-catalog") ? "active" : ""
+                  }`}
+                >
+                  Course Catalog
+                </Link>
+                <Link
+                  to="/payment-status"
+                  className={`nav-link ${
+                    isActive("/payment-status") ? "active" : ""
+                  }`}
+                >
+                  Payment Status
+                </Link>
+                <Link
+                  to="/lecture-notes"
+                  className={`nav-link ${
+                    isActive("/lecture-notes") ? "active" : ""
+                  }`}
+                >
+                  Lecture Notes
+                </Link>
+              </>
             )}
 
             {/* Teacher Announcements - available for teachers only */}
