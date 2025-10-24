@@ -263,20 +263,22 @@ const StudentDashboard = () => {
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const handleDownloadNote = async (noteId, fileName) => {
     try {
-      const response = await fetch(`http://localhost:8000/lecture-notes/download/${noteId}`);
+      const response = await fetch(
+        `http://localhost:8000/lecture-notes/download/${noteId}`
+      );
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
         a.download = fileName;
         document.body.appendChild(a);
@@ -284,12 +286,12 @@ const StudentDashboard = () => {
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       } else {
-        console.error('Failed to download lecture note');
-        alert('Failed to download the file. Please try again.');
+        console.error("Failed to download lecture note");
+        alert("Failed to download the file. Please try again.");
       }
     } catch (error) {
-      console.error('Error downloading lecture note:', error);
-      alert('Error downloading the file. Please try again.');
+      console.error("Error downloading lecture note:", error);
+      alert("Error downloading the file. Please try again.");
     }
   };
 
@@ -590,7 +592,9 @@ const StudentDashboard = () => {
                     <div className="lecture-note-header">
                       <div className="note-title-section">
                         <h4 className="lecture-note-title">{note.title}</h4>
-                        <span className="note-file-name">📄 {note.fileName}</span>
+                        <span className="note-file-name">
+                          📄 {note.fileName}
+                        </span>
                       </div>
                       <div className="note-meta">
                         <span className="note-date">
@@ -600,11 +604,11 @@ const StudentDashboard = () => {
                     </div>
                     <div className="lecture-note-class-info">
                       <span className="class-subject">
-                        📚 {note.classInfo?.subject || 'Unknown Subject'}
+                        📚 {note.classInfo?.subject || "Unknown Subject"}
                       </span>
                       <span className="class-details">
-                        Grade {note.classInfo?.grade || 'N/A'} • 
-                        👨‍🏫 {note.classInfo?.teacherName || 'Unknown Teacher'}
+                        Grade {note.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
+                        {note.classInfo?.teacherName || "Unknown Teacher"}
                       </span>
                     </div>
                     {note.description && (
@@ -615,17 +619,23 @@ const StudentDashboard = () => {
                     <div className="lecture-note-details">
                       <div className="note-detail-item">
                         <span className="detail-label">File Size:</span>
-                        <span className="detail-value">{formatFileSize(note.fileSize)}</span>
+                        <span className="detail-value">
+                          {formatFileSize(note.fileSize)}
+                        </span>
                       </div>
                       <div className="note-detail-item">
                         <span className="detail-label">Uploaded:</span>
-                        <span className="detail-value">{formatAnnouncementTime(note.createdAt)}</span>
+                        <span className="detail-value">
+                          {formatAnnouncementTime(note.createdAt)}
+                        </span>
                       </div>
                     </div>
                     <div className="lecture-note-actions">
-                      <button 
+                      <button
                         className="download-btn"
-                        onClick={() => handleDownloadNote(note.id, note.fileName)}
+                        onClick={() =>
+                          handleDownloadNote(note.id, note.fileName)
+                        }
                       >
                         <span className="btn-icon">⬇️</span>
                         Download PDF
@@ -641,7 +651,8 @@ const StudentDashboard = () => {
               <div className="no-lecture-notes-message">
                 <p>📚 No lecture notes available!</p>
                 <span>
-                  Your teachers will share study materials and lecture notes here.
+                  Your teachers will share study materials and lecture notes
+                  here.
                 </span>
               </div>
             )}

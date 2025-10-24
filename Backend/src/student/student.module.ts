@@ -12,7 +12,13 @@ import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student, Class, Payment, Announcement, LectureNote]),
+    TypeOrmModule.forFeature([
+      Student,
+      Class,
+      Payment,
+      Announcement,
+      LectureNote,
+    ]),
     UserModule,
     MulterModule.register({
       dest: './uploads/student-images',

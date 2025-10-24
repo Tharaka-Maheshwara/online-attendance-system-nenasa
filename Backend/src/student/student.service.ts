@@ -450,27 +450,29 @@ export class StudentService {
     try {
       // Get all classes the student is enrolled in
       const studentClasses = await this.getAllClassesForStudent(studentId);
-      
+
       if (studentClasses.length === 0) {
         return [];
       }
 
       // Get class IDs
-      const classIds = studentClasses.map(cls => cls.id);
+      const classIds = studentClasses.map((cls) => cls.id);
 
       // Get lecture notes for these classes where the student is included
       const lectureNotes = await this.lectureNoteRepository
         .createQueryBuilder('lectureNote')
         .where('lectureNote.classId IN (:...classIds)', { classIds })
         .andWhere('JSON_CONTAINS(lectureNote.studentIds, :studentId)', {
-          studentId: JSON.stringify(studentId)
+          studentId: JSON.stringify(studentId),
         })
         .orderBy('lectureNote.createdAt', 'DESC')
         .getMany();
 
       // Enrich lecture notes with class information
-      const enrichedLectureNotes = lectureNotes.map(lectureNote => {
-        const classInfo = studentClasses.find(cls => cls.id === lectureNote.classId);
+      const enrichedLectureNotes = lectureNotes.map((lectureNote) => {
+        const classInfo = studentClasses.find(
+          (cls) => cls.id === lectureNote.classId,
+        );
         return {
           ...lectureNote,
           classInfo: {
@@ -480,8 +482,8 @@ export class StudentService {
             teacherName: classInfo?.teacherName,
             dayOfWeek: classInfo?.dayOfWeek,
             startTime: classInfo?.startTime,
-            endTime: classInfo?.endTime
-          }
+            endTime: classInfo?.endTime,
+          },
         };
       });
 
@@ -506,7 +508,10 @@ export class StudentService {
       // Use the existing method with the student ID
       return await this.getLectureNotesForStudentClasses(student.id);
     } catch (error) {
-      console.error('Error fetching lecture notes for student classes by email:', error);
+      console.error(
+        'Error fetching lecture notes for student classes by email:',
+        error,
+      );
       return [];
     }
   }

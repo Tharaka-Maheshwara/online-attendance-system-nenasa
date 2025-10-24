@@ -222,9 +222,7 @@ export class StudentController {
   }
 
   @Get('email/:email/lecture-notes')
-  async getLectureNotesForStudentClassesByEmail(
-    @Param('email') email: string,
-  ) {
+  async getLectureNotesForStudentClassesByEmail(@Param('email') email: string) {
     return await this.studentService.getLectureNotesForStudentClassesByEmail(
       email,
     );

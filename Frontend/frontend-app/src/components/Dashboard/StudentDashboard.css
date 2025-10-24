@@ -1289,18 +1289,18 @@
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .note-meta {
     text-align: left;
     align-self: flex-end;
   }
-  
+
   .lecture-note-actions {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .download-btn {
     width: 100%;
     justify-content: center;
@@ -1316,15 +1316,15 @@
   .lecture-notes-section {
     padding: 15px;
   }
-  
+
   .lecture-note-card {
     padding: 15px;
   }
-  
+
   .lecture-note-title {
     font-size: 1rem;
   }
-  
+
   .lecture-note-class-info {
     padding: 8px;
   }
