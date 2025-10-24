@@ -155,4 +155,14 @@ export class StudentController {
   async getStudentByQRData(@Body() qrData: any) {
     return await this.studentService.findByQRData(qrData);
   }
+
+  @Get(':studentId/classes/today')
+  async getTodayClassesForStudent(@Param('studentId') studentId: string) {
+    return await this.studentService.getTodayClassesForStudent(+studentId);
+  }
+
+  @Get('email/:email/classes/today')
+  async getTodayClassesForStudentByEmail(@Param('email') email: string) {
+    return await this.studentService.getTodayClassesForStudentByEmail(email);
+  }
 }

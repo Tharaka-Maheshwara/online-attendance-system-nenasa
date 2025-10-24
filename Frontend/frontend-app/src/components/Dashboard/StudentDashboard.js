@@ -1,7 +1,91 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useMsal } from "@azure/msal-react";
 import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
+  const { accounts } = useMsal();
+  const [todayClasses, setTodayClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTodayClasses = async () => {
+      if (!accounts || accounts.length === 0) return;
+
+      try {
+        setLoading(true);
+        
+        // Get current user email
+        const userEmail = accounts[0].username;
+        
+        // Fetch today's classes for this student
+        const response = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/classes/today`
+        );
+        
+        if (response.ok) {
+          const classes = await response.json();
+          setTodayClasses(classes);
+        } else {
+          console.error('Failed to fetch today\'s classes');
+          setTodayClasses([]);
+        }
+      } catch (error) {
+        console.error('Error fetching today\'s classes:', error);
+        setTodayClasses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTodayClasses();
+  }, [accounts]);
+
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const [hour, minute] = timeString.split(':');
+    const hourNum = parseInt(hour, 10);
+    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const formattedHour = hourNum % 12 || 12;
+    return `${formattedHour}:${minute} ${ampm}`;
+  };
+
+  const getClassStatus = (startTime, endTime) => {
+    if (!startTime || !endTime) return 'upcoming';
+    
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    
+    const classStart = startHour * 60 + startMinute;
+    const classEnd = endHour * 60 + endMinute;
+    
+    if (currentTime >= classStart && currentTime <= classEnd) {
+      return 'current';
+    } else if (currentTime > classEnd) {
+      return 'completed';
+    }
+    return 'upcoming';
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'completed': return 'status-badge present';
+      case 'current': return 'status-badge current';
+      case 'upcoming': return 'status-badge upcoming';
+      default: return 'status-badge upcoming';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'completed': return 'Completed';
+      case 'current': return 'In Progress';
+      case 'upcoming': return 'Upcoming';
+      default: return 'Upcoming';
+    }
+  };
   return (
     <div className="student-dashboard">
       <div className="dashboard-grid">
@@ -40,41 +124,36 @@ const StudentDashboard = () => {
         <div className="todays-schedule">
           <h2>Today's Classes</h2>
           <div className="schedule-list">
-            <div className="schedule-item completed">
-              <div className="time-slot">9:00 AM</div>
-              <div className="class-info">
-                <h4>Mathematics</h4>
-                <p>Room: A101</p>
-                <p>Teacher: Mr. Perera</p>
+            {loading ? (
+              <div className="loading-message">Loading today's classes...</div>
+            ) : todayClasses.length > 0 ? (
+              todayClasses.map((cls) => {
+                const status = getClassStatus(cls.startTime, cls.endTime);
+                return (
+                  <div className={`schedule-item ${status}`} key={cls.id}>
+                    <div className="time-slot">
+                      {cls.startTime ? formatTime(cls.startTime) : 'TBA'}
+                      {cls.endTime && ` - ${formatTime(cls.endTime)}`}
+                    </div>
+                    <div className="class-info">
+                      <h4>{cls.subject}</h4>
+                      <p>Grade: {cls.grade || 'N/A'}</p>
+                      <p>Teacher: {cls.teacherName || 'TBA'}</p>
+                    </div>
+                    <div className="attendance-status">
+                      <span className={getStatusBadgeClass(status)}>
+                        {getStatusText(status)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="no-classes-message">
+                <p>🎉 No classes scheduled for today!</p>
+                <span>Enjoy your free day or catch up on your studies.</span>
               </div>
-              <div className="attendance-status">
-                <span className="status-badge present">Present</span>
-              </div>
-            </div>
-
-            <div className="schedule-item current">
-              <div className="time-slot">11:00 AM</div>
-              <div className="class-info">
-                <h4>Physics</h4>
-                <p>Room: B205</p>
-                <p>Teacher: Ms. Silva</p>
-              </div>
-              <div className="attendance-status">
-                <span className="status-badge current">In Progress</span>
-              </div>
-            </div>
-
-            <div className="schedule-item upcoming">
-              <div className="time-slot">2:00 PM</div>
-              <div className="class-info">
-                <h4>Chemistry</h4>
-                <p>Room: Lab 1</p>
-                <p>Teacher: Dr. Fernando</p>
-              </div>
-              <div className="attendance-status">
-                <span className="status-badge upcoming">Upcoming</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 

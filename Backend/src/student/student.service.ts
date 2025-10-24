@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Student } from './student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UserService } from '../user/user.service';
+import { Class } from '../class/class.entity';
 import * as QRCode from 'qrcode';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class StudentService {
   constructor(
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
     private userService: UserService,
   ) {}
 
@@ -165,6 +168,75 @@ export class StudentService {
     } catch (error) {
       console.error('Error finding student by QR data:', error);
       return null;
+    }
+  }
+
+  async getTodayClassesForStudent(studentId: number): Promise<Class[]> {
+    try {
+      // Get student details
+      const student = await this.findOne(studentId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Get student's subjects
+      const studentSubjects = [
+        student.sub_1,
+        student.sub_2,
+        student.sub_3,
+        student.sub_4,
+        student.sub_5,
+        student.sub_6,
+      ].filter((subject) => subject && subject.trim() !== '');
+
+      if (studentSubjects.length === 0) {
+        return [];
+      }
+
+      // Get today's day of week
+      const today = new Date();
+      const daysOfWeek = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
+      const todayDayOfWeek = daysOfWeek[today.getDay()];
+
+      // Find classes for student's subjects that are scheduled for today
+      const todayClasses = await this.classRepository
+        .createQueryBuilder('class')
+        .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .andWhere('class.dayOfWeek = :dayOfWeek', { dayOfWeek: todayDayOfWeek })
+        .orderBy('class.startTime', 'ASC')
+        .getMany();
+
+      return todayClasses;
+    } catch (error) {
+      console.error('Error fetching today\'s classes for student:', error);
+      return [];
+    }
+  }
+
+  async getTodayClassesForStudentByEmail(email: string): Promise<Class[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getTodayClassesForStudent(student.id);
+    } catch (error) {
+      console.error('Error fetching today\'s classes for student by email:', error);
+      return [];
     }
   }
 }

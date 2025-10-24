@@ -4,11 +4,12 @@ import { MulterModule } from '@nestjs/platform-express';
 import { StudentController } from './student.controller';
 import { StudentService } from './student.service';
 import { Student } from './student.entity';
+import { Class } from '../class/class.entity';
 import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Student]),
+    TypeOrmModule.forFeature([Student, Class]),
     UserModule,
     MulterModule.register({
       dest: './uploads/student-images',
