@@ -170,9 +170,6 @@ const StudentAnnouncements = () => {
                     <p>{announcement.message}</p>
                   </div>
                   <div className="announcement-footer">
-                    <small className="teacher-email">
-                      From: {announcement.teacherEmail}
-                    </small>
                     <small className="announcement-time">
                       {formatAnnouncementTime(announcement.createdAt)}
                     </small>
