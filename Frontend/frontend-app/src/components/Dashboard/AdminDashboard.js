@@ -356,19 +356,7 @@ const AdminDashboard = () => {
                       {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
                     </span>
                   </div>
-                  <div className="class-info-row">
-                    <span className="info-label">💰 Monthly Fee:</span>
-                    <span className="info-value">
-                      Rs.{" "}
-                      {cls.monthlyFees
-                        ? cls.monthlyFees.toLocaleString()
-                        : "N/A"}
-                    </span>
-                  </div>
-                  <div className="class-info-row">
-                    <span className="info-label">📍 Day:</span>
-                    <span className="info-value">{cls.dayOfWeek}</span>
-                  </div>
+                  {/* Removed Monthly Fee and Day rows as requested */}
                 </div>
               </div>
             ))}
