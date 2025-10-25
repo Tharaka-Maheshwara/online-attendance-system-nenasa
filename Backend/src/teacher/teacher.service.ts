@@ -128,7 +128,9 @@ export class TeacherService {
     const todayName = dayNames[today.getDay()];
 
     // First, find the teacher to get their name
-    const teacher = await this.teacherRepository.findOne({ where: { id: teacherId } });
+    const teacher = await this.teacherRepository.findOne({
+      where: { id: teacherId },
+    });
     if (!teacher) {
       return []; // Or throw an error
     }

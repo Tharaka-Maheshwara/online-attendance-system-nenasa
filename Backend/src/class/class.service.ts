@@ -59,7 +59,7 @@ export class ClassService {
 
   async getAllClassesWithStudentCount(): Promise<any[]> {
     const classes = await this.findAll();
-    
+
     const classesWithCount = await Promise.all(
       classes.map(async (cls) => {
         const studentCount = await this.getEnrolledStudentsCount(cls.id);

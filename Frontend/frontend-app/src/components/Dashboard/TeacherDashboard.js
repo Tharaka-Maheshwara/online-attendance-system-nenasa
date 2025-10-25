@@ -65,7 +65,9 @@ const TeacherDashboard = () => {
         setTodayClasses(Array.isArray(todayData) ? todayData : []);
 
         // Get all classes for this teacher
-        const allClassesResponse = await fetch(`http://localhost:8000/class/with-student-count`);
+        const allClassesResponse = await fetch(
+          `http://localhost:8000/class/with-student-count`
+        );
         const allClassesData = await allClassesResponse.json();
         console.log("All Classes Data:", allClassesData);
 
@@ -326,7 +328,9 @@ const TeacherDashboard = () => {
                                   </span>
                                 </div>
                                 <div className="compact-info-row">
-                                  <span className="compact-label">👥 Students:</span>
+                                  <span className="compact-label">
+                                    👥 Students:
+                                  </span>
                                   <span className="compact-value">
                                     {cls.enrolledStudents || 0} Enrolled
                                   </span>
