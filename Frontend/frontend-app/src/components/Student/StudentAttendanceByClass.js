@@ -115,7 +115,7 @@ const StudentAttendanceByClass = () => {
 
         if (matchingClassKey) {
           const classData = attendanceByClass[matchingClassKey];
-          
+
           classData.totalClasses++;
           classData.recentRecords.push({
             date: record.date,
@@ -167,7 +167,10 @@ const StudentAttendanceByClass = () => {
 
       console.log("📊 Attendance Summary by Class:", attendanceByClass);
       console.log("📚 Total Enrolled Classes:", enrolledClasses.length);
-      console.log("📝 Total Cards to Display:", Object.keys(attendanceByClass).length);
+      console.log(
+        "📝 Total Cards to Display:",
+        Object.keys(attendanceByClass).length
+      );
 
       // Calculate overall stats
       const overallAttendanceRate =
@@ -318,13 +321,16 @@ const StudentAttendanceByClass = () => {
                 <div className="attendance-card-content">
                   <div className="teacher-info">
                     <span className="teacher-label">Teacher:</span>
-                    <span className="teacher-name">{classData.teacherName}</span>
+                    <span className="teacher-name">
+                      {classData.teacherName}
+                    </span>
                   </div>
 
                   <div className="class-schedule-info">
                     <span className="schedule-label">📅 Schedule:</span>
                     <span className="schedule-value">
-                      {classData.dayOfWeek} • {classData.startTime && classData.endTime
+                      {classData.dayOfWeek} •{" "}
+                      {classData.startTime && classData.endTime
                         ? `${classData.startTime} - ${classData.endTime}`
                         : "Time TBA"}
                     </span>
@@ -366,7 +372,9 @@ const StudentAttendanceByClass = () => {
                       </div>
                       <div className="stat-item late">
                         <span className="stat-label">Late</span>
-                        <span className="stat-value">{classData.lateCount}</span>
+                        <span className="stat-value">
+                          {classData.lateCount}
+                        </span>
                         <span className="stat-percentage">
                           {classData.totalClasses > 0
                             ? Math.round(
@@ -412,33 +420,46 @@ const StudentAttendanceByClass = () => {
 
                   <div className="recent-attendance">
                     <h4>Recent Attendance</h4>
-                    {classData.recentRecords && classData.recentRecords.length > 0 ? (
+                    {classData.recentRecords &&
+                    classData.recentRecords.length > 0 ? (
                       <>
                         <div className="recent-records">
-                          {classData.recentRecords.slice(0, 5).map((record, index) => (
-                            <div key={index} className={`record-item ${record.status}`}>
-                              <span className="record-date">
-                                {new Date(record.date).toLocaleDateString("en-US", {
-                                  month: "short",
-                                  day: "numeric",
-                                })}
-                              </span>
-                              <span className={`record-status ${record.status}`}>
-                                {record.status === "present"
-                                  ? "✓"
-                                  : record.status === "absent"
-                                  ? "✗"
-                                  : record.status === "late"
-                                  ? "⚠"
-                                  : "?"}
-                              </span>
-                            </div>
-                          ))}
+                          {classData.recentRecords
+                            .slice(0, 5)
+                            .map((record, index) => (
+                              <div
+                                key={index}
+                                className={`record-item ${record.status}`}
+                              >
+                                <span className="record-date">
+                                  {new Date(record.date).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                    }
+                                  )}
+                                </span>
+                                <span
+                                  className={`record-status ${record.status}`}
+                                >
+                                  {record.status === "present"
+                                    ? "✓"
+                                    : record.status === "absent"
+                                    ? "✗"
+                                    : record.status === "late"
+                                    ? "⚠"
+                                    : "?"}
+                                </span>
+                              </div>
+                            ))}
                         </div>
                         <div className="card-actions">
                           <button
                             className="view-details-btn"
-                            onClick={() => handleViewDetails(classKey, classData)}
+                            onClick={() =>
+                              handleViewDetails(classKey, classData)
+                            }
                           >
                             <span className="btn-icon">📋</span>
                             View Full Details
@@ -448,7 +469,9 @@ const StudentAttendanceByClass = () => {
                     ) : (
                       <div className="no-records-notice">
                         <p>📝 No attendance records for this month yet.</p>
-                        <span>Records will appear here after classes begin.</span>
+                        <span>
+                          Records will appear here after classes begin.
+                        </span>
                       </div>
                     )}
                   </div>
@@ -459,11 +482,10 @@ const StudentAttendanceByClass = () => {
         ) : (
           <div className="no-attendance-message">
             <div className="no-data-icon">📊</div>
-            <p className="no-data-title">
-              No enrolled classes found!
-            </p>
+            <p className="no-data-title">No enrolled classes found!</p>
             <span className="no-data-subtitle">
-              Please contact your administrator to enroll in classes. Once enrolled, your attendance records will appear here.
+              Please contact your administrator to enroll in classes. Once
+              enrolled, your attendance records will appear here.
             </span>
           </div>
         )}
@@ -476,7 +498,9 @@ const StudentAttendanceByClass = () => {
             <div className="modal-header">
               <div className="modal-title-section">
                 <h2>{selectedClass.data.subject}</h2>
-                <span className="modal-grade">Grade {selectedClass.data.grade}</span>
+                <span className="modal-grade">
+                  Grade {selectedClass.data.grade}
+                </span>
               </div>
               <button className="close-btn" onClick={handleCloseModal}>
                 ✕
@@ -532,7 +556,10 @@ const StudentAttendanceByClass = () => {
 
               <div className="modal-attendance-history">
                 <h3>Complete Attendance History</h3>
-                {(selectedClass.data.allRecords || selectedClass.data.recentRecords).length > 0 ? (
+                {(
+                  selectedClass.data.allRecords ||
+                  selectedClass.data.recentRecords
+                ).length > 0 ? (
                   <>
                     <div className="history-table-container">
                       <table className="history-table">
@@ -546,54 +573,68 @@ const StudentAttendanceByClass = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {(selectedClass.data.allRecords || selectedClass.data.recentRecords).map(
-                            (record, index) => {
-                              const recordDate = new Date(record.date);
-                              return (
-                                <tr key={index} className={getStatusClass(record.status)}>
-                                  <td>{index + 1}</td>
-                                  <td>
-                                    {recordDate.toLocaleDateString("en-US", {
-                                      year: "numeric",
-                                      month: "short",
-                                      day: "numeric",
-                                    })}
-                                  </td>
-                                  <td>
-                                    {recordDate.toLocaleDateString("en-US", {
-                                      weekday: "short",
-                                    })}
-                                  </td>
-                                  <td>
-                                    <span className={`status-badge ${record.status}`}>
-                                      <span className="status-icon">
-                                        {getStatusIcon(record.status)}
-                                      </span>
-                                      <span className="status-text">
-                                        {record.status.charAt(0).toUpperCase() +
-                                          record.status.slice(1)}
-                                      </span>
+                          {(
+                            selectedClass.data.allRecords ||
+                            selectedClass.data.recentRecords
+                          ).map((record, index) => {
+                            const recordDate = new Date(record.date);
+                            return (
+                              <tr
+                                key={index}
+                                className={getStatusClass(record.status)}
+                              >
+                                <td>{index + 1}</td>
+                                <td>
+                                  {recordDate.toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                  })}
+                                </td>
+                                <td>
+                                  {recordDate.toLocaleDateString("en-US", {
+                                    weekday: "short",
+                                  })}
+                                </td>
+                                <td>
+                                  <span
+                                    className={`status-badge ${record.status}`}
+                                  >
+                                    <span className="status-icon">
+                                      {getStatusIcon(record.status)}
                                     </span>
-                                  </td>
-                                  <td>
-                                    {record.timestamp
-                                      ? new Date(record.timestamp).toLocaleTimeString("en-US", {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
-                                      : "N/A"}
-                                  </td>
-                                </tr>
-                              );
-                            }
-                          )}
+                                    <span className="status-text">
+                                      {record.status.charAt(0).toUpperCase() +
+                                        record.status.slice(1)}
+                                    </span>
+                                  </span>
+                                </td>
+                                <td>
+                                  {record.timestamp
+                                    ? new Date(
+                                        record.timestamp
+                                      ).toLocaleTimeString("en-US", {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })
+                                    : "N/A"}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>
 
                     <div className="history-summary">
                       <p>
-                        Total Records: {(selectedClass.data.allRecords || selectedClass.data.recentRecords).length}
+                        Total Records:{" "}
+                        {
+                          (
+                            selectedClass.data.allRecords ||
+                            selectedClass.data.recentRecords
+                          ).length
+                        }
                       </p>
                     </div>
                   </>
@@ -601,7 +642,9 @@ const StudentAttendanceByClass = () => {
                   <div className="modal-no-records">
                     <div className="modal-no-records-icon">📝</div>
                     <p>No attendance records available yet</p>
-                    <span>Attendance history will appear here once classes begin.</span>
+                    <span>
+                      Attendance history will appear here once classes begin.
+                    </span>
                   </div>
                 )}
               </div>
