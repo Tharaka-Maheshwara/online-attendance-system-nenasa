@@ -285,33 +285,40 @@ const TeacherDashboard = () => {
                             {classes.length === 1 ? "Class" : "Classes"}
                           </span>
                         </div>
-                        <div className="day-classes-list">
+                        <div className="day-classes-cards">
                           {classes.map((cls) => (
-                            <div className="class-item" key={cls.id}>
-                              <div className="class-item-header">
-                                <div className="subject-info">
+                            <div className="class-card-compact" key={cls.id}>
+                              <div
+                                className="card-compact-header"
+                                style={{ background: getDayColor(day) }}
+                              >
+                                <div className="compact-icon">📖</div>
+                                <div className="compact-title">
                                   <h4>{cls.subject}</h4>
-                                  <span className="grade-tag">
-                                    Grade {cls.grade}
-                                  </span>
-                                </div>
-                                <div className="time-info">
-                                  <span className="time-badge">
-                                    {formatTime(cls.startTime)} -{" "}
-                                    {formatTime(cls.endTime)}
+                                  <span className="compact-grade-badge">
+                                    GRADE {cls.grade}
                                   </span>
                                 </div>
                               </div>
-                              <div className="class-item-details">
-                                <span className="detail-item">
-                                  💰 Rs.{" "}
-                                  {cls.monthlyFees
-                                    ? cls.monthlyFees.toLocaleString()
-                                    : "N/A"}
-                                </span>
-                                <span className="detail-item">
-                                  📊 Class ID: {cls.id}
-                                </span>
+                              <div className="card-compact-body">
+                                <div className="compact-info-row">
+                                  <span className="compact-label">⏰ Time:</span>
+                                  <span className="compact-value">
+                                    {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
+                                  </span>
+                                </div>
+                                <div className="compact-info-row">
+                                  <span className="compact-label">💰 Fee:</span>
+                                  <span className="compact-value">
+                                    Rs. {cls.monthlyFees ? cls.monthlyFees.toLocaleString() : "N/A"}
+                                  </span>
+                                </div>
+                                <div className="compact-info-row">
+                                  <span className="compact-label">📊 ID:</span>
+                                  <span className="compact-value">
+                                    Class {cls.id}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           ))}
