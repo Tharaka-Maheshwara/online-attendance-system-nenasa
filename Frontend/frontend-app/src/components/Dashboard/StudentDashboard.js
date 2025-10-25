@@ -323,7 +323,8 @@ const StudentDashboard = () => {
               <div className="stat-icon">📅</div>
               <div className="stat-info">
                 <h3>Classes This Month</h3>
-                <p className="stat-percentage">{overallStats.presentClasses}</p>
+                <p className="stat-percentage">{overallStats.presentClasses}/{overallStats.totalClasses}</p>
+                <span className="stat-detail">Attended/Total</span>
               </div>
             </div>
             <div className="stat-card tertiary">
