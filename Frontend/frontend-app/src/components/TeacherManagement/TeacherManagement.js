@@ -275,7 +275,8 @@ const TeacherManagement = () => {
     return (
       teacher.name.toLowerCase().includes(term) ||
       teacher.email.toLowerCase().includes(term) ||
-      (teacher.registrationNumber && teacher.registrationNumber.toLowerCase().includes(term)) ||
+      (teacher.registrationNumber &&
+        teacher.registrationNumber.toLowerCase().includes(term)) ||
       (teacher.contact && teacher.contact.toLowerCase().includes(term)) ||
       subjects.includes(term)
     );
@@ -314,7 +315,8 @@ const TeacherManagement = () => {
 
       {searchTerm && (
         <div className="search-info">
-          Found {filteredTeachers.length} teacher{filteredTeachers.length !== 1 ? "s" : ""} matching "{searchTerm}"
+          Found {filteredTeachers.length} teacher
+          {filteredTeachers.length !== 1 ? "s" : ""} matching "{searchTerm}"
         </div>
       )}
 

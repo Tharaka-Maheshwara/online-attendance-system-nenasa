@@ -292,7 +292,8 @@ const CourseManagement = () => {
 
       {searchTerm && (
         <div className="search-info">
-          Found {filteredCourses.length} course{filteredCourses.length !== 1 ? "s" : ""} matching "{searchTerm}"
+          Found {filteredCourses.length} course
+          {filteredCourses.length !== 1 ? "s" : ""} matching "{searchTerm}"
         </div>
       )}
 
@@ -314,156 +315,165 @@ const CourseManagement = () => {
           <tbody>
             {filteredCourses.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
-                  {searchTerm ? `No courses found matching "${searchTerm}"` : "No courses available"}
+                <td
+                  colSpan="9"
+                  style={{ textAlign: "center", padding: "20px" }}
+                >
+                  {searchTerm
+                    ? `No courses found matching "${searchTerm}"`
+                    : "No courses available"}
                 </td>
               </tr>
             ) : (
               filteredCourses.map((course) => (
-              <tr key={course.id}>
-                <td>
-                  <div className="course-name">
-                    <strong>{course.courseName}</strong>
-                  </div>
-                </td>
-                <td>
-                  {course.teacher ? (
-                    <div className="teacher-info">
-                      <div className="teacher-profile">
-                        {course.teacher.profileImage && (
-                          <img
-                            src={`http://localhost:8000${course.teacher.profileImage}`}
-                            alt={course.teacher.name}
-                            className="teacher-avatar"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        )}
-                        <span>{course.teacher.name}</span>
-                      </div>
+                <tr key={course.id}>
+                  <td>
+                    <div className="course-name">
+                      <strong>{course.courseName}</strong>
                     </div>
-                  ) : (
-                    <span className="no-teacher">No teacher assigned</span>
-                  )}
-                </td>
-                <td>{course.duration}</td>
-                <td>
-                  {(() => {
-                    const currentDate = new Date();
-                    const startDate = new Date(course.startDate);
-                    const hasStarted = startDate < currentDate;
-                    return (
-                      <span
-                        className={hasStarted ? "date-passed" : ""}
-                        title={hasStarted ? "Course has already started" : ""}
-                      >
-                        {formatDate(course.startDate)}
-                        {hasStarted && " ⏰"}
-                      </span>
-                    );
-                  })()}
-                </td>
-                <td>{course.maxStudents}</td>
-                <td>
-                  {editingEnrollment === course.id ? (
-                    <div className="enrollment-edit">
-                      <input
-                        type="number"
-                        value={tempEnrollmentValue}
-                        onChange={(e) => setTempEnrollmentValue(e.target.value)}
-                        min="0"
-                        className="enrollment-input"
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") {
-                            saveEnrollmentCount(course.id);
-                          } else if (e.key === "Escape") {
-                            cancelEditingEnrollment();
+                  </td>
+                  <td>
+                    {course.teacher ? (
+                      <div className="teacher-info">
+                        <div className="teacher-profile">
+                          {course.teacher.profileImage && (
+                            <img
+                              src={`http://localhost:8000${course.teacher.profileImage}`}
+                              alt={course.teacher.name}
+                              className="teacher-avatar"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                              }}
+                            />
+                          )}
+                          <span>{course.teacher.name}</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="no-teacher">No teacher assigned</span>
+                    )}
+                  </td>
+                  <td>{course.duration}</td>
+                  <td>
+                    {(() => {
+                      const currentDate = new Date();
+                      const startDate = new Date(course.startDate);
+                      const hasStarted = startDate < currentDate;
+                      return (
+                        <span
+                          className={hasStarted ? "date-passed" : ""}
+                          title={hasStarted ? "Course has already started" : ""}
+                        >
+                          {formatDate(course.startDate)}
+                          {hasStarted && " ⏰"}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td>{course.maxStudents}</td>
+                  <td>
+                    {editingEnrollment === course.id ? (
+                      <div className="enrollment-edit">
+                        <input
+                          type="number"
+                          value={tempEnrollmentValue}
+                          onChange={(e) =>
+                            setTempEnrollmentValue(e.target.value)
                           }
-                        }}
-                        autoFocus
-                      />
-                      <div className="enrollment-actions">
-                        <button
-                          className="btn-save"
-                          onClick={() => saveEnrollmentCount(course.id)}
-                          disabled={loading}
-                        >
-                          ✓
-                        </button>
-                        <button
-                          className="btn-cancel"
-                          onClick={cancelEditingEnrollment}
-                        >
-                          ✕
-                        </button>
+                          min="0"
+                          className="enrollment-input"
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              saveEnrollmentCount(course.id);
+                            } else if (e.key === "Escape") {
+                              cancelEditingEnrollment();
+                            }
+                          }}
+                          autoFocus
+                        />
+                        <div className="enrollment-actions">
+                          <button
+                            className="btn-save"
+                            onClick={() => saveEnrollmentCount(course.id)}
+                            disabled={loading}
+                          >
+                            ✓
+                          </button>
+                          <button
+                            className="btn-cancel"
+                            onClick={cancelEditingEnrollment}
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <span
-                      className={`enrollment-count editable ${
-                        (course.enrolledStudents || 0) >= course.maxStudents
-                          ? "full"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        startEditingEnrollment(
-                          course.id,
-                          course.enrolledStudents || 0
-                        )
-                      }
-                      title={
-                        (course.enrolledStudents || 0) >= course.maxStudents
-                          ? "Course is full - Click to edit enrollment count"
-                          : "Click to edit enrollment count"
-                      }
-                    >
-                      {course.enrolledStudents || 0}
-                      {(course.enrolledStudents || 0) >= course.maxStudents &&
-                        " 🔴"}
-                    </span>
-                  )}
-                </td>
-                <td>{formatPrice(course.price)}</td>
-                <td>
-                  {(() => {
-                    const availability = getCourseAvailabilityStatus(course);
-                    return (
+                    ) : (
                       <span
-                        className={`status ${
-                          availability.isAvailable ? "active" : "inactive"
+                        className={`enrollment-count editable ${
+                          (course.enrolledStudents || 0) >= course.maxStudents
+                            ? "full"
+                            : ""
                         }`}
-                        title={availability.reason}
+                        onClick={() =>
+                          startEditingEnrollment(
+                            course.id,
+                            course.enrolledStudents || 0
+                          )
+                        }
+                        title={
+                          (course.enrolledStudents || 0) >= course.maxStudents
+                            ? "Course is full - Click to edit enrollment count"
+                            : "Click to edit enrollment count"
+                        }
                       >
-                        {availability.isAvailable ? "AVAILABLE" : "UNAVAILABLE"}
+                        {course.enrolledStudents || 0}
+                        {(course.enrolledStudents || 0) >= course.maxStudents &&
+                          " 🔴"}
                       </span>
-                    );
-                  })()}
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button
-                      className="btn-details"
-                      onClick={() => openDetailsModal(course)}
-                    >
-                      More Details
-                    </button>
-                    <button
-                      className="btn-edit"
-                      onClick={() => openEditModal(course)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn-delete3"
-                      onClick={() => handleDelete(course.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
+                    )}
+                  </td>
+                  <td>{formatPrice(course.price)}</td>
+                  <td>
+                    {(() => {
+                      const availability = getCourseAvailabilityStatus(course);
+                      return (
+                        <span
+                          className={`status ${
+                            availability.isAvailable ? "active" : "inactive"
+                          }`}
+                          title={availability.reason}
+                        >
+                          {availability.isAvailable
+                            ? "AVAILABLE"
+                            : "UNAVAILABLE"}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button
+                        className="btn-details"
+                        onClick={() => openDetailsModal(course)}
+                      >
+                        More Details
+                      </button>
+                      <button
+                        className="btn-edit"
+                        onClick={() => openEditModal(course)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn-delete3"
+                        onClick={() => handleDelete(course.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

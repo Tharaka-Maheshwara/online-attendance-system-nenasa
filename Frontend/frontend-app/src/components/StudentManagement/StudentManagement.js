@@ -449,11 +449,14 @@ const StudentManagement = () => {
     return (
       student.name.toLowerCase().includes(term) ||
       student.email.toLowerCase().includes(term) ||
-      (student.registerNumber && student.registerNumber.toLowerCase().includes(term)) ||
+      (student.registerNumber &&
+        student.registerNumber.toLowerCase().includes(term)) ||
       (student.grade && student.grade.toString().includes(term)) ||
-      (student.contactNumber && student.contactNumber.toLowerCase().includes(term)) ||
+      (student.contactNumber &&
+        student.contactNumber.toLowerCase().includes(term)) ||
       (student.parentName && student.parentName.toLowerCase().includes(term)) ||
-      (student.parentEmail && student.parentEmail.toLowerCase().includes(term)) ||
+      (student.parentEmail &&
+        student.parentEmail.toLowerCase().includes(term)) ||
       subjects.includes(term)
     );
   });
@@ -503,7 +506,8 @@ const StudentManagement = () => {
 
       {searchTerm && (
         <div className="search-info">
-          Found {filteredStudents.length} student{filteredStudents.length !== 1 ? "s" : ""} matching "{searchTerm}"
+          Found {filteredStudents.length} student
+          {filteredStudents.length !== 1 ? "s" : ""} matching "{searchTerm}"
         </div>
       )}
 
@@ -1058,71 +1062,76 @@ const StudentManagement = () => {
               <tbody>
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>
-                      {searchTerm ? `No students found matching "${searchTerm}"` : "No students available"}
+                    <td
+                      colSpan="10"
+                      style={{ textAlign: "center", padding: "20px" }}
+                    >
+                      {searchTerm
+                        ? `No students found matching "${searchTerm}"`
+                        : "No students available"}
                     </td>
                   </tr>
                 ) : (
                   filteredStudents.map((student) => {
-                  const subjects = [
-                    student.sub_1,
-                    student.sub_2,
-                    student.sub_3,
-                    student.sub_4,
-                    student.sub_5,
-                    student.sub_6,
-                  ]
-                    .filter(Boolean)
-                    .join(", ");
+                    const subjects = [
+                      student.sub_1,
+                      student.sub_2,
+                      student.sub_3,
+                      student.sub_4,
+                      student.sub_5,
+                      student.sub_6,
+                    ]
+                      .filter(Boolean)
+                      .join(", ");
 
-                  return (
-                    <tr key={student.id}>
-                      <td>
-                        {student.profileImage ? (
-                          <img
-                            src={`http://localhost:8000${student.profileImage}`}
-                            alt={student.name}
-                            className="student-image"
-                          />
-                        ) : (
-                          <div className="student-image-placeholder">👤</div>
-                        )}
-                      </td>
-                      <td>{student.name}</td>
-                      <td>{student.email}</td>
-                      <td>{student.registerNumber || "N/A"}</td>
-                      <td>{student.contactNumber || "N/A"}</td>
-                      <td>
-                        {student.grade ? `Grade ${student.grade}` : "N/A"}
-                      </td>
-                      <td>{student.parentName || "N/A"}</td>
-                      <td>{student.parentEmail || "N/A"}</td>
-                      <td>{subjects || "No subjects assigned"}</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button
-                            className="edit-btn"
-                            onClick={() => handleEdit(student)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="qr-btn"
-                            onClick={() => handleShowQR(student)}
-                          >
-                            QR Code
-                          </button>
-                          <button
-                            className="delete-btn2"
-                            onClick={() => handleDelete(student.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
+                    return (
+                      <tr key={student.id}>
+                        <td>
+                          {student.profileImage ? (
+                            <img
+                              src={`http://localhost:8000${student.profileImage}`}
+                              alt={student.name}
+                              className="student-image"
+                            />
+                          ) : (
+                            <div className="student-image-placeholder">👤</div>
+                          )}
+                        </td>
+                        <td>{student.name}</td>
+                        <td>{student.email}</td>
+                        <td>{student.registerNumber || "N/A"}</td>
+                        <td>{student.contactNumber || "N/A"}</td>
+                        <td>
+                          {student.grade ? `Grade ${student.grade}` : "N/A"}
+                        </td>
+                        <td>{student.parentName || "N/A"}</td>
+                        <td>{student.parentEmail || "N/A"}</td>
+                        <td>{subjects || "No subjects assigned"}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="edit-btn"
+                              onClick={() => handleEdit(student)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="qr-btn"
+                              onClick={() => handleShowQR(student)}
+                            >
+                              QR Code
+                            </button>
+                            <button
+                              className="delete-btn2"
+                              onClick={() => handleDelete(student.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
