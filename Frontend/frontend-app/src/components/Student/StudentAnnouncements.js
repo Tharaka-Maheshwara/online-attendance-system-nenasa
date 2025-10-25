@@ -217,7 +217,10 @@ const StudentAnnouncements = () => {
           ) : filteredAnnouncements.length > 0 ? (
             <div className="announcements-grid">
               {filteredAnnouncements.map((announcement) => (
-                <div key={announcement.id} className="announcement-compact-card">
+                <div
+                  key={announcement.id}
+                  className="announcement-compact-card"
+                >
                   <div className="announcement-card-header">
                     <div className="announcement-icon">📢</div>
                     <div className="announcement-info">
