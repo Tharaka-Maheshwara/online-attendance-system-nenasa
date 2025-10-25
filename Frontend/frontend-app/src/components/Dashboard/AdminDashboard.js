@@ -45,13 +45,21 @@ const AdminDashboard = () => {
       .then((data) => {
         setClasses(data);
         setClassLoading(false);
-        
+
         // Filter today's classes
         const today = new Date();
-        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
         const todayName = dayNames[today.getDay()];
-        
-        const todaysClasses = data.filter(cls => cls.dayOfWeek === todayName);
+
+        const todaysClasses = data.filter((cls) => cls.dayOfWeek === todayName);
         setTodayClasses(todaysClasses);
       })
       .catch((error) => {
@@ -338,7 +346,9 @@ const AdminDashboard = () => {
                 <div className="class-card-body">
                   <div className="class-info-row">
                     <span className="info-label">👨‍🏫 Teacher:</span>
-                    <span className="info-value">{cls.teacherName || "Not Assigned"}</span>
+                    <span className="info-value">
+                      {cls.teacherName || "Not Assigned"}
+                    </span>
                   </div>
                   <div className="class-info-row">
                     <span className="info-label">⏰ Time:</span>
@@ -349,7 +359,10 @@ const AdminDashboard = () => {
                   <div className="class-info-row">
                     <span className="info-label">💰 Monthly Fee:</span>
                     <span className="info-value">
-                      Rs. {cls.monthlyFees ? cls.monthlyFees.toLocaleString() : "N/A"}
+                      Rs.{" "}
+                      {cls.monthlyFees
+                        ? cls.monthlyFees.toLocaleString()
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="class-info-row">
