@@ -12,6 +12,7 @@ import {
 
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
   const [formData, setFormData] = useState({
@@ -258,6 +259,28 @@ const TeacherManagement = () => {
     }
   };
 
+  // Filter teachers based on search term
+  const filteredTeachers = teachers.filter((teacher) => {
+    const term = searchTerm.toLowerCase();
+    const subjects = [
+      teacher.sub_01,
+      teacher.sub_02,
+      teacher.sub_03,
+      teacher.sub_04,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      teacher.name.toLowerCase().includes(term) ||
+      teacher.email.toLowerCase().includes(term) ||
+      (teacher.registrationNumber && teacher.registrationNumber.toLowerCase().includes(term)) ||
+      (teacher.contact && teacher.contact.toLowerCase().includes(term)) ||
+      subjects.includes(term)
+    );
+  });
+
   return (
     <div className="teacher-management">
       <div className="header">
@@ -269,6 +292,31 @@ const TeacherManagement = () => {
           {showAddForm ? "Cancel" : "Add New Teacher"}
         </button>
       </div>
+
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by name, email, teacher ID, contact, or subject..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {searchTerm && (
+          <button
+            className="clear-search-btn"
+            onClick={() => setSearchTerm("")}
+            title="Clear search"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {searchTerm && (
+        <div className="search-info">
+          Found {filteredTeachers.length} teacher{filteredTeachers.length !== 1 ? "s" : ""} matching "{searchTerm}"
+        </div>
+      )}
 
       {showAddForm && (
         <div className="add-teacher-form">
@@ -457,6 +505,10 @@ const TeacherManagement = () => {
           <div className="no-data">
             <p>No teachers found. Add a new teacher to get started.</p>
           </div>
+        ) : filteredTeachers.length === 0 ? (
+          <div className="no-data">
+            <p>No teachers found matching "{searchTerm}"</p>
+          </div>
         ) : (
           <div className="teachers-table">
             <table>
@@ -471,7 +523,7 @@ const TeacherManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {teachers.map((teacher) => (
+                {filteredTeachers.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>
                       {teacher.profileImage ? (

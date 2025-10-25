@@ -11,6 +11,7 @@ import "./CourseManagement.css";
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [teachers, setTeachers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -242,6 +243,23 @@ const CourseManagement = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Filter courses based on search term
+  const filteredCourses = courses.filter((course) => {
+    const term = searchTerm.toLowerCase();
+    const teacherName = course.teacher?.name?.toLowerCase() || "";
+    const availabilityStatus = getCourseAvailabilityStatus(course);
+    const status = availabilityStatus.isAvailable ? "available" : "unavailable";
+
+    return (
+      course.courseName.toLowerCase().includes(term) ||
+      teacherName.includes(term) ||
+      course.duration.toLowerCase().includes(term) ||
+      course.price.toString().includes(term) ||
+      status.includes(term) ||
+      (course.description && course.description.toLowerCase().includes(term))
+    );
+  });
+
   return (
     <div className="course-management">
       <div className="course-header">
@@ -252,6 +270,31 @@ const CourseManagement = () => {
       </div>
 
       {loading && <div className="loading">Loading...</div>}
+
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by course name, teacher, duration, price, status, or description..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {searchTerm && (
+          <button
+            className="clear-search-btn"
+            onClick={() => setSearchTerm("")}
+            title="Clear search"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {searchTerm && (
+        <div className="search-info">
+          Found {filteredCourses.length} course{filteredCourses.length !== 1 ? "s" : ""} matching "{searchTerm}"
+        </div>
+      )}
 
       <div className="course-table-container">
         <table className="course-table">
@@ -269,7 +312,14 @@ const CourseManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {courses.map((course) => (
+            {filteredCourses.length === 0 ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
+                  {searchTerm ? `No courses found matching "${searchTerm}"` : "No courses available"}
+                </td>
+              </tr>
+            ) : (
+              filteredCourses.map((course) => (
               <tr key={course.id}>
                 <td>
                   <div className="course-name">
@@ -413,7 +463,8 @@ const CourseManagement = () => {
                   </div>
                 </td>
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
       </div>
