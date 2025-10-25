@@ -3,6 +3,7 @@
 ## 🔍 Verification Checklist
 
 ### 1. Backend Server Status
+
 Check if the backend server is running on port 8000:
 
 ```powershell
@@ -13,9 +14,11 @@ netstat -ano | findstr :8000
 Expected output: Should show a listening process on port 8000
 
 ### 2. Frontend Connection Check
+
 Open browser Developer Tools (F12) and check Console:
 
 **Expected Console Logs:**
+
 ```
 ✅ Socket connected: <socket-id>
 ✅ User registered: { success: true, message: 'Successfully connected...' }
@@ -26,6 +29,7 @@ Open browser Developer Tools (F12) and check Console:
 ```
 
 **Problem Indicators:**
+
 ```
 ❌ Socket connection error: ...
 ❌ Socket disconnected
@@ -33,9 +37,11 @@ Open browser Developer Tools (F12) and check Console:
 ```
 
 ### 3. Backend Logs
+
 Check terminal where backend is running for these logs:
 
 **Expected Logs:**
+
 ```
 Client connected: <socket-id>
 User registered: <email> (<role>)
@@ -53,16 +59,19 @@ Emitting new announcement to class <id>
 **Symptoms:** No socket logs in browser console
 
 **Solution:**
+
 1. Verify backend is running:
+
    ```powershell
    cd Backend
    npm run start:dev
    ```
 
 2. Check CORS configuration in `Backend/src/main.ts`:
+
    ```typescript
    app.enableCors({
-     origin: ['http://localhost:3000', 'http://localhost:3001'],
+     origin: ["http://localhost:3000", "http://localhost:3001"],
      credentials: true,
    });
    ```
@@ -82,15 +91,18 @@ Emitting new announcement to class <id>
 **Symptoms:** Socket connects but no "User registered" log
 
 **Possible Causes:**
+
 - User not logged in (no MSAL account)
 - currentUser not in sessionStorage
 - SocketContext not wrapped around App
 
 **Solution:**
+
 1. Check if user is logged in:
+
    ```javascript
    // In browser console
-   JSON.parse(sessionStorage.getItem('currentUser'))
+   JSON.parse(sessionStorage.getItem("currentUser"));
    ```
 
 2. Verify App.js structure:
@@ -108,7 +120,9 @@ Emitting new announcement to class <id>
 **Symptoms:** "User registered" appears but no "Classes registered"
 
 **Solution:**
+
 1. Test student classes API manually:
+
    ```powershell
    # Replace with actual student email
    curl http://localhost:8000/student/email/student@example.com/classes/all
@@ -122,7 +136,9 @@ Emitting new announcement to class <id>
 **Symptoms:** Socket connected, user registered, but no notifications on teacher action
 
 **Solution:**
+
 1. Verify EventsGateway is injected in controllers:
+
    ```typescript
    constructor(
      private readonly lectureNoteService: LectureNoteService,
@@ -131,6 +147,7 @@ Emitting new announcement to class <id>
    ```
 
 2. Check if EventsModule is imported in feature modules:
+
    ```typescript
    // In lecture-notes/lecture-note.module.ts
    @Module({
@@ -140,9 +157,10 @@ Emitting new announcement to class <id>
    ```
 
 3. Verify emit is called after save:
+
    ```typescript
    const lectureNote = await this.lectureNoteService.createLectureNote(dto);
-   
+
    // Must be AFTER the save
    this.eventsGateway.emitNewLectureNote(classId, {
      id: lectureNote.id,
@@ -156,11 +174,14 @@ Emitting new announcement to class <id>
 **Symptoms:** Backend logs show "Emitting...", but student doesn't receive
 
 **Solution:**
+
 1. Verify student joined the correct room:
+
    - Backend logs should show: "Student classes registered: email -> 1, 2, 3"
    - Event should be emitted to correct class: "Emitting new lecture note to class 1"
 
 2. Check event names match exactly:
+
    - Backend emits: `'newLectureNote'`
    - Frontend listens: `socket.on('newLectureNote', ...)`
 
@@ -168,8 +189,8 @@ Emitting new announcement to class <id>
    ```javascript
    // In browser console
    const { socket } = window.__SOCKET_CONTEXT__;
-   socket.on('newLectureNote', (data) => {
-     console.log('TEST RECEIVED:', data);
+   socket.on("newLectureNote", (data) => {
+     console.log("TEST RECEIVED:", data);
    });
    ```
 
@@ -178,6 +199,7 @@ Emitting new announcement to class <id>
 ## 🧪 Testing Steps
 
 ### Manual Test 1: Connection Test
+
 1. Start backend: `npm run start:dev` in Backend folder
 2. Start frontend: `npm start` in frontend-app folder
 3. Login as student
@@ -185,6 +207,7 @@ Emitting new announcement to class <id>
 5. Verify logs appear in order
 
 ### Manual Test 2: Lecture Note Notification
+
 1. Login as student in one browser window
 2. Login as teacher in another (or incognito)
 3. Teacher uploads a lecture note for a class the student is in
@@ -194,6 +217,7 @@ Emitting new announcement to class <id>
    - Beep sound plays
 
 ### Manual Test 3: Announcement Notification
+
 1. Same setup as Test 2
 2. Teacher creates an announcement
 3. Student should see:
@@ -202,6 +226,7 @@ Emitting new announcement to class <id>
    - Beep sound plays
 
 ### Manual Test 4: Room Targeting
+
 1. Login as Student A (enrolled in Class 1 and 2)
 2. Login as Student B (enrolled in Class 3)
 3. Teacher uploads note to Class 1
@@ -213,6 +238,7 @@ Emitting new announcement to class <id>
 ## 🔧 Quick Fix Commands
 
 ### Restart Everything
+
 ```powershell
 # Kill all Node processes (BE CAREFUL!)
 taskkill /F /IM node.exe
@@ -227,6 +253,7 @@ npm start
 ```
 
 ### Clear Cache and Reinstall
+
 ```powershell
 # Backend
 cd Backend
@@ -240,6 +267,7 @@ npm install
 ```
 
 ### Check Dependencies
+
 ```powershell
 # Backend - should see these packages
 cd Backend
@@ -255,6 +283,7 @@ npm list socket.io-client
 ## 📊 Monitoring Tools
 
 ### Browser DevTools Network Tab
+
 1. Open DevTools → Network tab
 2. Filter: WS (WebSocket)
 3. Should see connection to `ws://localhost:8000/socket.io/`
@@ -262,19 +291,21 @@ npm list socket.io-client
 5. Click on connection to see messages
 
 ### Socket.IO Client Testing
+
 Add to browser console for debugging:
+
 ```javascript
 // Check socket state
 const { socket, isConnected } = window.__SOCKET_CONTEXT__;
-console.log('Socket:', socket);
-console.log('Connected:', isConnected);
-console.log('Socket ID:', socket?.id);
+console.log("Socket:", socket);
+console.log("Connected:", isConnected);
+console.log("Socket ID:", socket?.id);
 
 // Test emit
-socket.emit('test', { message: 'hello' });
+socket.emit("test", { message: "hello" });
 
 // Test listen
-socket.on('test-response', (data) => console.log('Received:', data));
+socket.on("test-response", (data) => console.log("Received:", data));
 ```
 
 ---
@@ -284,6 +315,7 @@ socket.on('test-response', (data) => console.log('Received:', data));
 When everything works correctly, you should see:
 
 ### Backend Terminal:
+
 ```
 🚀 Backend is running on: http://localhost:8000
 Client connected: abc123
@@ -293,6 +325,7 @@ Emitting new lecture note to class 1
 ```
 
 ### Frontend Console:
+
 ```
 ✅ Socket connected: abc123
 ✅ User registered: { success: true, ... }
@@ -304,6 +337,7 @@ Emitting new lecture note to class 1
 ```
 
 ### Student Browser:
+
 - ✅ Side popup appears in top-right
 - ✅ Beep sound plays
 - ✅ Notification shows title, message, subject
@@ -317,6 +351,7 @@ Emitting new lecture note to class 1
 If you've tried everything above and it's still not working:
 
 1. **Check EventsModule in AppModule:**
+
    ```typescript
    // Backend/src/app.module.ts
    @Module({
@@ -328,13 +363,16 @@ If you've tried everything above and it's still not working:
    ```
 
 2. **Verify SocketProvider wraps entire app:**
+
    ```javascript
    // Frontend/frontend-app/src/App.js
    function AppContent() {
      return (
-       <SocketProvider>  {/* Must wrap Router */}
+       <SocketProvider>
+         {" "}
+         {/* Must wrap Router */}
          <Router>
-           <RealtimeNotification />  {/* Must be inside SocketProvider */}
+           <RealtimeNotification /> {/* Must be inside SocketProvider */}
            {/* ... */}
          </Router>
        </SocketProvider>
@@ -343,23 +381,25 @@ If you've tried everything above and it's still not working:
    ```
 
 3. **Check for port conflicts:**
+
    ```powershell
    netstat -ano | findstr :8000
    netstat -ano | findstr :3000
    ```
 
 4. **Try changing WebSocket transport:**
+
    ```javascript
    // In SocketContext.js
-   const newSocket = io('http://localhost:8000', {
-     transports: ['polling', 'websocket'],  // Try polling first
+   const newSocket = io("http://localhost:8000", {
+     transports: ["polling", "websocket"], // Try polling first
      // ...
    });
    ```
 
 5. **Enable Socket.IO debug mode:**
    ```javascript
-   localStorage.debug = 'socket.io-client:*';
+   localStorage.debug = "socket.io-client:*";
    // Refresh page
    ```
 
@@ -368,6 +408,7 @@ If you've tried everything above and it's still not working:
 ## 📝 Next Steps
 
 Once you confirm the issue, update the relevant file:
+
 - Connection issues → `SocketContext.js`
 - Event emission → Controller files
 - Event reception → `RealtimeNotification.js`

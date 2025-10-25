@@ -3,6 +3,7 @@
 ## 📡 Overview
 
 This system implements real-time notifications using **Socket.IO** for instant updates when teachers add:
+
 - 📚 **Lecture Notes**
 - 📢 **Announcements**
 
@@ -15,11 +16,13 @@ Students who are **actively online** will receive **live notifications** immedia
 ### Backend (NestJS + Socket.IO)
 
 #### 1. **Events Gateway** (`events.gateway.ts`)
+
 - WebSocket server using Socket.IO
 - Handles client connections and room management
 - Emits real-time events to students
 
 **Key Features:**
+
 - User registration with email and role
 - Student class registration (joins rooms for each enrolled class)
 - Emit to specific classes or students
@@ -28,10 +31,12 @@ Students who are **actively online** will receive **live notifications** immedia
 #### 2. **Integration Points**
 
 **Lecture Note Controller:**
+
 - After creating a lecture note, emits `newLectureNote` event
 - Sent to all students in that specific class
 
 **Announcement Controller:**
+
 - After creating an announcement, emits `newAnnouncement` event
 - Sent to all students in that specific class
 
@@ -40,6 +45,7 @@ Students who are **actively online** will receive **live notifications** immedia
 ### Frontend (React + Socket.IO Client)
 
 #### 1. **Socket Context** (`SocketContext.js`)
+
 - Centralized socket connection management
 - Automatic user registration on connect
 - Automatic class registration for students
@@ -48,12 +54,14 @@ Students who are **actively online** will receive **live notifications** immedia
 #### 2. **Student Components**
 
 **StudentLectureNotes.js:**
+
 - Listens for `newLectureNote` events
 - Shows toast notification
 - Auto-refreshes lecture notes list
 - Auto-hides notification after 5 seconds
 
 **StudentAnnouncements.js:**
+
 - Listens for `newAnnouncement` events
 - Shows toast notification
 - Auto-refreshes announcements list
@@ -65,19 +73,19 @@ Students who are **actively online** will receive **live notifications** immedia
 
 ### Client → Server
 
-| Event | Data | Description |
-|-------|------|-------------|
-| `register` | `{ userEmail, role }` | Register user connection |
+| Event                    | Data                           | Description                         |
+| ------------------------ | ------------------------------ | ----------------------------------- |
+| `register`               | `{ userEmail, role }`          | Register user connection            |
 | `registerStudentClasses` | `{ studentEmail, classIds[] }` | Register student's enrolled classes |
 
 ### Server → Client
 
-| Event | Data | Description |
-|-------|------|-------------|
-| `registered` | `{ success, message }` | Registration confirmation |
-| `classesRegistered` | `{ success, classIds[] }` | Class registration confirmation |
-| `newLectureNote` | `{ type, data, message, timestamp }` | New lecture note added |
-| `newAnnouncement` | `{ type, data, message, timestamp }` | New announcement posted |
+| Event               | Data                                 | Description                     |
+| ------------------- | ------------------------------------ | ------------------------------- |
+| `registered`        | `{ success, message }`               | Registration confirmation       |
+| `classesRegistered` | `{ success, classIds[] }`            | Class registration confirmation |
+| `newLectureNote`    | `{ type, data, message, timestamp }` | New lecture note added          |
+| `newAnnouncement`   | `{ type, data, message, timestamp }` | New announcement posted         |
 
 ---
 
@@ -153,10 +161,11 @@ npm install socket.io-client
 ## 📱 UI Components
 
 ### Toast Notification
+
 - **Position:** Top-right corner
 - **Duration:** 5 seconds (auto-hide)
 - **Design:** Modern card with icon, title, message
-- **Colors:** 
+- **Colors:**
   - Lecture Notes: Purple/Blue (`#667eea`)
   - Announcements: Orange (`#f59e0b`)
 - **Animation:** Slide in from right
@@ -169,10 +178,12 @@ npm install socket.io-client
 ### Test Real-time Notifications:
 
 1. **Open Two Browsers:**
+
    - Browser 1: Teacher account
    - Browser 2: Student account
 
 2. **Teacher Actions:**
+
    - Add a lecture note for a class
    - OR create an announcement
 
@@ -184,6 +195,7 @@ npm install socket.io-client
 ### Debug Console:
 
 Check browser console for:
+
 - `✅ Socket connected`
 - `✅ User registered`
 - `✅ Classes registered`
@@ -228,6 +240,7 @@ Check browser console for:
 The system provides **instant, real-time communication** between teachers and students. When a teacher adds content, students receive immediate notifications, creating an **interactive and engaging learning experience**!
 
 **Key Benefits:**
+
 - ⚡ Instant updates
 - 🎯 Class-specific targeting
 - 📱 Modern UI/UX

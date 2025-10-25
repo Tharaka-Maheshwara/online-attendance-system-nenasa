@@ -64,13 +64,13 @@ const StudentLectureNotes = () => {
     if (!socket) return;
 
     const handleNewLectureNote = (data) => {
-      console.log('📚 New lecture note received:', data);
-      
+      console.log("📚 New lecture note received:", data);
+
       // Show notification
       setNewNotification({
         id: Date.now(),
-        type: 'lecture-note',
-        title: 'New Lecture Note',
+        type: "lecture-note",
+        title: "New Lecture Note",
         message: data.message,
         data: data.data,
       });
@@ -78,8 +78,8 @@ const StudentLectureNotes = () => {
       // Add to notifications
       addNotification({
         id: Date.now(),
-        type: 'lecture-note',
-        title: 'New Lecture Note',
+        type: "lecture-note",
+        title: "New Lecture Note",
         message: data.message,
         timestamp: data.timestamp,
       });
@@ -87,15 +87,21 @@ const StudentLectureNotes = () => {
       // Refresh lecture notes list
       if (accounts && accounts.length > 0) {
         const userEmail = accounts[0].username;
-        fetch(`http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/lecture-notes`)
-          .then(res => res.json())
-          .then(updatedNotes => {
+        fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/lecture-notes`
+        )
+          .then((res) => res.json())
+          .then((updatedNotes) => {
             setLectureNotes(updatedNotes);
             if (selectedSubject === "All") {
               setFilteredNotes(updatedNotes);
             }
           })
-          .catch(error => console.error('Error refreshing lecture notes:', error));
+          .catch((error) =>
+            console.error("Error refreshing lecture notes:", error)
+          );
       }
 
       // Auto hide notification after 5 seconds
@@ -104,10 +110,10 @@ const StudentLectureNotes = () => {
       }, 5000);
     };
 
-    socket.on('newLectureNote', handleNewLectureNote);
+    socket.on("newLectureNote", handleNewLectureNote);
 
     return () => {
-      socket.off('newLectureNote', handleNewLectureNote);
+      socket.off("newLectureNote", handleNewLectureNote);
     };
   }, [socket, accounts, selectedSubject, addNotification]);
 
@@ -195,7 +201,7 @@ const StudentLectureNotes = () => {
             <h4>{newNotification.title}</h4>
             <p>{newNotification.message}</p>
           </div>
-          <button 
+          <button
             className="toast-close"
             onClick={() => setNewNotification(null)}
           >

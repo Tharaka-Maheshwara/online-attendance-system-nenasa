@@ -6,10 +6,7 @@ import { Announcement } from './announcement.entity';
 import { EventsModule } from '../events/events.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Announcement]),
-    EventsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Announcement]), EventsModule],
   controllers: [AnnouncementController],
   providers: [AnnouncementService],
   exports: [AnnouncementService],

@@ -65,13 +65,13 @@ const StudentAnnouncements = () => {
     if (!socket) return;
 
     const handleNewAnnouncement = (data) => {
-      console.log('📢 New announcement received:', data);
-      
+      console.log("📢 New announcement received:", data);
+
       // Show notification
       setNewNotification({
         id: Date.now(),
-        type: 'announcement',
-        title: 'New Announcement',
+        type: "announcement",
+        title: "New Announcement",
         message: data.message,
         data: data.data,
       });
@@ -79,8 +79,8 @@ const StudentAnnouncements = () => {
       // Add to notifications
       addNotification({
         id: Date.now(),
-        type: 'announcement',
-        title: 'New Announcement',
+        type: "announcement",
+        title: "New Announcement",
         message: data.message,
         timestamp: data.timestamp,
       });
@@ -88,15 +88,21 @@ const StudentAnnouncements = () => {
       // Refresh announcements list
       if (accounts && accounts.length > 0) {
         const userEmail = accounts[0].username;
-        fetch(`http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/announcements`)
-          .then(res => res.json())
-          .then(updatedAnnouncements => {
+        fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/announcements`
+        )
+          .then((res) => res.json())
+          .then((updatedAnnouncements) => {
             setAnnouncements(updatedAnnouncements);
             if (selectedSubject === "All") {
               setFilteredAnnouncements(updatedAnnouncements);
             }
           })
-          .catch(error => console.error('Error refreshing announcements:', error));
+          .catch((error) =>
+            console.error("Error refreshing announcements:", error)
+          );
       }
 
       // Auto hide notification after 5 seconds
@@ -105,10 +111,10 @@ const StudentAnnouncements = () => {
       }, 5000);
     };
 
-    socket.on('newAnnouncement', handleNewAnnouncement);
+    socket.on("newAnnouncement", handleNewAnnouncement);
 
     return () => {
-      socket.off('newAnnouncement', handleNewAnnouncement);
+      socket.off("newAnnouncement", handleNewAnnouncement);
     };
   }, [socket, accounts, selectedSubject, addNotification]);
 
@@ -173,7 +179,7 @@ const StudentAnnouncements = () => {
             <h4>{newNotification.title}</h4>
             <p>{newNotification.message}</p>
           </div>
-          <button 
+          <button
             className="toast-close"
             onClick={() => setNewNotification(null)}
           >

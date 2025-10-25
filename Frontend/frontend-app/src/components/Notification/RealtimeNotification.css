@@ -14,8 +14,7 @@
 .realtime-notification {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
-              0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 16px;
   display: flex;
   align-items: flex-start;
@@ -30,8 +29,7 @@
 
 .realtime-notification:hover {
   transform: translateX(-5px);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2),
-              0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
 .realtime-notification.lecture-note {
@@ -68,7 +66,8 @@
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

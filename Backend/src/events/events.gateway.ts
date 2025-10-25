@@ -21,10 +21,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   private logger: Logger = new Logger('EventsGateway');
-  
+
   // Store user connections: { userId: socketId }
   private userConnections = new Map<string, string>();
-  
+
   // Store student class enrollments: { studentEmail: [classIds] }
   private studentClasses = new Map<string, number[]>();
 
@@ -34,7 +34,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
-    
+
     // Remove from userConnections
     for (const [userId, socketId] of this.userConnections.entries()) {
       if (socketId === client.id) {
@@ -52,10 +52,10 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     this.userConnections.set(data.userEmail, client.id);
     this.logger.log(`User registered: ${data.userEmail} (${data.role})`);
-    
-    client.emit('registered', { 
-      success: true, 
-      message: 'Successfully connected to real-time updates' 
+
+    client.emit('registered', {
+      success: true,
+      message: 'Successfully connected to real-time updates',
     });
   }
 
@@ -65,20 +65,24 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     this.studentClasses.set(data.studentEmail, data.classIds);
-    this.logger.log(`Student classes registered: ${data.studentEmail} -> ${data.classIds.join(', ')}`);
-    
+    this.logger.log(
+      `Student classes registered: ${data.studentEmail} -> ${data.classIds.join(', ')}`,
+    );
+
     // Join rooms for each class
-    data.classIds.forEach(classId => {
+    data.classIds.forEach((classId) => {
       client.join(`class-${classId}`);
-      this.logger.log(`Student ${data.studentEmail} joined room: class-${classId}`);
+      this.logger.log(
+        `Student ${data.studentEmail} joined room: class-${classId}`,
+      );
     });
-    
+
     // Log all rooms the client is in
     const rooms = Array.from(client.rooms);
     this.logger.log(`Client ${client.id} is now in rooms: ${rooms.join(', ')}`);
-    
-    client.emit('classesRegistered', { 
-      success: true, 
+
+    client.emit('classesRegistered', {
+      success: true,
       classIds: data.classIds,
       rooms: rooms,
     });
@@ -88,14 +92,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   emitNewLectureNote(classId: number, lectureNote: any) {
     this.logger.log(`Emitting new lecture note to class ${classId}`);
     this.logger.log(`Lecture note data: ${JSON.stringify(lectureNote)}`);
-    
+
     const payload = {
       type: 'lecture-note',
       data: lectureNote,
       message: `New lecture note added: ${lectureNote.title}`,
       timestamp: new Date().toISOString(),
     };
-    
+
     this.server.to(`class-${classId}`).emit('newLectureNote', payload);
     this.logger.log(`Event emitted to room: class-${classId}`);
   }
@@ -104,14 +108,14 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   emitNewAnnouncement(classId: number, announcement: any) {
     this.logger.log(`Emitting new announcement to class ${classId}`);
     this.logger.log(`Announcement data: ${JSON.stringify(announcement)}`);
-    
+
     const payload = {
       type: 'announcement',
       data: announcement,
       message: `New announcement: ${announcement.title}`,
       timestamp: new Date().toISOString(),
     };
-    
+
     this.server.to(`class-${classId}`).emit('newAnnouncement', payload);
     this.logger.log(`Event emitted to room: class-${classId}`);
   }
@@ -127,7 +131,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Emit to all students in multiple classes
   emitToMultipleClasses(classIds: number[], event: string, data: any) {
-    classIds.forEach(classId => {
+    classIds.forEach((classId) => {
       this.server.to(`class-${classId}`).emit(event, data);
     });
     this.logger.log(`Emitted ${event} to classes: ${classIds.join(', ')}`);
@@ -138,7 +142,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`TEST: Emitting test notification to class ${classId}`);
     const payload = {
       type: 'announcement',
-      data: { 
+      data: {
         id: 999,
         title: 'Test Notification',
         message: 'This is a test notification',
