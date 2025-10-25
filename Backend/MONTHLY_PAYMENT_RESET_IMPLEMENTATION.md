@@ -29,6 +29,7 @@
 ```
 
 **Logic:**
+
 - Filters students by: `grade === class.grade` AND `subject in student subjects`
 - Creates payment record with:
   - `month`: Current month (1-12)
@@ -39,6 +40,7 @@
 ### 2. Payment Controller (`payment.controller.ts`)
 
 Updated `getPaymentStatusForClass()` endpoint:
+
 ```typescript
 @Get('class/:classId/status')
 async getPaymentStatusForClass(@Param('classId') classId: string) {
@@ -61,6 +63,7 @@ Wrapper method that calls `paymentService.ensureCurrentMonthPayments()`.
 ### 5. Attendance Controller (`attendance.controller.ts`)
 
 Updated POST endpoint to ensure payments before marking attendance:
+
 ```typescript
 @Post()
 async create(@Body() attendanceData: any): Promise<any> {
@@ -93,12 +96,14 @@ Save attendance record
 ### Scenario: September → October Transition
 
 **September 2025:**
+
 - Student A: Class Math → Payment Status: 'paid' (paid on Sept 15)
 - Student B: Class Math → Payment Status: 'paid' (paid on Sept 20)
 
 **October 1, 2025 - Teacher marks attendance:**
 
 System automatically:
+
 1. Checks for October 2025 payment records
 2. Finds none exist
 3. Creates new records:
@@ -106,6 +111,7 @@ System automatically:
    - Student B: Class Math → Payment Status: 'pending' (month: 10, year: 2025)
 
 **September records remain:**
+
 - Student A: Class Math → Payment Status: 'paid' (month: 9, year: 2025) ✅ Unchanged
 - Student B: Class Math → Payment Status: 'paid' (month: 9, year: 2025) ✅ Unchanged
 
@@ -131,16 +137,20 @@ CREATE TABLE payment (
 ## API Endpoints
 
 ### 1. Get Payment Status (Auto-creates if needed)
+
 ```http
 GET /payment/class/:classId/status
 ```
+
 Response: List of students with payment status for current month
 
 ### 2. Mark Attendance (Auto-creates if needed)
+
 ```http
 POST /attendance
 Body: { classId, studentId, date, status, ... }
 ```
+
 Automatically ensures current month payments before saving
 
 ## Testing

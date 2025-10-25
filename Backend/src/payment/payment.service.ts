@@ -76,7 +76,8 @@ export class PaymentService {
 
       return (
         studentSubjects.some(
-          (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
+          (subject) =>
+            subject.toLowerCase() === classInfo.subject.toLowerCase(),
         ) && student.grade === classInfo.grade
       );
     });
@@ -144,7 +145,8 @@ export class PaymentService {
 
       return (
         studentSubjects.some(
-          (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
+          (subject) =>
+            subject.toLowerCase() === classInfo.subject.toLowerCase(),
         ) && student.grade === classInfo.grade
       );
     });
