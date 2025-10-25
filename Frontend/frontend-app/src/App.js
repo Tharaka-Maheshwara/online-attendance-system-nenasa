@@ -28,6 +28,8 @@ import StudentPaymentStatus from "./components/Student/StudentPaymentStatus";
 import StudentLectureNotes from "./components/Student/StudentLectureNotes";
 import StudentAnnouncements from "./components/Student/StudentAnnouncements";
 import StudentAttendanceByClass from "./components/Student/StudentAttendanceByClass";
+import RealtimeNotification from "./components/Notification/RealtimeNotification";
+import { SocketProvider } from "./contexts/SocketContext";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -75,16 +77,18 @@ function AppContent() {
   }
 
   return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <main
-          style={{
-            padding: "0",
-            backgroundColor: "#f5f7fa",
-            minHeight: "100vh",
-          }}
-        >
+    <SocketProvider>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <RealtimeNotification />
+          <main
+            style={{
+              padding: "0",
+              backgroundColor: "#f5f7fa",
+              minHeight: "100vh",
+            }}
+          >
           <Routes>
             {/* All roles can access dashboard */}
             <Route path="/" element={<Dashboard />} />
@@ -294,6 +298,7 @@ function AppContent() {
         </main>
       </div>
     </Router>
+    </SocketProvider>
   );
 }
 

@@ -1,0 +1,210 @@
+/* Realtime Notification Popup - Side Panel */
+.realtime-notifications-container {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.realtime-notification {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  animation: slideInBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: auto;
+  border-left: 4px solid;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  max-width: 400px;
+  min-width: 350px;
+}
+
+.realtime-notification:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2),
+              0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.realtime-notification.lecture-note {
+  border-left-color: #667eea;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+}
+
+.realtime-notification.announcement {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbf5 100%);
+}
+
+@keyframes slideInBounce {
+  0% {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-10px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.notification-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.notification-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a202c;
+  letter-spacing: 0.3px;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: #718096;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.notification-message {
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  color: #2d3748;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.notification-subject {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.notification-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #2d3748;
+  transform: rotate(90deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .realtime-notifications-container {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .realtime-notification {
+    min-width: auto;
+    max-width: none;
+  }
+
+  .notification-icon {
+    font-size: 1.5rem;
+  }
+
+  .notification-header h4 {
+    font-size: 0.875rem;
+  }
+
+  .notification-message {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .realtime-notification {
+    background: #2d3748;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .realtime-notification.lecture-note {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  }
+
+  .realtime-notification.announcement {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  }
+
+  .notification-header h4 {
+    color: #f7fafc;
+  }
+
+  .notification-message {
+    color: #e2e8f0;
+  }
+
+  .notification-time {
+    color: #cbd5e0;
+  }
+
+  .notification-subject {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cbd5e0;
+  }
+
+  .notification-close {
+    color: #cbd5e0;
+  }
+
+  .notification-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f7fafc;
+  }
+}

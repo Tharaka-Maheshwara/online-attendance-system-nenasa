@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
+import { useSocket } from "../../contexts/SocketContext";
 import "../Dashboard/StudentDashboard.css"; // Reuse styles from StudentDashboard
 import "./StudentLectureNotes.css"; // Custom styles for lecture notes
 
 const StudentLectureNotes = () => {
   const { accounts } = useMsal();
+  const { socket, addNotification } = useSocket();
   const [lectureNotes, setLectureNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("All");
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [lectureNotesLoading, setLectureNotesLoading] = useState(true);
+  const [newNotification, setNewNotification] = useState(null);
 
   useEffect(() => {
     const fetchLectureNotes = async () => {
@@ -55,6 +58,58 @@ const StudentLectureNotes = () => {
 
     fetchLectureNotes();
   }, [accounts]);
+
+  // Listen for real-time lecture note updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewLectureNote = (data) => {
+      console.log('📚 New lecture note received:', data);
+      
+      // Show notification
+      setNewNotification({
+        id: Date.now(),
+        type: 'lecture-note',
+        title: 'New Lecture Note',
+        message: data.message,
+        data: data.data,
+      });
+
+      // Add to notifications
+      addNotification({
+        id: Date.now(),
+        type: 'lecture-note',
+        title: 'New Lecture Note',
+        message: data.message,
+        timestamp: data.timestamp,
+      });
+
+      // Refresh lecture notes list
+      if (accounts && accounts.length > 0) {
+        const userEmail = accounts[0].username;
+        fetch(`http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/lecture-notes`)
+          .then(res => res.json())
+          .then(updatedNotes => {
+            setLectureNotes(updatedNotes);
+            if (selectedSubject === "All") {
+              setFilteredNotes(updatedNotes);
+            }
+          })
+          .catch(error => console.error('Error refreshing lecture notes:', error));
+      }
+
+      // Auto hide notification after 5 seconds
+      setTimeout(() => {
+        setNewNotification(null);
+      }, 5000);
+    };
+
+    socket.on('newLectureNote', handleNewLectureNote);
+
+    return () => {
+      socket.off('newLectureNote', handleNewLectureNote);
+    };
+  }, [socket, accounts, selectedSubject, addNotification]);
 
   // Filter notes when selected subject changes
   useEffect(() => {
@@ -132,6 +187,23 @@ const StudentLectureNotes = () => {
 
   return (
     <div className="student-dashboard">
+      {/* Real-time notification toast */}
+      {newNotification && (
+        <div className="notification-toast lecture-note-toast">
+          <div className="toast-icon">📚</div>
+          <div className="toast-content">
+            <h4>{newNotification.title}</h4>
+            <p>{newNotification.message}</p>
+          </div>
+          <button 
+            className="toast-close"
+            onClick={() => setNewNotification(null)}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="lecture-notes-section">
         <div className="lecture-notes-header">
           <h2>Class Lecture Notes</h2>

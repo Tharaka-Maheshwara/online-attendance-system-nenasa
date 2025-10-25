@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useMsal } from "@azure/msal-react";
+import { useSocket } from "../../contexts/SocketContext";
 import "../Dashboard/StudentDashboard.css"; // Reuse styles from StudentDashboard
 import "./StudentAnnouncements.css"; // Custom styles for announcements
 
 const StudentAnnouncements = () => {
   const { accounts } = useMsal();
+  const { socket, addNotification } = useSocket();
   const [announcements, setAnnouncements] = useState([]);
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState("All");
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [newNotification, setNewNotification] = useState(null);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -56,6 +59,58 @@ const StudentAnnouncements = () => {
 
     fetchAnnouncements();
   }, [accounts]);
+
+  // Listen for real-time announcement updates
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewAnnouncement = (data) => {
+      console.log('📢 New announcement received:', data);
+      
+      // Show notification
+      setNewNotification({
+        id: Date.now(),
+        type: 'announcement',
+        title: 'New Announcement',
+        message: data.message,
+        data: data.data,
+      });
+
+      // Add to notifications
+      addNotification({
+        id: Date.now(),
+        type: 'announcement',
+        title: 'New Announcement',
+        message: data.message,
+        timestamp: data.timestamp,
+      });
+
+      // Refresh announcements list
+      if (accounts && accounts.length > 0) {
+        const userEmail = accounts[0].username;
+        fetch(`http://localhost:8000/student/email/${encodeURIComponent(userEmail)}/announcements`)
+          .then(res => res.json())
+          .then(updatedAnnouncements => {
+            setAnnouncements(updatedAnnouncements);
+            if (selectedSubject === "All") {
+              setFilteredAnnouncements(updatedAnnouncements);
+            }
+          })
+          .catch(error => console.error('Error refreshing announcements:', error));
+      }
+
+      // Auto hide notification after 5 seconds
+      setTimeout(() => {
+        setNewNotification(null);
+      }, 5000);
+    };
+
+    socket.on('newAnnouncement', handleNewAnnouncement);
+
+    return () => {
+      socket.off('newAnnouncement', handleNewAnnouncement);
+    };
+  }, [socket, accounts, selectedSubject, addNotification]);
 
   // Filter announcements when selected subject changes
   useEffect(() => {
@@ -110,6 +165,23 @@ const StudentAnnouncements = () => {
 
   return (
     <div className="student-dashboard">
+      {/* Real-time notification toast */}
+      {newNotification && (
+        <div className="notification-toast announcement-toast">
+          <div className="toast-icon">📢</div>
+          <div className="toast-content">
+            <h4>{newNotification.title}</h4>
+            <p>{newNotification.message}</p>
+          </div>
+          <button 
+            className="toast-close"
+            onClick={() => setNewNotification(null)}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="announcements-section">
         <div className="announcements-header">
           <h2>Class Announcements</h2>

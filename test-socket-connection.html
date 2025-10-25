@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Connection Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .connected {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+        .log-entry.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .log-entry.info {
+            border-left-color: #17a2b8;
+            background: #d1ecf1;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .notification {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Socket.IO Connection Test</h1>
+        
+        <div id="status" class="status disconnected">
+            ❌ Disconnected
+        </div>
+
+        <div class="controls">
+            <h3>Test Actions:</h3>
+            <label>Student Email:</label>
+            <input type="text" id="emailInput" placeholder="student@example.com" value="student@example.com">
+            
+            <label>Class IDs (comma-separated):</label>
+            <input type="text" id="classIdsInput" placeholder="1,2,3" value="1,2,3">
+            
+            <br><br>
+            <button onclick="registerUser()">Register User</button>
+            <button onclick="registerClasses()">Register Classes</button>
+            <button onclick="sendTestNotification()">Send Test Notification</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+
+        <h3>Event Log:</h3>
+        <div id="log" class="log"></div>
+
+        <div id="notifications"></div>
+    </div>
+
+    <script>
+        let socket;
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('status');
+        const notificationsDiv = document.getElementById('notifications');
+
+        // Connect to Socket.IO server
+        function connect() {
+            addLog('Attempting to connect to http://localhost:8000...', 'info');
+            
+            socket = io('http://localhost:8000', {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionDelay: 1000,
+                reconnectionAttempts: 5,
+            });
+
+            socket.on('connect', () => {
+                addLog('✅ Connected! Socket ID: ' + socket.id, 'success');
+                statusDiv.textContent = '✅ Connected - Socket ID: ' + socket.id;
+                statusDiv.className = 'status connected';
+            });
+
+            socket.on('disconnect', () => {
+                addLog('❌ Disconnected', 'error');
+                statusDiv.textContent = '❌ Disconnected';
+                statusDiv.className = 'status disconnected';
+            });
+
+            socket.on('connect_error', (error) => {
+                addLog('❌ Connection error: ' + error.message, 'error');
+            });
+
+            socket.on('registered', (data) => {
+                addLog('✅ User registered: ' + JSON.stringify(data), 'success');
+            });
+
+            socket.on('classesRegistered', (data) => {
+                addLog('✅ Classes registered: ' + JSON.stringify(data), 'success');
+            });
+
+            socket.on('newLectureNote', (data) => {
+                addLog('📚 New Lecture Note received: ' + JSON.stringify(data), 'success');
+                showNotification('📚 New Lecture Note', data.message);
+            });
+
+            socket.on('newAnnouncement', (data) => {
+                addLog('📢 New Announcement received: ' + JSON.stringify(data), 'success');
+                showNotification('📢 New Announcement', data.message);
+            });
+        }
+
+        function registerUser() {
+            const email = document.getElementById('emailInput').value;
+            if (!socket || !socket.connected) {
+                addLog('❌ Socket not connected! Connect first.', 'error');
+                return;
+            }
+            addLog(`Registering user: ${email}`, 'info');
+            socket.emit('register', { userEmail: email, role: 'student' });
+        }
+
+        function registerClasses() {
+            const email = document.getElementById('emailInput').value;
+            const classIdsStr = document.getElementById('classIdsInput').value;
+            const classIds = classIdsStr.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            
+            if (!socket || !socket.connected) {
+                addLog('❌ Socket not connected! Connect first.', 'error');
+                return;
+            }
+            
+            addLog(`Registering classes for ${email}: [${classIds.join(', ')}]`, 'info');
+            socket.emit('registerStudentClasses', { studentEmail: email, classIds: classIds });
+        }
+
+        async function sendTestNotification() {
+            const classIdsStr = document.getElementById('classIdsInput').value;
+            const classIds = classIdsStr.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            
+            if (classIds.length === 0) {
+                addLog('❌ Please enter at least one class ID', 'error');
+                return;
+            }
+
+            const classId = classIds[0];
+            addLog(`Sending test notification to class ${classId} via API...`, 'info');
+
+            try {
+                const response = await fetch(`http://localhost:8000/announcements/test-notification/${classId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    addLog(`✅ ${result.message}`, 'success');
+                } else {
+                    addLog(`❌ ${result.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`❌ Error sending test notification: ${error.message}`, 'error');
+            }
+        }
+
+        function addLog(message, type = '') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.insertBefore(entry, logDiv.firstChild);
+        }
+
+        function showNotification(title, message) {
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.innerHTML = `<strong>${title}</strong><br>${message}`;
+            notificationsDiv.appendChild(notif);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notif.remove();
+            }, 5000);
+
+            // Play beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function clearLog() {
+            logDiv.innerHTML = '';
+        }
+
+        // Auto-connect on page load
+        window.onload = () => {
+            connect();
+            addLog('🚀 Test page loaded. Connecting to server...', 'info');
+        };
+    </script>
+</body>
+</html>
