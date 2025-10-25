@@ -515,7 +515,7 @@
   .class-cards-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
-  
+
   .day-classes-cards {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
@@ -570,7 +570,7 @@
   .class-cards-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .day-classes-cards {
     grid-template-columns: 1fr;
   }
@@ -594,11 +594,11 @@
   .stat-box .stat-number {
     font-size: 2rem;
   }
-  
+
   .day-classes-cards {
     gap: 15px;
   }
-  
+
   .class-item {
     padding: 15px;
   }

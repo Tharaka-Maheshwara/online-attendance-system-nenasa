@@ -302,15 +302,21 @@ const TeacherDashboard = () => {
                               </div>
                               <div className="card-compact-body">
                                 <div className="compact-info-row">
-                                  <span className="compact-label">⏰ Time:</span>
+                                  <span className="compact-label">
+                                    ⏰ Time:
+                                  </span>
                                   <span className="compact-value">
-                                    {formatTime(cls.startTime)} - {formatTime(cls.endTime)}
+                                    {formatTime(cls.startTime)} -{" "}
+                                    {formatTime(cls.endTime)}
                                   </span>
                                 </div>
                                 <div className="compact-info-row">
                                   <span className="compact-label">💰 Fee:</span>
                                   <span className="compact-value">
-                                    Rs. {cls.monthlyFees ? cls.monthlyFees.toLocaleString() : "N/A"}
+                                    Rs.{" "}
+                                    {cls.monthlyFees
+                                      ? cls.monthlyFees.toLocaleString()
+                                      : "N/A"}
                                   </span>
                                 </div>
                                 <div className="compact-info-row">
