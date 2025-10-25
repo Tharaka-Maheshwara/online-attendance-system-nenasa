@@ -160,8 +160,6 @@ const TeacherDashboard = () => {
           </div>
           <div className="teacher-details">
             <h1>Welcome, {teacherInfo.name}!</h1>
-            <p className="teacher-email">📧 {teacherInfo.email}</p>
-            <p className="teacher-phone">📱 {teacherInfo.phone || "N/A"}</p>
           </div>
           <div className="teacher-stats-summary">
             <div className="stat-box">
