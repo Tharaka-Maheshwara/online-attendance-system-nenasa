@@ -22,6 +22,7 @@ const AdminDashboard = () => {
     subject: "",
   });
   const [todayClasses, setTodayClasses] = React.useState([]);
+  const [classSearchTerm, setClassSearchTerm] = React.useState("");
 
   React.useEffect(() => {
     // Fetch all users from backend
