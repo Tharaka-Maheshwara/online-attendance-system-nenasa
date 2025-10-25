@@ -215,39 +215,47 @@ const StudentAnnouncements = () => {
           {announcementsLoading ? (
             <div className="loading-message">Loading announcements...</div>
           ) : filteredAnnouncements.length > 0 ? (
-            <div className="announcements-list">
+            <div className="announcements-grid">
               {filteredAnnouncements.map((announcement) => (
-                <div key={announcement.id} className="announcement-card">
-                  <div className="announcement-header">
-                    <div className="announcement-title-section">
+                <div key={announcement.id} className="announcement-compact-card">
+                  <div className="announcement-card-header">
+                    <div className="announcement-icon">📢</div>
+                    <div className="announcement-info">
                       <h4 className="announcement-title">
                         {announcement.title}
                       </h4>
+                      <span className="announcement-subject">
+                        {announcement.classInfo?.subject || "Unknown Subject"}
+                      </span>
+                    </div>
+                    <span className="announcement-date">
+                      {formatAnnouncementDate(announcement.createdAt)}
+                    </span>
+                  </div>
+
+                  <div className="announcement-card-body">
+                    <div className="announcement-meta">
                       <span
                         className={`announcement-priority ${announcement.priority}`}
                       >
                         {getPriorityText(announcement.priority)}
                       </span>
-                    </div>
-                    <div className="announcement-meta">
-                      <span className="announcement-date">
-                        {formatAnnouncementDate(announcement.createdAt)}
+                      <span className="grade-tag">
+                        Grade {announcement.classInfo?.grade || "N/A"}
+                      </span>
+                      <span className="teacher-name">
+                        👨‍🏫{" "}
+                        {announcement.classInfo?.teacherName ||
+                          "Unknown Teacher"}
                       </span>
                     </div>
+
+                    <div className="announcement-message-box">
+                      <p>{announcement.message}</p>
+                    </div>
                   </div>
-                  <div className="announcement-class-info">
-                    <span className="class-subject">
-                      📚 {announcement.classInfo?.subject || "Unknown Subject"}
-                    </span>
-                    <span className="class-details">
-                      Grade {announcement.classInfo?.grade || "N/A"} • 👨‍🏫{" "}
-                      {announcement.classInfo?.teacherName || "Unknown Teacher"}
-                    </span>
-                  </div>
-                  <div className="announcement-message">
-                    <p>{announcement.message}</p>
-                  </div>
-                  <div className="announcement-footer">
+
+                  <div className="announcement-card-footer">
                     <small className="announcement-time">
                       {formatAnnouncementTime(announcement.createdAt)}
                     </small>
