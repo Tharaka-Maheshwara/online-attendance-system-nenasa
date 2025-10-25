@@ -282,112 +282,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <span>📊</span>
-          </div>
-          <div className="stat-info">
-            <h3>System Status</h3>
-            <p className="stat-number">Active</p>
-          </div>
-        </div>
+        {/* System Status card removed as requested */}
       </div>
 
       <div className="dashboard-grid">
-        {/* Quick Actions Panel */}
-        <div className="quick-actions">
-          <h2>Quick Actions</h2>
-          <div className="action-buttons">
-            <button
-              className="action-btn primary"
-              onClick={() => (window.location.href = "/students")}
-            >
-              <span className="btn-icon">👥</span>
-              Manage Students
-            </button>
-            <button
-              className="action-btn secondary"
-              onClick={() => (window.location.href = "/teachers")}
-            >
-              <span className="btn-icon">👨‍🏫</span>
-              Manage Teachers
-            </button>
-            <button
-              className="action-btn tertiary"
-              onClick={() => (window.location.href = "/classes")}
-            >
-              <span className="btn-icon">📚</span>
-              Manage Classes
-            </button>
-            <button
-              className="action-btn quaternary"
-              onClick={() => (window.location.href = "/attendance")}
-            >
-              <span className="btn-icon">✅</span>
-              Mark Attendance
-            </button>
-          </div>
-        </div>
-
-        {/* System Overview */}
-        <div className="system-overview">
-          <h2>System Overview</h2>
-          <div className="overview-items">
-            <div className="overview-item">
-              <span className="overview-label">Database Status</span>
-              <span className="status-indicator online">Online</span>
-            </div>
-            <div className="overview-item">
-              <span className="overview-label">Last Backup</span>
-              <span className="status-indicator warning">2 days ago</span>
-            </div>
-            <div className="overview-item">
-              <span className="overview-label">Active Sessions</span>
-              <span className="status-indicator online">
-                {users.filter((u) => u.role !== "admin").length} users
-              </span>
-            </div>
-            <div className="overview-item">
-              <span className="overview-label">System Health</span>
-              <span className="status-indicator online">Excellent</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activities */}
-        <div className="recent-activities">
-          <h2>Recent Activities</h2>
-          <div className="activity-list">
-            <div className="activity-item">
-              <div className="activity-icon">📝</div>
-              <div className="activity-details">
-                <p>New student registration completed</p>
-                <div className="activity-time">2 minutes ago</div>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-icon">✅</div>
-              <div className="activity-details">
-                <p>Attendance marked for English - Grade 9</p>
-                <div className="activity-time">15 minutes ago</div>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-icon">👨‍🏫</div>
-              <div className="activity-details">
-                <p>Teacher profile updated</p>
-                <div className="activity-time">1 hour ago</div>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-icon">📚</div>
-              <div className="activity-details">
-                <p>New class created: Mathematics</p>
-                <div className="activity-time">2 hours ago</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Removed Quick Actions, System Overview, and Recent Activities sections as requested */}
         {/* ...existing dashboard code... */}
 
         {/* Role Edit Modal */}
