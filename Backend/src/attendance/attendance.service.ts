@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attendance } from './attendance.entity';
 import { NotificationService } from '../notification/notification.service';
+import { PaymentService } from '../payment/payment.service';
 import { User } from '../user/user.entity';
 import { Student } from '../student/student.entity';
 import { Class } from '../class/class.entity';
@@ -22,6 +23,7 @@ export class AttendanceService {
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
     private readonly notificationService: NotificationService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   async getAvailableGrades(): Promise<number[]> {
@@ -87,6 +89,19 @@ export class AttendanceService {
     } catch (error) {
       console.error('Error fetching all classes with grades:', error);
       return [];
+    }
+  }
+
+  // Ensure current month payment records exist for a class
+  async ensureCurrentMonthPaymentsForClass(classId: number): Promise<void> {
+    try {
+      await this.paymentService.ensureCurrentMonthPayments(classId);
+      console.log(`✅ Ensured current month payments for class ${classId}`);
+    } catch (error) {
+      console.error(
+        `Error ensuring current month payments for class ${classId}:`,
+        error,
+      );
     }
   }
 

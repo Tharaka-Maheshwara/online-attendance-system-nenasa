@@ -52,7 +52,9 @@ export class PaymentController {
 
   @Get('class/:classId/status')
   @Roles('admin', 'teacher')
-  getPaymentStatusForClass(@Param('classId') classId: string) {
+  async getPaymentStatusForClass(@Param('classId') classId: string) {
+    // Ensure current month payment records exist
+    await this.paymentService.ensureCurrentMonthPayments(+classId);
     return this.paymentService.getPaymentStatusForClass(+classId);
   }
 

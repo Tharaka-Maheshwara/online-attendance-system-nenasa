@@ -70,10 +70,14 @@ export class PaymentService {
         student.sub_2,
         student.sub_3,
         student.sub_4,
+        student.sub_5,
+        student.sub_6,
       ].filter(Boolean);
 
-      return studentSubjects.some(
-        (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
+      return (
+        studentSubjects.some(
+          (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
+        ) && student.grade === classInfo.grade
       );
     });
 
@@ -107,6 +111,72 @@ export class PaymentService {
     });
 
     return paymentStatuses;
+  }
+
+  // Check and create new month payment records if needed
+  async ensureCurrentMonthPayments(classId: number): Promise<void> {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    const currentYear = currentDate.getFullYear();
+
+    // Get class details
+    const classInfo = await this.classRepository.findOne({
+      where: { id: classId },
+    });
+
+    if (!classInfo) {
+      return;
+    }
+
+    // Get all students
+    const allStudents = await this.studentRepository.find();
+
+    // Filter students enrolled in this class
+    const enrolledStudents = allStudents.filter((student) => {
+      const studentSubjects = [
+        student.sub_1,
+        student.sub_2,
+        student.sub_3,
+        student.sub_4,
+        student.sub_5,
+        student.sub_6,
+      ].filter(Boolean);
+
+      return (
+        studentSubjects.some(
+          (subject) => subject.toLowerCase() === classInfo.subject.toLowerCase(),
+        ) && student.grade === classInfo.grade
+      );
+    });
+
+    // Check if payment records exist for current month
+    for (const student of enrolledStudents) {
+      const existingPayment = await this.paymentRepository.findOne({
+        where: {
+          studentId: student.id,
+          classId: classId,
+          month: currentMonth,
+          year: currentYear,
+        },
+      });
+
+      // Create new pending payment if doesn't exist
+      if (!existingPayment) {
+        const newPayment = this.paymentRepository.create({
+          studentId: student.id,
+          classId: classId,
+          amount: classInfo.monthlyFees || 0,
+          month: currentMonth,
+          year: currentYear,
+          status: 'pending',
+        });
+
+        await this.paymentRepository.save(newPayment);
+        console.log(
+          `Created new payment record for student ${student.name} (${student.id}) for ${currentMonth}/${currentYear}`,
+        );
+      }
+    }
   }
 
   // Mark payment as paid
