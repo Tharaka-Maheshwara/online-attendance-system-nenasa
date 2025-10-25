@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { Class } from '../class/class.entity';
+import { Student } from '../student/student.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { UserService } from '../user/user.service';
@@ -14,6 +15,8 @@ export class TeacherService {
     private teacherRepository: Repository<Teacher>,
     @InjectRepository(Class)
     private classRepository: Repository<Class>,
+    @InjectRepository(Student)
+    private studentRepository: Repository<Student>,
     private userService: UserService,
   ) {}
 
@@ -110,7 +113,7 @@ export class TeacherService {
     await this.teacherRepository.delete(id);
   }
 
-  async getTodayClasses(teacherId: number): Promise<Class[]> {
+  async getTodayClasses(teacherId: number): Promise<any[]> {
     // Get current day of week (0 = Sunday, 1 = Monday, etc.)
     const today = new Date();
     const dayNames = [
@@ -141,6 +144,31 @@ export class TeacherService {
       },
     });
 
-    return classes;
+    // Add enrolled student count to each class
+    const classesWithCount = await Promise.all(
+      classes.map(async (cls) => {
+        const studentCount = await this.getEnrolledStudentsCount(cls);
+        return {
+          ...cls,
+          enrolledStudents: studentCount,
+        };
+      }),
+    );
+
+    return classesWithCount;
+  }
+
+  private async getEnrolledStudentsCount(cls: Class): Promise<number> {
+    // Count students who have this subject and grade
+    const students = await this.studentRepository
+      .createQueryBuilder('student')
+      .where('student.grade = :grade', { grade: cls.grade })
+      .andWhere(
+        '(student.sub_1 = :subject OR student.sub_2 = :subject OR student.sub_3 = :subject OR student.sub_4 = :subject OR student.sub_5 = :subject OR student.sub_6 = :subject)',
+        { subject: cls.subject },
+      )
+      .getCount();
+
+    return students;
   }
 }

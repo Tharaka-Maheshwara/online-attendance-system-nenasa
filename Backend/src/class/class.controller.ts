@@ -25,9 +25,20 @@ export class ClassController {
     return this.classService.findAll();
   }
 
+  @Get('with-student-count')
+  async findAllWithStudentCount() {
+    return this.classService.getAllClassesWithStudentCount();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return this.classService.findOne(Number(id));
+  }
+
+  @Get(':id/enrolled-students-count')
+  async getEnrolledStudentsCount(@Param('id') id: number) {
+    const count = await this.classService.getEnrolledStudentsCount(Number(id));
+    return { classId: Number(id), enrolledStudents: count };
   }
 
   @Put(':id')

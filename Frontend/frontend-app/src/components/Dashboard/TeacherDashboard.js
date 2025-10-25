@@ -65,7 +65,7 @@ const TeacherDashboard = () => {
         setTodayClasses(Array.isArray(todayData) ? todayData : []);
 
         // Get all classes for this teacher
-        const allClassesResponse = await fetch(`http://localhost:8000/class`);
+        const allClassesResponse = await fetch(`http://localhost:8000/class/with-student-count`);
         const allClassesData = await allClassesResponse.json();
         console.log("All Classes Data:", allClassesData);
 
@@ -235,6 +235,12 @@ const TeacherDashboard = () => {
                             : "N/A"}
                         </span>
                       </div>
+                      <div className="info-row">
+                        <span className="info-label">👥 Enrolled:</span>
+                        <span className="info-value">
+                          {cls.enrolledStudents || 0} Students
+                        </span>
+                      </div>
                     </div>
                     <div className="card-footer">
                       <button className="action-btn-small primary">
@@ -320,11 +326,12 @@ const TeacherDashboard = () => {
                                   </span>
                                 </div>
                                 <div className="compact-info-row">
-                                  <span className="compact-label">📊 ID:</span>
+                                  <span className="compact-label">👥 Students:</span>
                                   <span className="compact-value">
-                                    Class {cls.id}
+                                    {cls.enrolledStudents || 0} Enrolled
                                   </span>
                                 </div>
+                                {/* Removed ID row as requested */}
                               </div>
                             </div>
                           ))}
