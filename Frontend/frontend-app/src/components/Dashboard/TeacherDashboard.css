@@ -722,19 +722,19 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .class-actions {
     flex-direction: column;
   }
-  
+
   .attendance-table {
     font-size: 0.9rem;
   }
-  
+
   .attendance-table th,
   .attendance-table td {
     padding: 8px;
