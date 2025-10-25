@@ -27,6 +27,7 @@ import TeacherLectureNotes from "./components/LectureNotes/TeacherLectureNotes";
 import StudentPaymentStatus from "./components/Student/StudentPaymentStatus";
 import StudentLectureNotes from "./components/Student/StudentLectureNotes";
 import StudentAnnouncements from "./components/Student/StudentAnnouncements";
+import StudentAttendanceByClass from "./components/Student/StudentAttendanceByClass";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -217,6 +218,17 @@ function AppContent() {
                 <PrivateRoute
                   allowedRoles={["student"]}
                   element={<StudentAnnouncements />}
+                />
+              }
+            />
+
+            {/* Student Attendance by Class: students only */}
+            <Route
+              path="/my-attendance"
+              element={
+                <PrivateRoute
+                  allowedRoles={["student"]}
+                  element={<StudentAttendanceByClass />}
                 />
               }
             />

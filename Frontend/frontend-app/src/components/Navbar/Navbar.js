@@ -92,6 +92,14 @@ const Navbar = () => {
                   Course Catalog
                 </Link>
                 <Link
+                  to="/my-attendance"
+                  className={`nav-link ${
+                    isActive("/my-attendance") ? "active" : ""
+                  }`}
+                >
+                  My Attendance
+                </Link>
+                <Link
                   to="/payment-status"
                   className={`nav-link ${
                     isActive("/payment-status") ? "active" : ""
