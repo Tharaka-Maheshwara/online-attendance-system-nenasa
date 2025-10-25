@@ -173,7 +173,7 @@ const ClassManagement = () => {
   // Filter classes based on search term
   const filteredClasses = classes.filter((cls) => {
     if (!searchTerm) return true;
-    
+
     const searchLower = searchTerm.toLowerCase();
     return (
       cls.subject?.toLowerCase().includes(searchLower) ||
@@ -497,7 +497,8 @@ const ClassManagement = () => {
         <h3>Available Classes</h3>
         {searchTerm && (
           <p className="search-results-info">
-            Found {filteredClasses.length} class{filteredClasses.length !== 1 ? 'es' : ''} matching "{searchTerm}"
+            Found {filteredClasses.length} class
+            {filteredClasses.length !== 1 ? "es" : ""} matching "{searchTerm}"
           </p>
         )}
         <div className="classes-table">
@@ -558,7 +559,9 @@ const ClassManagement = () => {
               ) : (
                 <tr>
                   <td colSpan="6" className="no-results">
-                    {searchTerm ? `No classes found matching "${searchTerm}"` : "No classes available"}
+                    {searchTerm
+                      ? `No classes found matching "${searchTerm}"`
+                      : "No classes available"}
                   </td>
                 </tr>
               )}
