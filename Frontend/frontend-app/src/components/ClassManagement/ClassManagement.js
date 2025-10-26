@@ -15,6 +15,7 @@ const ClassManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentClass, setCurrentClass] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     subject: "",
     teacherId: "",
@@ -169,6 +170,19 @@ const ClassManagement = () => {
     setFilteredTeachers([]);
   };
 
+  // Filter classes based on search term
+  const filteredClasses = classes.filter((cls) => {
+    if (!searchTerm) return true;
+
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      cls.subject?.toLowerCase().includes(searchLower) ||
+      cls.teacherName?.toLowerCase().includes(searchLower) ||
+      cls.grade?.toString().includes(searchLower) ||
+      cls.dayOfWeek?.toLowerCase().includes(searchLower)
+    );
+  });
+
   // Function to fetch teacher who teaches the subject
   const fetchTeacherForSubject = async (subjectName) => {
     try {
@@ -256,6 +270,26 @@ const ClassManagement = () => {
         >
           Add New Class
         </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Search by subject, teacher, grade, or day..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {searchTerm && (
+          <button
+            className="clear-search-btn"
+            onClick={() => setSearchTerm("")}
+            title="Clear search"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -461,6 +495,12 @@ const ClassManagement = () => {
 
       <div className="classes-list">
         <h3>Available Classes</h3>
+        {searchTerm && (
+          <p className="search-results-info">
+            Found {filteredClasses.length} class
+            {filteredClasses.length !== 1 ? "es" : ""} matching "{searchTerm}"
+          </p>
+        )}
         <div className="classes-table">
           <table>
             <thead>
@@ -474,47 +514,57 @@ const ClassManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {classes.map((cls) => (
-                <tr key={cls.id}>
-                  <td>
-                    <span
-                      className="clickable-subject"
-                      onClick={() => handleSubjectClick(cls.subject)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {cls.subject}
-                    </span>
-                  </td>
-                  <td>{cls.dayOfWeek || "-"}</td>
-                  <td>{cls.startTime || "-"}</td>
-                  <td>{cls.endTime || "-"}</td>
-                  <td>
-                    {cls.monthlyFees ? (
-                      <span className="fee-amount">
-                        LKR {parseFloat(cls.monthlyFees).toFixed(2)}
+              {filteredClasses.length > 0 ? (
+                filteredClasses.map((cls) => (
+                  <tr key={cls.id}>
+                    <td>
+                      <span
+                        className="clickable-subject"
+                        onClick={() => handleSubjectClick(cls.subject)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {cls.subject}
                       </span>
-                    ) : (
-                      <span className="no-fee">-</span>
-                    )}
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="edit-btn"
-                        onClick={() => handleEdit(cls)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="delete-btn4"
-                        onClick={() => handleDelete(cls.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    </td>
+                    <td>{cls.dayOfWeek || "-"}</td>
+                    <td>{cls.startTime || "-"}</td>
+                    <td>{cls.endTime || "-"}</td>
+                    <td>
+                      {cls.monthlyFees ? (
+                        <span className="fee-amount">
+                          LKR {parseFloat(cls.monthlyFees).toFixed(2)}
+                        </span>
+                      ) : (
+                        <span className="no-fee">-</span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="edit-btn"
+                          onClick={() => handleEdit(cls)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn4"
+                          onClick={() => handleDelete(cls.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="no-results">
+                    {searchTerm
+                      ? `No classes found matching "${searchTerm}"`
+                      : "No classes available"}
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

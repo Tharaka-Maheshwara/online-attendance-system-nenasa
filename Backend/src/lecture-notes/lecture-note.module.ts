@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { LectureNote } from './lecture-note.entity';
 import { LectureNoteService } from './lecture-note.service';
 import { LectureNoteController } from './lecture-note.controller';
+import { EventsModule } from '../events/events.module';
 import * as fs from 'fs';
 
 // Ensure upload directory exists
@@ -18,6 +19,7 @@ if (!fs.existsSync(uploadDir)) {
     MulterModule.register({
       dest: uploadDir,
     }),
+    EventsModule,
   ],
   controllers: [LectureNoteController],
   providers: [LectureNoteService],
