@@ -21,6 +21,7 @@ import {
   CreateLectureNoteDto,
 } from './lecture-note.service';
 import { MockAuthGuard } from '../auth/mock-auth.guard';
+import { EventsGateway } from '../events/events.gateway';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -47,7 +48,10 @@ const fileFilter = (req: any, file: any, cb: any) => {
 @Controller('lecture-notes')
 @UseGuards(MockAuthGuard)
 export class LectureNoteController {
-  constructor(private readonly lectureNoteService: LectureNoteService) {}
+  constructor(
+    private readonly lectureNoteService: LectureNoteService,
+    private readonly eventsGateway: EventsGateway,
+  ) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -90,6 +94,17 @@ export class LectureNoteController {
 
       const lectureNote =
         await this.lectureNoteService.createLectureNote(createLectureNoteDto);
+
+      // Emit real-time notification to students
+      this.eventsGateway.emitNewLectureNote(createLectureNoteDto.classId, {
+        id: lectureNote.id,
+        title: lectureNote.title,
+        description: lectureNote.description,
+        fileName: lectureNote.fileName,
+        classId: lectureNote.classId,
+        teacherEmail: lectureNote.teacherEmail,
+        createdAt: lectureNote.createdAt,
+      });
 
       return {
         success: true,

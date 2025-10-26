@@ -1,0 +1,412 @@
+/* Lecture Notes Compact Card Styles */
+
+/* Real-time notification toast */
+.notification-toast {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10000;
+  animation: slideInRight 0.3s ease-out;
+  min-width: 350px;
+  max-width: 500px;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notification-toast.lecture-note-toast {
+  border-left: 4px solid #667eea;
+}
+
+.notification-toast.announcement-toast {
+  border-left: 4px solid #f59e0b;
+}
+
+.toast-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-content h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.toast-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  color: #374151;
+}
+
+/* Header and Filter Section */
+.lecture-notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.lecture-notes-header h2 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.filter-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  white-space: nowrap;
+}
+
+.subject-filter-dropdown {
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDE0IDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDFMNyA3TDEzIDEiIHN0cm9rZT0iIzZCNzI4MCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 36px;
+  appearance: none;
+}
+
+.subject-filter-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.subject-filter-dropdown:hover {
+  border-color: #667eea;
+}
+
+.lecture-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.lecture-note-compact-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+}
+
+.lecture-note-compact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3182ce;
+}
+
+.note-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.file-icon {
+  font-size: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 8px;
+  border-radius: 8px;
+  color: white;
+  min-width: 40px;
+  text-align: center;
+}
+
+.note-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.note-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-subject {
+  font-size: 13px;
+  color: #667eea;
+  font-weight: 500;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.note-time {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+  background: #f7fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.note-card-body {
+  margin-bottom: 16px;
+}
+
+.class-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.grade-tag {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.teacher-name {
+  font-size: 12px;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-details {
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+}
+
+.file-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+}
+
+.note-card-footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.download-btn-compact {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  justify-content: center;
+}
+
+.download-btn-compact:hover {
+  background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.download-btn-compact:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .lecture-notes-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .lecture-notes-header h2 {
+    font-size: 20px;
+  }
+
+  .filter-section {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 14px;
+  }
+
+  .subject-filter-dropdown {
+    min-width: 120px;
+    flex: 1;
+    max-width: 200px;
+  }
+
+  .lecture-notes-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .lecture-note-compact-card {
+    padding: 16px;
+  }
+
+  .note-card-header {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .note-title {
+    font-size: 15px;
+  }
+
+  .class-meta {
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lecture-notes-header h2 {
+    font-size: 18px;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filter-label {
+    text-align: center;
+  }
+
+  .subject-filter-dropdown {
+    min-width: auto;
+    max-width: none;
+  }
+
+  .lecture-notes-grid {
+    gap: 12px;
+  }
+
+  .lecture-note-compact-card {
+    padding: 14px;
+  }
+
+  .file-icon {
+    font-size: 20px;
+    padding: 6px;
+    min-width: 32px;
+  }
+
+  .note-title {
+    font-size: 14px;
+  }
+
+  .class-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+} /* Loading and Empty States */
+.loading-message,
+.no-lecture-notes-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+}
+
+.no-lecture-notes-message p {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #4a5568;
+}
+
+.no-lecture-notes-message span {
+  font-size: 14px;
+  color: #718096;
+}

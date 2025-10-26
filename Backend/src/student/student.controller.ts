@@ -155,4 +155,76 @@ export class StudentController {
   async getStudentByQRData(@Body() qrData: any) {
     return await this.studentService.findByQRData(qrData);
   }
+
+  @Get(':studentId/classes/today')
+  async getTodayClassesForStudent(@Param('studentId') studentId: string) {
+    return await this.studentService.getTodayClassesForStudent(+studentId);
+  }
+
+  @Get('email/:email/classes/today')
+  async getTodayClassesForStudentByEmail(@Param('email') email: string) {
+    return await this.studentService.getTodayClassesForStudentByEmail(email);
+  }
+
+  @Get(':studentId/classes/all')
+  async getAllClassesForStudent(@Param('studentId') studentId: string) {
+    return await this.studentService.getAllClassesForStudent(+studentId);
+  }
+
+  @Get('email/:email/classes/all')
+  async getAllClassesForStudentByEmail(@Param('email') email: string) {
+    return await this.studentService.getAllClassesForStudentByEmail(email);
+  }
+
+  @Get(':studentId/classes/payment-status')
+  async getStudentClassesWithPaymentStatus(
+    @Param('studentId') studentId: string,
+  ) {
+    return await this.studentService.getStudentClassesWithPaymentStatus(
+      +studentId,
+    );
+  }
+
+  @Get('email/:email/classes/payment-status')
+  async getStudentClassesWithPaymentStatusByEmail(
+    @Param('email') email: string,
+  ) {
+    return await this.studentService.getStudentClassesWithPaymentStatusByEmail(
+      email,
+    );
+  }
+
+  @Get(':studentId/announcements')
+  async getAnnouncementsForStudentClasses(
+    @Param('studentId') studentId: string,
+  ) {
+    return await this.studentService.getAnnouncementsForStudentClasses(
+      +studentId,
+    );
+  }
+
+  @Get('email/:email/announcements')
+  async getAnnouncementsForStudentClassesByEmail(
+    @Param('email') email: string,
+  ) {
+    return await this.studentService.getAnnouncementsForStudentClassesByEmail(
+      email,
+    );
+  }
+
+  @Get(':studentId/lecture-notes')
+  async getLectureNotesForStudentClasses(
+    @Param('studentId') studentId: string,
+  ) {
+    return await this.studentService.getLectureNotesForStudentClasses(
+      +studentId,
+    );
+  }
+
+  @Get('email/:email/lecture-notes')
+  async getLectureNotesForStudentClassesByEmail(@Param('email') email: string) {
+    return await this.studentService.getLectureNotesForStudentClassesByEmail(
+      email,
+    );
+  }
 }

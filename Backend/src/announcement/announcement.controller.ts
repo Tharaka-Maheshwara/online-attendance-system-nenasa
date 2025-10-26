@@ -13,12 +13,16 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MockAuthGuard } from '../auth/mock-auth.guard';
 import { AnnouncementService } from './announcement.service';
+import { EventsGateway } from '../events/events.gateway';
 import type { CreateAnnouncementDto } from './announcement.service';
 
 @Controller('announcements')
 @UseGuards(MockAuthGuard) // Temporarily using mock auth
 export class AnnouncementController {
-  constructor(private readonly announcementService: AnnouncementService) {}
+  constructor(
+    private readonly announcementService: AnnouncementService,
+    private readonly eventsGateway: EventsGateway,
+  ) {}
 
   @Post('send')
   async sendAnnouncement(
@@ -43,6 +47,17 @@ export class AnnouncementController {
 
       const announcement =
         await this.announcementService.createAnnouncement(announcementData);
+
+      // Emit real-time notification to students
+      this.eventsGateway.emitNewAnnouncement(createAnnouncementDto.classId, {
+        id: announcement.id,
+        title: announcement.title,
+        message: announcement.message,
+        priority: announcement.priority,
+        classId: announcement.classId,
+        teacherEmail: announcement.teacherEmail,
+        createdAt: announcement.createdAt,
+      });
 
       return {
         success: true,
@@ -207,6 +222,28 @@ export class AnnouncementController {
         {
           success: false,
           message: error.message || 'Failed to delete announcement',
+        },
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // Test endpoint to verify socket notifications
+  @Post('test-notification/:classId')
+  async testNotification(@Param('classId') classId: number) {
+    try {
+      // Emit a test notification
+      this.eventsGateway.testEmitToClass(classId);
+
+      return {
+        success: true,
+        message: `Test notification sent to class ${classId}`,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to send test notification',
         },
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
