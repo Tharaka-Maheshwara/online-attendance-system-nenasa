@@ -24,6 +24,12 @@ import RegisterNumberLookup from "./components/RegisterNumberLookup/RegisterNumb
 import AdminAttendanceMarking from "./components/AdminAttendanceMarking/AdminAttendanceMarking";
 import TeacherAnnouncements from "./components/Announcements/TeacherAnnouncements";
 import TeacherLectureNotes from "./components/LectureNotes/TeacherLectureNotes";
+import StudentPaymentStatus from "./components/Student/StudentPaymentStatus";
+import StudentLectureNotes from "./components/Student/StudentLectureNotes";
+import StudentAnnouncements from "./components/Student/StudentAnnouncements";
+import StudentAttendanceByClass from "./components/Student/StudentAttendanceByClass";
+import RealtimeNotification from "./components/Notification/RealtimeNotification";
+import { SocketProvider } from "./contexts/SocketContext";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
 import "./App.css";
 
@@ -71,181 +77,228 @@ function AppContent() {
   }
 
   return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <main
-          style={{
-            padding: "0",
-            backgroundColor: "#f5f7fa",
-            minHeight: "100vh",
-          }}
-        >
-          <Routes>
-            {/* All roles can access dashboard */}
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+    <SocketProvider>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <RealtimeNotification />
+          <main
+            style={{
+              padding: "0",
+              backgroundColor: "#f5f7fa",
+              minHeight: "100vh",
+            }}
+          >
+            <Routes>
+              {/* All roles can access dashboard */}
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
 
-            {/* Attendance: admin only */}
-            <Route
-              path="/attendance"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<AttendanceMarking />}
-                />
-              }
-            />
+              {/* Attendance: admin only */}
+              <Route
+                path="/attendance"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<AttendanceMarking />}
+                  />
+                }
+              />
 
-            {/* Student management: admin only */}
-            <Route
-              path="/students"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<StudentManagement />}
-                />
-              }
-            />
+              {/* Student management: admin only */}
+              <Route
+                path="/students"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<StudentManagement />}
+                  />
+                }
+              />
 
-            {/* Teacher management: admin only */}
-            <Route
-              path="/teachers"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<TeacherManagement />}
-                />
-              }
-            />
+              {/* Teacher management: admin only */}
+              <Route
+                path="/teachers"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<TeacherManagement />}
+                  />
+                }
+              />
 
-            {/* Notifications: admin only */}
-            <Route
-              path="/notifications"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<NotificationTest />}
-                />
-              }
-            />
+              {/* Notifications: admin only */}
+              <Route
+                path="/notifications"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<NotificationTest />}
+                  />
+                }
+              />
 
-            {/* Role assignment: admin only */}
-            <Route
-              path="/role-assignment"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<RoleAssignment />}
-                />
-              }
-            />
+              {/* Role assignment: admin only */}
+              <Route
+                path="/role-assignment"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<RoleAssignment />}
+                  />
+                }
+              />
 
-            {/* Register number lookup: all roles */}
-            <Route
-              path="/register-lookup"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin", "teacher", "student"]}
-                  element={<RegisterNumberLookup />}
-                />
-              }
-            />
+              {/* Register number lookup: all roles */}
+              <Route
+                path="/register-lookup"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin", "teacher", "student"]}
+                    element={<RegisterNumberLookup />}
+                  />
+                }
+              />
 
-            {/* Classes: admin only */}
-            <Route
-              path="/classes"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<ClassManagement />}
-                />
-              }
-            />
+              {/* Classes: admin only */}
+              <Route
+                path="/classes"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<ClassManagement />}
+                  />
+                }
+              />
 
-            {/* Courses: admin only */}
-            <Route
-              path="/courses"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<CourseManagement />}
-                />
-              }
-            />
+              {/* Courses: admin only */}
+              <Route
+                path="/courses"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<CourseManagement />}
+                  />
+                }
+              />
 
-            {/* Student Course View: students only */}
-            <Route
-              path="/course-catalog"
-              element={
-                <PrivateRoute
-                  allowedRoles={["student"]}
-                  element={<StudentCourseView />}
-                />
-              }
-            />
+              {/* Student Course View: students only */}
+              <Route
+                path="/course-catalog"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentCourseView />}
+                  />
+                }
+              />
 
-            {/* Reports: admin only */}
-            <Route
-              path="/reports"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<Dashboard />}
-                />
-              }
-            />
+              {/* Student Payment Status: students only */}
+              <Route
+                path="/payment-status"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentPaymentStatus />}
+                  />
+                }
+              />
 
-            {/* Student Attendance History: admin only */}
-            <Route
-              path="/attendance-history"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<StudentAttendanceHistory />}
-                />
-              }
-            />
+              {/* Student Lecture Notes: students only */}
+              <Route
+                path="/lecture-notes"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentLectureNotes />}
+                  />
+                }
+              />
 
-            {/* Admin attendance marking: admin only */}
-            <Route
-              path="/admin/mark-attendance"
-              element={
-                <PrivateRoute
-                  allowedRoles={["admin"]}
-                  element={<AdminAttendanceMarking />}
-                />
-              }
-            />
+              {/* Student Announcements: students only */}
+              <Route
+                path="/announcements"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentAnnouncements />}
+                  />
+                }
+              />
 
-            {/* Teacher announcements: teacher only */}
-            <Route
-              path="/teacher/announcements"
-              element={
-                <PrivateRoute
-                  allowedRoles={["teacher"]}
-                  element={<TeacherAnnouncements />}
-                />
-              }
-            />
+              {/* Student Attendance by Class: students only */}
+              <Route
+                path="/my-attendance"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentAttendanceByClass />}
+                  />
+                }
+              />
 
-            {/* Teacher lecture notes: teacher only */}
-            <Route
-              path="/teacher/lecture-notes"
-              element={
-                <PrivateRoute
-                  allowedRoles={["teacher"]}
-                  element={<TeacherLectureNotes />}
-                />
-              }
-            />
+              {/* Reports: admin only */}
+              <Route
+                path="/reports"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<Dashboard />}
+                  />
+                }
+              />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+              {/* Student Attendance History: admin only */}
+              <Route
+                path="/attendance-history"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<StudentAttendanceHistory />}
+                  />
+                }
+              />
+
+              {/* Admin attendance marking: admin only */}
+              <Route
+                path="/admin/mark-attendance"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["admin"]}
+                    element={<AdminAttendanceMarking />}
+                  />
+                }
+              />
+
+              {/* Teacher announcements: teacher only */}
+              <Route
+                path="/teacher/announcements"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["teacher"]}
+                    element={<TeacherAnnouncements />}
+                  />
+                }
+              />
+
+              {/* Teacher lecture notes: teacher only */}
+              <Route
+                path="/teacher/lecture-notes"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["teacher"]}
+                    element={<TeacherLectureNotes />}
+                  />
+                }
+              />
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
+    </SocketProvider>
   );
 }
 

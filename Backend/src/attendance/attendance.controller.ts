@@ -51,6 +51,13 @@ export class AttendanceController {
   // @Roles('teacher', 'admin') // Temporarily disabled for testing
   async create(@Body() attendanceData: any): Promise<any> {
     try {
+      // Ensure current month payment records exist for this class
+      if (attendanceData.classId) {
+        await this.attendanceService.ensureCurrentMonthPaymentsForClass(
+          attendanceData.classId,
+        );
+      }
+
       // Handle bulk attendance creation
       if (
         attendanceData.attendance &&

@@ -15,6 +15,7 @@ const StudentManagement = () => {
   const [classes, setClasses] = useState([]);
   const [filteredClasses, setFilteredClasses] = useState([]);
   const [editFilteredClasses, setEditFilteredClasses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [newStudent, setNewStudent] = useState({
     name: "",
     email: "",
@@ -430,6 +431,36 @@ const StudentManagement = () => {
     img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   };
 
+  // Filter students based on search term
+  const filteredStudents = students.filter((student) => {
+    const term = searchTerm.toLowerCase();
+    const subjects = [
+      student.sub_1,
+      student.sub_2,
+      student.sub_3,
+      student.sub_4,
+      student.sub_5,
+      student.sub_6,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return (
+      student.name.toLowerCase().includes(term) ||
+      student.email.toLowerCase().includes(term) ||
+      (student.registerNumber &&
+        student.registerNumber.toLowerCase().includes(term)) ||
+      (student.grade && student.grade.toString().includes(term)) ||
+      (student.contactNumber &&
+        student.contactNumber.toLowerCase().includes(term)) ||
+      (student.parentName && student.parentName.toLowerCase().includes(term)) ||
+      (student.parentEmail &&
+        student.parentEmail.toLowerCase().includes(term)) ||
+      subjects.includes(term)
+    );
+  });
+
   return (
     <div className="student-management">
       <div className="header">
@@ -451,6 +482,32 @@ const StudentManagement = () => {
           <button onClick={() => setError("")} className="error-close">
             ×
           </button>
+        </div>
+      )}
+
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by name, email, register number, grade, contact, parent, or subject..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {searchTerm && (
+          <button
+            className="clear-search-btn"
+            onClick={() => setSearchTerm("")}
+            title="Clear search"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {searchTerm && (
+        <div className="search-info">
+          Found {filteredStudents.length} student
+          {filteredStudents.length !== 1 ? "s" : ""} matching "{searchTerm}"
         </div>
       )}
 
@@ -1003,66 +1060,79 @@ const StudentManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => {
-                  const subjects = [
-                    student.sub_1,
-                    student.sub_2,
-                    student.sub_3,
-                    student.sub_4,
-                    student.sub_5,
-                    student.sub_6,
-                  ]
-                    .filter(Boolean)
-                    .join(", ");
+                {filteredStudents.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="10"
+                      style={{ textAlign: "center", padding: "20px" }}
+                    >
+                      {searchTerm
+                        ? `No students found matching "${searchTerm}"`
+                        : "No students available"}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStudents.map((student) => {
+                    const subjects = [
+                      student.sub_1,
+                      student.sub_2,
+                      student.sub_3,
+                      student.sub_4,
+                      student.sub_5,
+                      student.sub_6,
+                    ]
+                      .filter(Boolean)
+                      .join(", ");
 
-                  return (
-                    <tr key={student.id}>
-                      <td>
-                        {student.profileImage ? (
-                          <img
-                            src={`http://localhost:8000${student.profileImage}`}
-                            alt={student.name}
-                            className="student-image"
-                          />
-                        ) : (
-                          <div className="student-image-placeholder">👤</div>
-                        )}
-                      </td>
-                      <td>{student.name}</td>
-                      <td>{student.email}</td>
-                      <td>{student.registerNumber || "N/A"}</td>
-                      <td>{student.contactNumber || "N/A"}</td>
-                      <td>
-                        {student.grade ? `Grade ${student.grade}` : "N/A"}
-                      </td>
-                      <td>{student.parentName || "N/A"}</td>
-                      <td>{student.parentEmail || "N/A"}</td>
-                      <td>{subjects || "No subjects assigned"}</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button
-                            className="edit-btn"
-                            onClick={() => handleEdit(student)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="qr-btn"
-                            onClick={() => handleShowQR(student)}
-                          >
-                            QR Code
-                          </button>
-                          <button
-                            className="delete-btn2"
-                            onClick={() => handleDelete(student.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                    return (
+                      <tr key={student.id}>
+                        <td>
+                          {student.profileImage ? (
+                            <img
+                              src={`http://localhost:8000${student.profileImage}`}
+                              alt={student.name}
+                              className="student-image"
+                            />
+                          ) : (
+                            <div className="student-image-placeholder">👤</div>
+                          )}
+                        </td>
+                        <td>{student.name}</td>
+                        <td>{student.email}</td>
+                        <td>{student.registerNumber || "N/A"}</td>
+                        <td>{student.contactNumber || "N/A"}</td>
+                        <td>
+                          {student.grade ? `Grade ${student.grade}` : "N/A"}
+                        </td>
+                        <td>{student.parentName || "N/A"}</td>
+                        <td>{student.parentEmail || "N/A"}</td>
+                        <td>{subjects || "No subjects assigned"}</td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="edit-btn"
+                              onClick={() => handleEdit(student)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="qr-btn"
+                              onClick={() => handleShowQR(student)}
+                            >
+                              QR Code
+                            </button>
+                            <button
+                              className="delete-btn2"
+                              onClick={() => handleDelete(student.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

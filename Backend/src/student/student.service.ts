@@ -4,6 +4,10 @@ import { Repository } from 'typeorm';
 import { Student } from './student.entity';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UserService } from '../user/user.service';
+import { Class } from '../class/class.entity';
+import { Payment } from '../payment/payment.entity';
+import { Announcement } from '../announcement/announcement.entity';
+import { LectureNote } from '../lecture-notes/lecture-note.entity';
 import * as QRCode from 'qrcode';
 
 @Injectable()
@@ -11,6 +15,14 @@ export class StudentService {
   constructor(
     @InjectRepository(Student)
     private studentRepository: Repository<Student>,
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(Payment)
+    private paymentRepository: Repository<Payment>,
+    @InjectRepository(Announcement)
+    private announcementRepository: Repository<Announcement>,
+    @InjectRepository(LectureNote)
+    private lectureNoteRepository: Repository<LectureNote>,
     private userService: UserService,
   ) {}
 
@@ -165,6 +177,342 @@ export class StudentService {
     } catch (error) {
       console.error('Error finding student by QR data:', error);
       return null;
+    }
+  }
+
+  async getTodayClassesForStudent(studentId: number): Promise<Class[]> {
+    try {
+      // Get student details
+      const student = await this.findOne(studentId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Get student's subjects
+      const studentSubjects = [
+        student.sub_1,
+        student.sub_2,
+        student.sub_3,
+        student.sub_4,
+        student.sub_5,
+        student.sub_6,
+      ].filter((subject) => subject && subject.trim() !== '');
+
+      if (studentSubjects.length === 0) {
+        return [];
+      }
+
+      // Get today's day of week
+      const today = new Date();
+      const daysOfWeek = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
+      const todayDayOfWeek = daysOfWeek[today.getDay()];
+
+      // Find classes for student's subjects that are scheduled for today
+      const todayClasses = await this.classRepository
+        .createQueryBuilder('class')
+        .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .andWhere('class.dayOfWeek = :dayOfWeek', { dayOfWeek: todayDayOfWeek })
+        .orderBy('class.startTime', 'ASC')
+        .getMany();
+
+      return todayClasses;
+    } catch (error) {
+      console.error("Error fetching today's classes for student:", error);
+      return [];
+    }
+  }
+
+  async getTodayClassesForStudentByEmail(email: string): Promise<Class[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getTodayClassesForStudent(student.id);
+    } catch (error) {
+      console.error(
+        "Error fetching today's classes for student by email:",
+        error,
+      );
+      return [];
+    }
+  }
+
+  async getAllClassesForStudent(studentId: number): Promise<Class[]> {
+    try {
+      // Get student details
+      const student = await this.findOne(studentId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Get student's subjects
+      const studentSubjects = [
+        student.sub_1,
+        student.sub_2,
+        student.sub_3,
+        student.sub_4,
+        student.sub_5,
+        student.sub_6,
+      ].filter((subject) => subject && subject.trim() !== '');
+
+      if (studentSubjects.length === 0) {
+        return [];
+      }
+
+      // Find all classes for student's subjects
+      const allClasses = await this.classRepository
+        .createQueryBuilder('class')
+        .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .orderBy('class.dayOfWeek', 'ASC')
+        .addOrderBy('class.startTime', 'ASC')
+        .getMany();
+
+      return allClasses;
+    } catch (error) {
+      console.error('Error fetching all classes for student:', error);
+      return [];
+    }
+  }
+
+  async getAllClassesForStudentByEmail(email: string): Promise<Class[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getAllClassesForStudent(student.id);
+    } catch (error) {
+      console.error('Error fetching all classes for student by email:', error);
+      return [];
+    }
+  }
+
+  async getStudentClassesWithPaymentStatus(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const classes = await this.getAllClassesForStudent(studentId);
+
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1;
+      const currentYear = currentDate.getFullYear();
+
+      // Get payment status for each class
+      const classesWithPaymentStatus = await Promise.all(
+        classes.map(async (classInfo) => {
+          // Check if payment exists for current month
+          const payment = await this.paymentRepository.findOne({
+            where: {
+              studentId,
+              classId: classInfo.id,
+              month: currentMonth,
+              year: currentYear,
+            },
+          });
+
+          return {
+            ...classInfo,
+            paymentStatus: payment?.status || 'pending',
+            paymentAmount: payment?.amount || classInfo.monthlyFees || 0,
+            paymentDate: payment?.paidDate || null,
+            paymentId: payment?.id || null,
+            monthlyFee: classInfo.monthlyFees || 0,
+            currentMonth,
+            currentYear,
+          };
+        }),
+      );
+
+      return classesWithPaymentStatus;
+    } catch (error) {
+      console.error('Error fetching classes with payment status:', error);
+      return [];
+    }
+  }
+
+  async getStudentClassesWithPaymentStatusByEmail(
+    email: string,
+  ): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getStudentClassesWithPaymentStatus(student.id);
+    } catch (error) {
+      console.error(
+        'Error fetching classes with payment status by email:',
+        error,
+      );
+      return [];
+    }
+  }
+
+  async getAnnouncementsForStudentClasses(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const studentClasses = await this.getAllClassesForStudent(studentId);
+
+      if (studentClasses.length === 0) {
+        return [];
+      }
+
+      // Get class IDs
+      const classIds = studentClasses.map((cls) => cls.id);
+
+      // Get announcements for these classes where the student is included
+      const announcements = await this.announcementRepository
+        .createQueryBuilder('announcement')
+        .where('announcement.classId IN (:...classIds)', { classIds })
+        .andWhere('JSON_CONTAINS(announcement.studentIds, :studentId)', {
+          studentId: JSON.stringify(studentId),
+        })
+        .orderBy('announcement.createdAt', 'DESC')
+        .getMany();
+
+      // Enrich announcements with class information
+      const enrichedAnnouncements = announcements.map((announcement) => {
+        const classInfo = studentClasses.find(
+          (cls) => cls.id === announcement.classId,
+        );
+        return {
+          ...announcement,
+          classInfo: {
+            id: classInfo?.id,
+            subject: classInfo?.subject,
+            grade: classInfo?.grade,
+            teacherName: classInfo?.teacherName,
+            dayOfWeek: classInfo?.dayOfWeek,
+            startTime: classInfo?.startTime,
+            endTime: classInfo?.endTime,
+          },
+        };
+      });
+
+      return enrichedAnnouncements;
+    } catch (error) {
+      console.error('Error fetching announcements for student classes:', error);
+      return [];
+    }
+  }
+
+  async getAnnouncementsForStudentClassesByEmail(
+    email: string,
+  ): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getAnnouncementsForStudentClasses(student.id);
+    } catch (error) {
+      console.error(
+        'Error fetching announcements for student classes by email:',
+        error,
+      );
+      return [];
+    }
+  }
+
+  async getLectureNotesForStudentClasses(studentId: number): Promise<any[]> {
+    try {
+      // Get all classes the student is enrolled in
+      const studentClasses = await this.getAllClassesForStudent(studentId);
+
+      if (studentClasses.length === 0) {
+        return [];
+      }
+
+      // Get class IDs
+      const classIds = studentClasses.map((cls) => cls.id);
+
+      // Get lecture notes for these classes where the student is included
+      const lectureNotes = await this.lectureNoteRepository
+        .createQueryBuilder('lectureNote')
+        .where('lectureNote.classId IN (:...classIds)', { classIds })
+        .andWhere('JSON_CONTAINS(lectureNote.studentIds, :studentId)', {
+          studentId: JSON.stringify(studentId),
+        })
+        .orderBy('lectureNote.createdAt', 'DESC')
+        .getMany();
+
+      // Enrich lecture notes with class information
+      const enrichedLectureNotes = lectureNotes.map((lectureNote) => {
+        const classInfo = studentClasses.find(
+          (cls) => cls.id === lectureNote.classId,
+        );
+        return {
+          ...lectureNote,
+          classInfo: {
+            id: classInfo?.id,
+            subject: classInfo?.subject,
+            grade: classInfo?.grade,
+            teacherName: classInfo?.teacherName,
+            dayOfWeek: classInfo?.dayOfWeek,
+            startTime: classInfo?.startTime,
+            endTime: classInfo?.endTime,
+          },
+        };
+      });
+
+      return enrichedLectureNotes;
+    } catch (error) {
+      console.error('Error fetching lecture notes for student classes:', error);
+      return [];
+    }
+  }
+
+  async getLectureNotesForStudentClassesByEmail(email: string): Promise<any[]> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found with email: ' + email);
+      }
+
+      // Use the existing method with the student ID
+      return await this.getLectureNotesForStudentClasses(student.id);
+    } catch (error) {
+      console.error(
+        'Error fetching lecture notes for student classes by email:',
+        error,
+      );
+      return [];
     }
   }
 }

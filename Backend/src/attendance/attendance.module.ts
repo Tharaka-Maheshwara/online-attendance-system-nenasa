@@ -6,6 +6,7 @@ import { AttendanceController } from './attendance.controller';
 import { AttendanceService } from './attendance.service';
 import { NotificationModule } from '../notification/notification.module';
 import { UserModule } from '../user/user.module';
+import { PaymentModule } from '../payment/payment.module';
 import { User } from '../user/user.entity';
 import { Student } from '../student/student.entity';
 import { Class } from '../class/class.entity';
@@ -17,6 +18,7 @@ import { RolesGuard } from '../auth/roles.guard';
     TypeOrmModule.forFeature([Attendance, User, Student, Class, Payment]),
     NotificationModule,
     UserModule,
+    PaymentModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default-secret',
       signOptions: { expiresIn: '24h' },
