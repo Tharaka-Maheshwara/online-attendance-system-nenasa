@@ -35,13 +35,13 @@ export class ClassController {
   @Get('export/pdf')
   async exportToPdf(@Res() res: Response) {
     const pdfBuffer = await this.classService.generateClassesPdf();
-    
+
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=classes-report.pdf',
       'Content-Length': pdfBuffer.length,
     });
-    
+
     res.end(pdfBuffer);
   }
 
