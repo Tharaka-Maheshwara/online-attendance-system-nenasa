@@ -368,7 +368,9 @@ const StudentDashboard = () => {
 
                       <div className="card-content">
                         <div className="subject-header">
-                          <h3 className="subject-name">{cls.subject || "N/A"}</h3>
+                          <h3 className="subject-name">
+                            {cls.subject || "N/A"}
+                          </h3>
                         </div>
 
                         <div className="class-details">
