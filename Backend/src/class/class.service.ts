@@ -260,12 +260,6 @@ export class ClassService {
           });
 
           doc.moveDown(1);
-
-          // Draw line after each row
-          if ((index + 1) % 5 === 0) {
-            doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#CCCCCC');
-            doc.moveDown(0.3);
-          }
         });
 
         // Footer
@@ -278,18 +272,9 @@ export class ClassService {
           (sum, cls) => sum + (cls.enrolledStudents || 0),
           0,
         );
-        const totalFees = classes.reduce(
-          (sum, cls) => sum + (cls.monthlyFees || 0),
-          0,
-        );
 
         doc.fontSize(9).font('Helvetica-Bold');
         doc.text(`Total Enrolled Students: ${totalStudents}`, 50, doc.y);
-        doc.text(
-          `Total Monthly Fees: Rs. ${totalFees.toLocaleString()}`,
-          50,
-          doc.y,
-        );
 
         // Page numbers
         const pages = doc.bufferedPageRange();
