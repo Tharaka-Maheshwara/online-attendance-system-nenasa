@@ -145,6 +145,29 @@ const StudentManagement = () => {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/student/export/pdf");
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `students-list-${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      setError("Failed to download PDF. Please try again.");
+    }
+  };
+
   const filterClassesByGrade = (selectedGrade) => {
     if (!selectedGrade) {
       setFilteredClasses([]);
@@ -465,15 +488,20 @@ const StudentManagement = () => {
     <div className="student-management">
       <div className="header">
         <h2>Student Management</h2>
-        <button
-          className="add-btn"
-          onClick={() => {
-            setShowAddForm(!showAddForm);
-            setEditingStudent(null);
-          }}
-        >
-          {showAddForm ? "Cancel" : "Add New Student"}
-        </button>
+        <div className="header-buttons">
+          <button className="download-pdf-btn" onClick={handleDownloadPdf}>
+            📄 Download PDF
+          </button>
+          <button
+            className="add-btn"
+            onClick={() => {
+              setShowAddForm(!showAddForm);
+              setEditingStudent(null);
+            }}
+          >
+            {showAddForm ? "Cancel" : "Add New Student"}
+          </button>
+        </div>
       </div>
 
       {error && (

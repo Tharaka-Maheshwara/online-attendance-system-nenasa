@@ -14,7 +14,7 @@ USE attendance_db;
 
 -- Note: Tables will be created automatically by TypeORM when you start the application
 -- The following tables will be created:
--- - nenasala_users (users table)
+-- - nenasa_users (users table)
 -- - role (roles table) 
 -- - class (classes table)
 -- - student (students table)

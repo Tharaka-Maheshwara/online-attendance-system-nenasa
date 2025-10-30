@@ -802,6 +802,21 @@
   padding: 20px;
 }
 
+.subject-header {
+  margin-bottom: 15px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e8ecf1;
+  text-align: center;
+}
+
+.subject-name {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
 .subject-title {
   margin: 0 0 15px 0;
   color: #2c3e50;

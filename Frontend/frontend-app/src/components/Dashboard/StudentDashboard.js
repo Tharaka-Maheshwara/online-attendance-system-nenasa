@@ -367,7 +367,11 @@ const StudentDashboard = () => {
                       </div>
 
                       <div className="card-content">
-                        <h3 className="subject-title">{cls.subject}</h3>
+                        <div className="subject-header">
+                          <h3 className="subject-name">
+                            {cls.subject || "N/A"}
+                          </h3>
+                        </div>
 
                         <div className="class-details">
                           <div className="detail-row">

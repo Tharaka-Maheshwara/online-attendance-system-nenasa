@@ -9,6 +9,7 @@ import { Payment } from '../payment/payment.entity';
 import { Announcement } from '../announcement/announcement.entity';
 import { LectureNote } from '../lecture-notes/lecture-note.entity';
 import * as QRCode from 'qrcode';
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class StudentService {
@@ -83,7 +84,7 @@ export class StudentService {
     const student = this.studentRepository.create(createStudentDto);
     const savedStudent = await this.studentRepository.save(student);
 
-    // Create or update user in nenasala_users table with student role
+    // Create or update user in nenasa_users table with student role
     try {
       const existingUser = await this.userService.findByEmail(
         createStudentDto.email,
@@ -220,6 +221,7 @@ export class StudentService {
         .createQueryBuilder('class')
         .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
         .andWhere('class.dayOfWeek = :dayOfWeek', { dayOfWeek: todayDayOfWeek })
+        .andWhere('class.grade = :grade', { grade: student.grade })
         .orderBy('class.startTime', 'ASC')
         .getMany();
 
@@ -278,6 +280,7 @@ export class StudentService {
       const allClasses = await this.classRepository
         .createQueryBuilder('class')
         .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .andWhere('class.grade = :grade', { grade: student.grade })
         .orderBy('class.dayOfWeek', 'ASC')
         .addOrderBy('class.startTime', 'ASC')
         .getMany();
@@ -514,5 +517,125 @@ export class StudentService {
       );
       return [];
     }
+  }
+
+  async generateStudentsPdf(): Promise<Buffer> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const students = await this.findAll();
+
+        const doc = new PDFDocument({ margin: 50 });
+        const chunks: Buffer[] = [];
+
+        doc.on('data', (chunk) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        // Header
+        doc
+          .fontSize(20)
+          .font('Helvetica-Bold')
+          .text('නෙනස Online Attendance System', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(16).text('Students List', { align: 'center' });
+        doc.moveDown(0.3);
+        doc
+          .fontSize(10)
+          .font('Helvetica')
+          .text(`Generated on: ${new Date().toLocaleDateString()}`, {
+            align: 'center',
+          });
+        doc.moveDown(1.5);
+
+        // Summary
+        doc
+          .fontSize(11)
+          .font('Helvetica-Bold')
+          .text(`Total Students: ${students.length}`, { align: 'left' });
+        doc.moveDown(1);
+
+        // Table headers
+        const tableTop = doc.y;
+        const colWidths = {
+          no: 30,
+          regNo: 70,
+          name: 120,
+          email: 140,
+          grade: 40,
+          subjects: 100,
+        };
+
+        doc.fontSize(9).font('Helvetica-Bold');
+        doc.text('No', 50, tableTop, { width: colWidths.no });
+        doc.text('Reg No', 80, tableTop, { width: colWidths.regNo });
+        doc.text('Name', 150, tableTop, { width: colWidths.name });
+        doc.text('Email', 270, tableTop, { width: colWidths.email });
+        doc.text('Grade', 410, tableTop, { width: colWidths.grade });
+        doc.text('Subjects', 450, tableTop, { width: colWidths.subjects });
+
+        doc.moveDown(0.5);
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown(0.5);
+
+        // Table rows
+        doc.font('Helvetica').fontSize(8);
+        students.forEach((student, index) => {
+          const rowY = doc.y;
+
+          // Collect subjects
+          const subjects = [
+            student.sub_1,
+            student.sub_2,
+            student.sub_3,
+            student.sub_4,
+            student.sub_5,
+            student.sub_6,
+          ]
+            .filter((sub) => sub && sub.trim() !== '')
+            .join(', ');
+
+          // Check if we need a new page
+          if (rowY > 700) {
+            doc.addPage();
+            doc.y = 50;
+          }
+
+          doc.text((index + 1).toString(), 50, doc.y, { width: colWidths.no });
+          doc.text(student.registerNumber || 'N/A', 80, rowY, {
+            width: colWidths.regNo,
+          });
+          doc.text(student.name || 'N/A', 150, rowY, {
+            width: colWidths.name,
+          });
+          doc.text(student.email || 'N/A', 270, rowY, {
+            width: colWidths.email,
+            ellipsis: true,
+          });
+          doc.text(student.grade?.toString() || 'N/A', 410, rowY, {
+            width: colWidths.grade,
+          });
+          doc.text(subjects || 'None', 450, rowY, {
+            width: colWidths.subjects,
+          });
+
+          doc.moveDown(0.8);
+        });
+
+        // Footer
+        doc.moveDown(2);
+        doc
+          .fontSize(8)
+          .text(
+            `Page ${doc.bufferedPageRange().count} - Generated by නෙනස Online Attendance System`,
+            50,
+            doc.page.height - 50,
+            { align: 'center' },
+          );
+
+        doc.end();
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }

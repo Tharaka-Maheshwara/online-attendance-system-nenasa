@@ -9,7 +9,9 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -108,6 +110,19 @@ export class TeacherController {
   @Get('by-email/:email')
   async getTeacherByEmail(@Param('email') email: string) {
     return await this.teacherService.findByEmail(email);
+  }
+
+  @Get('export/pdf')
+  async exportToPdf(@Res() res: Response) {
+    const pdfBuffer = await this.teacherService.generateTeachersPdf();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=teachers-report.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+
+    res.end(pdfBuffer);
   }
 
   @Get()

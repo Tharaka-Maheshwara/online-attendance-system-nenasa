@@ -7,6 +7,7 @@ import { Student } from '../student/student.entity';
 import { CreateTeacherDto } from './dto/create-teacher.dto';
 import { UpdateTeacherDto } from './dto/update-teacher.dto';
 import { UserService } from '../user/user.service';
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class TeacherService {
@@ -37,7 +38,7 @@ export class TeacherService {
     const teacher = this.teacherRepository.create(createTeacherDto);
     const savedTeacher = await this.teacherRepository.save(teacher);
 
-    // Create or update user in nenasala_users table with teacher role
+    // Create or update user in nenasa_users table with teacher role
     try {
       const existingUser = await this.userService.findByEmail(
         createTeacherDto.email,
@@ -172,5 +173,194 @@ export class TeacherService {
       .getCount();
 
     return students;
+  }
+
+  async generateTeachersPdf(): Promise<Buffer> {
+    const teachers = await this.findAll();
+
+    return new Promise((resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margin: 50, size: 'A4' });
+        const chunks: Buffer[] = [];
+
+        doc.on('data', (chunk) => chunks.push(chunk));
+        doc.on('end', () => resolve(Buffer.concat(chunks)));
+        doc.on('error', reject);
+
+        // Header
+        doc
+          .fontSize(20)
+          .font('Helvetica-Bold')
+          .text('Nenasa Online Attendance System', { align: 'center' });
+        doc.moveDown(0.5);
+        doc.fontSize(16).text('Teachers Report', { align: 'center' });
+        doc.moveDown(0.3);
+        doc
+          .fontSize(10)
+          .font('Helvetica')
+          .text(`Generated on: ${new Date().toLocaleString()}`, {
+            align: 'center',
+          });
+        doc.moveDown(1);
+
+        // Draw line
+        doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+        doc.moveDown(1);
+
+        // Summary
+        doc
+          .fontSize(12)
+          .font('Helvetica-Bold')
+          .text(`Total Teachers: ${teachers.length}`, { align: 'left' });
+        doc.moveDown(1);
+
+        // Table headers
+        const tableTop = doc.y;
+        const colWidths = {
+          no: 30,
+          id: 50,
+          name: 110,
+          email: 140,
+          contact: 80,
+          subjects: 135,
+        };
+
+        doc.fontSize(9).font('Helvetica-Bold');
+        let xPos = 50;
+
+        doc.text('No', xPos, tableTop, {
+          width: colWidths.no,
+          align: 'center',
+        });
+        xPos += colWidths.no;
+
+        doc.text('Teacher ID', xPos, tableTop, {
+          width: colWidths.id,
+          align: 'left',
+        });
+        xPos += colWidths.id;
+
+        doc.text('Name', xPos, tableTop, {
+          width: colWidths.name,
+          align: 'left',
+        });
+        xPos += colWidths.name;
+
+        doc.text('Email', xPos, tableTop, {
+          width: colWidths.email,
+          align: 'left',
+        });
+        xPos += colWidths.email;
+
+        doc.text('Contact', xPos, tableTop, {
+          width: colWidths.contact,
+          align: 'left',
+        });
+        xPos += colWidths.contact;
+
+        doc.text('Subjects', xPos, tableTop, {
+          width: colWidths.subjects,
+          align: 'left',
+        });
+
+        doc.moveDown(0.5);
+        doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+        doc.moveDown(0.3);
+
+        // Table rows
+        doc.font('Helvetica').fontSize(8);
+
+        teachers.forEach((teacher, index) => {
+          const rowY = doc.y;
+
+          // Check if we need a new page
+          if (rowY > 700) {
+            doc.addPage();
+            doc.fontSize(8).font('Helvetica');
+          }
+
+          xPos = 50;
+          const rowHeight = 25;
+
+          // No
+          doc.text((index + 1).toString(), xPos, rowY, {
+            width: colWidths.no,
+            align: 'center',
+            height: rowHeight,
+          });
+          xPos += colWidths.no;
+
+          // Teacher ID
+          doc.text(teacher.registerNumber || 'N/A', xPos, rowY, {
+            width: colWidths.id,
+            align: 'left',
+            height: rowHeight,
+          });
+          xPos += colWidths.id;
+
+          // Name
+          doc.text(teacher.name || 'N/A', xPos, rowY, {
+            width: colWidths.name,
+            align: 'left',
+            height: rowHeight,
+          });
+          xPos += colWidths.name;
+
+          // Email
+          doc.text(teacher.email || 'N/A', xPos, rowY, {
+            width: colWidths.email,
+            align: 'left',
+            height: rowHeight,
+          });
+          xPos += colWidths.email;
+
+          // Contact
+          doc.text(teacher.contactNumber || 'N/A', xPos, rowY, {
+            width: colWidths.contact,
+            align: 'left',
+            height: rowHeight,
+          });
+          xPos += colWidths.contact;
+
+          // Subjects
+          const subjects = [
+            teacher.sub_01,
+            teacher.sub_02,
+            teacher.sub_03,
+            teacher.sub_04,
+          ]
+            .filter(Boolean)
+            .join(', ');
+          doc.text(subjects || 'No subjects', xPos, rowY, {
+            width: colWidths.subjects,
+            align: 'left',
+            height: rowHeight,
+          });
+
+          doc.moveDown(1.2);
+        });
+
+        // Footer
+        doc.moveDown(2);
+        doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke();
+        doc.moveDown(0.5);
+
+        // Page numbers
+        const pages = doc.bufferedPageRange();
+        for (let i = 0; i < pages.count; i++) {
+          doc.switchToPage(i);
+          doc
+            .fontSize(8)
+            .font('Helvetica')
+            .text(`Page ${i + 1} of ${pages.count}`, 50, doc.page.height - 50, {
+              align: 'center',
+            });
+        }
+
+        doc.end();
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 }
