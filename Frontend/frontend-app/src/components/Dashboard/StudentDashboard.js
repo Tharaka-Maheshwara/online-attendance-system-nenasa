@@ -477,66 +477,6 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* My QR Code Section */}
-        <div className="my-qr-code-section">
-          <h2>📱 My Attendance QR Code</h2>
-          <div className="qr-code-content">
-            {qrLoading ? (
-              <div className="loading-message">Loading your QR code...</div>
-            ) : qrCodeData && studentInfo ? (
-              <div className="qr-code-display">
-                <div className="qr-info-box">
-                  <p className="qr-description">
-                    🎯 This is your personal attendance QR code. Show this code
-                    to your teacher during class to mark your attendance.
-                  </p>
-                  <div className="student-qr-info">
-                    <p>
-                      <strong>Name:</strong> {studentInfo.name}
-                    </p>
-                    <p>
-                      <strong>Register Number:</strong>{" "}
-                      {studentInfo.registerNumber}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {studentInfo.email}
-                    </p>
-                  </div>
-                </div>
-                <div className="qr-code-container">
-                  <div className="qr-code-wrapper">
-                    <QRCode
-                      id="student-qr-code"
-                      value={JSON.stringify({
-                        type: "student_attendance",
-                        studentId: studentInfo.id,
-                        name: studentInfo.name,
-                        registerNumber: studentInfo.registerNumber,
-                      })}
-                      size={200}
-                      level={"H"}
-                      includeMargin={true}
-                    />
-                  </div>
-                  <button className="download-qr-btn" onClick={downloadQRCode}>
-                    📥 Download QR Code
-                  </button>
-                  <p className="qr-instruction">
-                    💡 Tip: Download and save this QR code on your phone for
-                    quick access during classes.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="no-qr-message">
-                <p>❌ Unable to load QR code</p>
-                <span>
-                  Please contact your administrator if this issue persists.
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

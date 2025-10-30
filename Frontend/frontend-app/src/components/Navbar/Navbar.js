@@ -100,6 +100,14 @@ const Navbar = () => {
                   My Attendance
                 </Link>
                 <Link
+                  to="/my-qr-code"
+                  className={`nav-link ${
+                    isActive("/my-qr-code") ? "active" : ""
+                  }`}
+                >
+                  My QR Code
+                </Link>
+                <Link
                   to="/payment-status"
                   className={`nav-link ${
                     isActive("/payment-status") ? "active" : ""
