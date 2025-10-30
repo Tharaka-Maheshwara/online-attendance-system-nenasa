@@ -6,7 +6,9 @@ import {
   Delete,
   Body,
   Param,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
@@ -28,6 +30,19 @@ export class ClassController {
   @Get('with-student-count')
   async findAllWithStudentCount() {
     return this.classService.getAllClassesWithStudentCount();
+  }
+
+  @Get('export/pdf')
+  async exportToPdf(@Res() res: Response) {
+    const pdfBuffer = await this.classService.generateClassesPdf();
+    
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=classes-report.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+    
+    res.end(pdfBuffer);
   }
 
   @Get(':id')
