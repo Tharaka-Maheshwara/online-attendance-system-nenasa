@@ -133,7 +133,10 @@ const StudentQRCode = () => {
                     includeMargin={true}
                   />
                 </div>
-                <button className="download-qr-btn-main" onClick={downloadQRCode}>
+                <button
+                  className="download-qr-btn-main"
+                  onClick={downloadQRCode}
+                >
                   📥 Download QR Code
                 </button>
                 <p className="qr-tip">
