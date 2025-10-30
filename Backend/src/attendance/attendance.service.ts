@@ -332,6 +332,16 @@ export class AttendanceService {
     try {
       let studentName: string = 'Student';
       let parentEmail: string = '';
+      let className: string = '';
+
+      // Fetch class information to get class name
+      const classInfo = await this.classRepository.findOne({
+        where: { id: attendance.classId },
+      });
+
+      if (classInfo) {
+        className = `Grade ${classInfo.grade} ${classInfo.subject}`;
+      }
 
       // First try to get student information from User entity
       const user = await this.userRepository.findOne({
@@ -364,7 +374,7 @@ export class AttendanceService {
         `📨 Sending attendance notification to ${parentEmail} for student ${studentName}`,
       );
       console.log(
-        `📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${attendance.classId}`,
+        `📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${className || attendance.classId}`,
       );
 
       // Send notification
@@ -375,6 +385,7 @@ export class AttendanceService {
         attendance.studentId,
         attendance.status === 'present',
         attendance.date,
+        className,
       );
 
       console.log('✅ Email notification sent successfully!');
