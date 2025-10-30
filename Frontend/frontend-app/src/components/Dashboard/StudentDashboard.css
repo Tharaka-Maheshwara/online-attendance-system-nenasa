@@ -1739,7 +1739,7 @@
 .stat-label {
   display: block;
   font-size: 0.8rem;
-  color: #7f8c8d;
+  color: black !important;
   font-weight: 500;
   margin-bottom: 4px;
   text-transform: uppercase;
