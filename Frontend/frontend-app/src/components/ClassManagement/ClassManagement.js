@@ -218,9 +218,9 @@ const ClassManagement = () => {
           s.sub_2 === subjectName ||
           s.sub_3 === subjectName ||
           s.sub_4 === subjectName;
-        
+
         const hasGrade = s.grade === grade;
-        
+
         return hasSubject && hasGrade;
       });
 
