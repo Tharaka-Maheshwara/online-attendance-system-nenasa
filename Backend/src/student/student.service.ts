@@ -537,9 +537,7 @@ export class StudentService {
           .font('Helvetica-Bold')
           .text('නෙනස Online Attendance System', { align: 'center' });
         doc.moveDown(0.5);
-        doc
-          .fontSize(16)
-          .text('Students List', { align: 'center' });
+        doc.fontSize(16).text('Students List', { align: 'center' });
         doc.moveDown(0.3);
         doc
           .fontSize(10)
@@ -576,10 +574,7 @@ export class StudentService {
         doc.text('Subjects', 450, tableTop, { width: colWidths.subjects });
 
         doc.moveDown(0.5);
-        doc
-          .moveTo(50, doc.y)
-          .lineTo(550, doc.y)
-          .stroke();
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
         doc.moveDown(0.5);
 
         // Table rows
