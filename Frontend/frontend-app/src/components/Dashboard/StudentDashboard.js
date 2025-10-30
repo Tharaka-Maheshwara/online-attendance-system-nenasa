@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useMsal } from "@azure/msal-react";
+import QRCode from "react-qr-code";
 import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
@@ -8,6 +9,9 @@ const StudentDashboard = () => {
   const [allClasses, setAllClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
+  const [qrCodeData, setQrCodeData] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [studentInfo, setStudentInfo] = useState(null);
   const [overallStats, setOverallStats] = useState({
     totalClasses: 0,
     presentClasses: 0,
@@ -67,6 +71,38 @@ const StudentDashboard = () => {
     };
 
     fetchClasses();
+  }, [accounts]);
+
+  // Fetch student QR code
+  useEffect(() => {
+    const fetchQRCode = async () => {
+      if (!accounts || accounts.length === 0) return;
+
+      try {
+        setQrLoading(true);
+        const userEmail = accounts[0].username;
+
+        const response = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/qrcode`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setQrCodeData(data.qrCode);
+          setStudentInfo(data.student);
+        } else {
+          console.error("Failed to fetch QR code");
+        }
+      } catch (error) {
+        console.error("Error fetching QR code:", error);
+      } finally {
+        setQrLoading(false);
+      }
+    };
+
+    fetchQRCode();
   }, [accounts]);
 
   const fetchAttendanceSummary = useCallback(async () => {
@@ -219,6 +255,34 @@ const StudentDashboard = () => {
       "Saturday",
       "Sunday",
     ];
+  };
+
+  const downloadQRCode = () => {
+    if (!studentInfo) return;
+
+    const svg = document.getElementById("student-qr-code");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    canvas.width = 300;
+    canvas.height = 300;
+
+    img.onload = () => {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `${studentInfo.name}-QRCode.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
   return (
@@ -408,6 +472,65 @@ const StudentDashboard = () => {
                 <span>
                   Please contact your administrator to enroll in classes.
                 </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* My QR Code Section */}
+        <div className="my-qr-code-section">
+          <h2>📱 My Attendance QR Code</h2>
+          <div className="qr-code-content">
+            {qrLoading ? (
+              <div className="loading-message">Loading your QR code...</div>
+            ) : qrCodeData && studentInfo ? (
+              <div className="qr-code-display">
+                <div className="qr-info-box">
+                  <p className="qr-description">
+                    🎯 This is your personal attendance QR code. Show this code to
+                    your teacher during class to mark your attendance.
+                  </p>
+                  <div className="student-qr-info">
+                    <p>
+                      <strong>Name:</strong> {studentInfo.name}
+                    </p>
+                    <p>
+                      <strong>Register Number:</strong>{" "}
+                      {studentInfo.registerNumber}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {studentInfo.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="qr-code-container">
+                  <div className="qr-code-wrapper">
+                    <QRCode
+                      id="student-qr-code"
+                      value={JSON.stringify({
+                        type: "student_attendance",
+                        studentId: studentInfo.id,
+                        name: studentInfo.name,
+                        registerNumber: studentInfo.registerNumber,
+                      })}
+                      size={200}
+                      level={"H"}
+                      includeMargin={true}
+                    />
+                  </div>
+                  <button className="download-qr-btn" onClick={downloadQRCode}>
+                    📥 Download QR Code
+                  </button>
+                  <p className="qr-instruction">
+                    💡 Tip: Download and save this QR code on your phone for quick
+                    access during classes.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="no-qr-message">
+                <p>❌ Unable to load QR code</p>
+                <span>Please contact your administrator if this issue persists.</span>
               </div>
             )}
           </div>

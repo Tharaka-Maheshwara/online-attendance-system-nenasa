@@ -181,6 +181,35 @@ export class StudentService {
     }
   }
 
+  async getStudentQRCodeByEmail(email: string): Promise<{ qrCode: string; student: Student }> {
+    try {
+      // Find student by email
+      const student = await this.studentRepository.findOne({
+        where: { email },
+      });
+
+      if (!student) {
+        throw new Error('Student not found');
+      }
+
+      // Generate QR code for the student
+      const qrCode = await this.generateQRCodeDataURL(student);
+
+      return {
+        qrCode,
+        student: {
+          id: student.id,
+          name: student.name,
+          email: student.email,
+          registerNumber: student.registerNumber,
+        } as Student,
+      };
+    } catch (error) {
+      console.error('Error getting student QR code by email:', error);
+      throw error;
+    }
+  }
+
   async getTodayClassesForStudent(studentId: number): Promise<Class[]> {
     try {
       // Get student details
