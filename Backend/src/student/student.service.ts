@@ -220,6 +220,7 @@ export class StudentService {
         .createQueryBuilder('class')
         .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
         .andWhere('class.dayOfWeek = :dayOfWeek', { dayOfWeek: todayDayOfWeek })
+        .andWhere('class.grade = :grade', { grade: student.grade })
         .orderBy('class.startTime', 'ASC')
         .getMany();
 
@@ -278,6 +279,7 @@ export class StudentService {
       const allClasses = await this.classRepository
         .createQueryBuilder('class')
         .where('class.subject IN (:...subjects)', { subjects: studentSubjects })
+        .andWhere('class.grade = :grade', { grade: student.grade })
         .orderBy('class.dayOfWeek', 'ASC')
         .addOrderBy('class.startTime', 'ASC')
         .getMany();
