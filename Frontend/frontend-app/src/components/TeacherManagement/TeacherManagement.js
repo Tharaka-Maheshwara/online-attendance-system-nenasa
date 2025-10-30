@@ -262,24 +262,26 @@ const TeacherManagement = () => {
   // Download PDF
   const handleDownloadPdf = async () => {
     try {
-      const response = await fetch('http://localhost:8000/teacher/export/pdf');
-      
+      const response = await fetch("http://localhost:8000/teacher/export/pdf");
+
       if (!response.ok) {
-        throw new Error('Failed to download PDF');
+        throw new Error("Failed to download PDF");
       }
-      
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `teachers-report-${new Date().toISOString().split('T')[0]}.pdf`;
+      a.download = `teachers-report-${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Error downloading PDF:', error);
-      alert('Failed to download PDF. Please try again.');
+      console.error("Error downloading PDF:", error);
+      alert("Failed to download PDF. Please try again.");
     }
   };
 

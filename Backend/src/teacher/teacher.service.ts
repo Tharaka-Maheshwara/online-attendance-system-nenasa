@@ -240,7 +240,10 @@ export class TeacherService {
         });
         xPos += colWidths.id;
 
-        doc.text('Name', xPos, tableTop, { width: colWidths.name, align: 'left' });
+        doc.text('Name', xPos, tableTop, {
+          width: colWidths.name,
+          align: 'left',
+        });
         xPos += colWidths.name;
 
         doc.text('Email', xPos, tableTop, {
