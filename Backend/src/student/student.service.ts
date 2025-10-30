@@ -83,7 +83,7 @@ export class StudentService {
     const student = this.studentRepository.create(createStudentDto);
     const savedStudent = await this.studentRepository.save(student);
 
-    // Create or update user in nenasala_users table with student role
+    // Create or update user in nenasa_users table with student role
     try {
       const existingUser = await this.userService.findByEmail(
         createStudentDto.email,

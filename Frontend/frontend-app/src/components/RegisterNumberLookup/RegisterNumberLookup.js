@@ -123,7 +123,7 @@ const RegisterNumberLookup = () => {
     <div className="register-lookup-container">
       <h1>Register Number Auto-Fill Demo</h1>
       <p className="description">
-        Enter a register number to automatically fill Name and Email fields from the nenasala_users table.
+        Enter a register number to automatically fill Name and Email fields from the nenasa_users table.
       </p>
 
       <div className="lookup-form-container">
@@ -254,7 +254,7 @@ const RegisterNumberLookup = () => {
           <h3>How it works:</h3>
           <ul>
             <li>✨ Enter a register number (minimum 3 characters)</li>
-            <li>🔍 System automatically looks up user in nenasala_users table</li>
+            <li>🔍 System automatically looks up user in nenasa_users table</li>
             <li>📝 Name, Email, and other fields auto-fill if user exists</li>
             <li>⚡ Real-time feedback shows success/error status</li>
             <li>🎯 Perfect for attendance marking, enrollment forms, etc.</li>

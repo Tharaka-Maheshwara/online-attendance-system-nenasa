@@ -213,7 +213,7 @@ export class AttendanceService {
         .createQueryBuilder('a')
         .leftJoin('student', 's', 'a.studentId = s.id')
         .leftJoin('class', 'c', 'a.classId = c.id')
-        .leftJoin('nenasala_users', 'u', 'a.markedBy = u.id')
+        .leftJoin('nenasa_users', 'u', 'a.markedBy = u.id')
         .select([
           'a.id as id',
           'a.studentId as studentId',

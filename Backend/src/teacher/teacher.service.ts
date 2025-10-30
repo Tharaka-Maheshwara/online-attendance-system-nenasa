@@ -37,7 +37,7 @@ export class TeacherService {
     const teacher = this.teacherRepository.create(createTeacherDto);
     const savedTeacher = await this.teacherRepository.save(teacher);
 
-    // Create or update user in nenasala_users table with teacher role
+    // Create or update user in nenasa_users table with teacher role
     try {
       const existingUser = await this.userService.findByEmail(
         createTeacherDto.email,
