@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useMsal } from "@azure/msal-react";
 import "./Navbar.css";
+import logo from "../../assets/images/nenasa-logo.jpg";
 
 const Navbar = () => {
   const { accounts, instance } = useMsal();
@@ -65,7 +66,8 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
-            NENASA Attendance
+            <img src={logo} alt="NENASA Logo" className="navbar-logo" />
+            <span className="brand-text">NENASA Attendance</span>
           </Link>
         </div>
 
