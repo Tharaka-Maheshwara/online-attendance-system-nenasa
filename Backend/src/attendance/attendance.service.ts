@@ -332,6 +332,7 @@ export class AttendanceService {
     try {
       let studentName: string = 'Student';
       let parentEmail: string = '';
+      let parentName: string = '';
       let className: string = '';
 
       // Fetch class information to get class name
@@ -351,6 +352,7 @@ export class AttendanceService {
       if (user && user.parentEmail) {
         studentName = user.display_name || 'Student';
         parentEmail = user.parentEmail;
+        parentName = user.parentName || '';
       } else {
         // If not found in User entity, try Student entity
         const student = await this.studentRepository.findOne({
@@ -360,6 +362,7 @@ export class AttendanceService {
         if (student && student.parentEmail) {
           studentName = student.name || 'Student';
           parentEmail = student.parentEmail;
+          parentName = student.parentName || '';
         }
       }
 
@@ -386,6 +389,7 @@ export class AttendanceService {
         attendance.status === 'present',
         attendance.date,
         className,
+        parentName,
       );
 
       console.log('✅ Email notification sent successfully!');
