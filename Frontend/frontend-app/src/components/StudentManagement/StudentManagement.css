@@ -16,6 +16,29 @@
   margin: 0;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.download-pdf-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.download-pdf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+}
+
 .add-btn {
   background-color: #28a745;
   color: white;
