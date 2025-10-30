@@ -487,8 +487,8 @@ const StudentDashboard = () => {
               <div className="qr-code-display">
                 <div className="qr-info-box">
                   <p className="qr-description">
-                    🎯 This is your personal attendance QR code. Show this code to
-                    your teacher during class to mark your attendance.
+                    🎯 This is your personal attendance QR code. Show this code
+                    to your teacher during class to mark your attendance.
                   </p>
                   <div className="student-qr-info">
                     <p>
@@ -522,15 +522,17 @@ const StudentDashboard = () => {
                     📥 Download QR Code
                   </button>
                   <p className="qr-instruction">
-                    💡 Tip: Download and save this QR code on your phone for quick
-                    access during classes.
+                    💡 Tip: Download and save this QR code on your phone for
+                    quick access during classes.
                   </p>
                 </div>
               </div>
             ) : (
               <div className="no-qr-message">
                 <p>❌ Unable to load QR code</p>
-                <span>Please contact your administrator if this issue persists.</span>
+                <span>
+                  Please contact your administrator if this issue persists.
+                </span>
               </div>
             )}
           </div>

@@ -35,12 +35,14 @@ Student Management යටතේ ඔබ student කෙනෙකු add කළ ව
 ### Backend (පසු පද්ධතිය)
 
 #### 1. `student.controller.ts` - නව API Endpoint
+
 ```typescript
 ✅ GET /student/email/:email/qrcode
    └─ Email ඔස්සේ student QR code ගන්නවා
 ```
 
 #### 2. `student.service.ts` - නව Service Method
+
 ```typescript
 ✅ getStudentQRCodeByEmail(email)
    ├─ Student database එකෙන් හොයනවා
@@ -51,6 +53,7 @@ Student Management යටතේ ඔබ student කෙනෙකු add කළ ව
 ### Frontend (ඉදිරි පද්ධතිය)
 
 #### 3. `StudentDashboard.js` - Dashboard වෙනස්කම්
+
 ```javascript
 ✅ QR code fetch logic එකතු කළා
 ✅ Display section එකතු කළා
@@ -58,6 +61,7 @@ Student Management යටතේ ඔබ student කෙනෙකු add කළ ව
 ```
 
 #### 4. `StudentDashboard.css` - Styling එකතු කළා
+
 ```css
 ✅ QR section styles
 ✅ Responsive design
@@ -106,6 +110,7 @@ Student login වූ වහාම dashboard එකේ මෙසේ section එ�
 ### 👨‍🎓 Student සඳහා:
 
 #### පියවර 1: Login වීම
+
 ```
 🔐 System එකට login වන්න
    ↓
@@ -113,6 +118,7 @@ Student login වූ වහාම dashboard එකේ මෙසේ section එ�
 ```
 
 #### පියවර 2: Dashboard බැලීම
+
 ```
 🏠 Dashboard auto-load වේ
    ↓
@@ -120,6 +126,7 @@ Student login වූ වහාම dashboard එකේ මෙසේ section එ�
 ```
 
 #### පියවර 3: QR Code බැලීම
+
 ```
 📱 "My Attendance QR Code" section
    ↓
@@ -129,6 +136,7 @@ Student login වූ වහාම dashboard එකේ මෙසේ section එ�
 ```
 
 #### පියවර 4: Download කිරීම
+
 ```
 🖱️ "Download QR Code" button click
    ↓
@@ -138,6 +146,7 @@ Student login වූ වහාම dashboard එකේ මෙසේ section එ�
 ```
 
 #### පියවර 5: භාවිත කිරීම
+
 ```
 🏫 Class එකට යන්න
    ↓
@@ -253,37 +262,38 @@ Frontend                Backend               Database
 
 ### ✅ Students සඳහා
 
-| විශේෂාංගය | වාසිය |
-|-----------|-------|
-| 🚫 **No Email** | Email එකක් බලා සිටීමකින් තොරව instant access |
-| 📱 **Mobile Friendly** | Phone එකේ save කර ගත හැකි |
-| ⚡ **Instant Access** | Login වූ වහාම available |
-| 💾 **Download** | PNG image එකක් ලෙස save කරන්න පුළුවන් |
+| විශේෂාංගය               | වාසිය                                         |
+| ----------------------- | --------------------------------------------- |
+| 🚫 **No Email**         | Email එකක් බලා සිටීමකින් තොරව instant access  |
+| 📱 **Mobile Friendly**  | Phone එකේ save කර ගත හැකි                     |
+| ⚡ **Instant Access**   | Login වූ වහාම available                       |
+| 💾 **Download**         | PNG image එකක් ලෙස save කරන්න පුළුවන්         |
 | 🔄 **Always Available** | Dashboard එකෙන් නැවත download කර ගන්න පුළුවන් |
 
 ### ✅ Teachers සඳහා
 
-| විශේෂාංගය | වාසිය |
-|-----------|-------|
-| ⚡ **Fast Marking** | QR scan කරන්න පමණයි |
-| ✔️ **Accurate** | Manual errors නැත |
-| 🤖 **Automatic** | Auto-verification |
-| 📊 **Instant** | Real-time attendance updates |
+| විශේෂාංගය           | වාසිය                        |
+| ------------------- | ---------------------------- |
+| ⚡ **Fast Marking** | QR scan කරන්න පමණයි          |
+| ✔️ **Accurate**     | Manual errors නැත            |
+| 🤖 **Automatic**    | Auto-verification            |
+| 📊 **Instant**      | Real-time attendance updates |
 
 ### ✅ Administration සඳහා
 
-| විශේෂාංගය | වාසිය |
-|-----------|-------|
-| 🤖 **Auto-Generation** | Student add කළ වහාම QR code generate වේ |
-| 🚫 **No Manual Work** | QR codes manually distribute කිරීමට අවශ්‍ය නැත |
-| 💾 **Centralized** | System එකේම manage වේ |
-| 📈 **Better Data** | Accurate records |
+| විශේෂාංගය              | වාසිය                                          |
+| ---------------------- | ---------------------------------------------- |
+| 🤖 **Auto-Generation** | Student add කළ වහාම QR code generate වේ        |
+| 🚫 **No Manual Work**  | QR codes manually distribute කිරීමට අවශ්‍ය නැත |
+| 💾 **Centralized**     | System එකේම manage වේ                          |
+| 📈 **Better Data**     | Accurate records                               |
 
 ---
 
 ## 💡 වැදගත් උපදෙස්
 
 ### 📌 Tip 1: QR Code Save කරන්න
+
 ```
 Download කළ වහාම:
   ↓
@@ -295,6 +305,7 @@ Download කළ වහාම:
 ```
 
 ### 📌 Tip 2: Class වලදී භාවිත කරන්න
+
 ```
 Class එකට යන විට:
   ↓
@@ -308,6 +319,7 @@ Class එකට යන විට:
 ```
 
 ### 📌 Tip 3: නැති වුණොත්
+
 ```
 QR code නැති වුණොත්:
   ↓
@@ -319,6 +331,7 @@ QR code නැති වුණොත්:
 ```
 
 ### 📌 Tip 4: Security
+
 ```
 ⚠️ QR code එක private වැදගත්!
   ↓
@@ -461,6 +474,7 @@ StudentDashboard.css
 ## 📚 අමතර ලේඛන
 
 සම්පූර්ණ විස්තර සඳහා බලන්න:
+
 - `STUDENT_QR_CODE_IMPLEMENTATION.md` - සම්පූර්ණ documentation
 - `STUDENT_QR_IMPLEMENTATION_SUMMARY.md` - Quick summary
 

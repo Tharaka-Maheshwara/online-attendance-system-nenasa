@@ -181,7 +181,9 @@ export class StudentService {
     }
   }
 
-  async getStudentQRCodeByEmail(email: string): Promise<{ qrCode: string; student: Student }> {
+  async getStudentQRCodeByEmail(
+    email: string,
+  ): Promise<{ qrCode: string; student: Student }> {
     try {
       // Find student by email
       const student = await this.studentRepository.findOne({

@@ -7,19 +7,23 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 ## 🎯 ප්‍රධාන විශේෂාංග (Key Features)
 
 ### 1. **Automatic QR Code Generation**
+
 - Student කෙනෙකු add කරන විට system එක automatically QR code එකක් generate කරයි
 - QR code එක student එකේ details (ID, name, register number) සමඟ create වේ
 
 ### 2. **Student Dashboard Integration**
+
 - Student role එකෙන් login වූ විට dashboard එකේ QR code section එකක් පෙන්වයි
 - Email address භාවිතයෙන් automatically student හඳුනාගෙන QR code එක fetch කරයි
 - Email එකක් යැවීමකින් තොරව system එක තුළම accessible වේ
 
 ### 3. **Download Functionality**
+
 - Student හට තමන්ගේ QR code එක PNG image එකක් ලෙස download කර ගැනීමට හැකියාව ඇත
 - Mobile phone එකේ save කර ගැනීමට පහසු
 
 ### 4. **User-Friendly Display**
+
 - Student information සමඟ QR code එක පෙන්වයි
 - Clear instructions සහ professional design
 - Responsive design - mobile සහ desktop යන දෙකෙහිම වැඩ කරයි
@@ -31,6 +35,7 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 #### 1. **Student Controller** (`Backend/src/student/student.controller.ts`)
 
 **නව API Endpoint එකක් එකතු කරන ලදී:**
+
 ```typescript
 @Get('email/:email/qrcode')
 async getStudentQRCodeByEmail(@Param('email') email: string) {
@@ -39,6 +44,7 @@ async getStudentQRCodeByEmail(@Param('email') email: string) {
 ```
 
 **Endpoint Details:**
+
 - **URL:** `GET /student/email/:email/qrcode`
 - **Purpose:** Student email භාවිතයෙන් QR code එක retrieve කරයි
 - **Response:** QR code data URL සහ student information
@@ -46,6 +52,7 @@ async getStudentQRCodeByEmail(@Param('email') email: string) {
 #### 2. **Student Service** (`Backend/src/student/student.service.ts`)
 
 **නව Service Method එකක් එකතු කරන ලදී:**
+
 ```typescript
 async getStudentQRCodeByEmail(email: string): Promise<{ qrCode: string; student: Student }> {
   try {
@@ -78,6 +85,7 @@ async getStudentQRCodeByEmail(email: string): Promise<{ qrCode: string; student:
 ```
 
 **Method Details:**
+
 - Email භාවිතයෙන් student database එකෙන් හොයාගනී
 - QR code data URL එක generate කරයි
 - Student information සහ QR code එක return කරයි
@@ -87,11 +95,13 @@ async getStudentQRCodeByEmail(email: string): Promise<{ qrCode: string; student:
 #### 1. **Student Dashboard Component** (`Frontend/frontend-app/src/components/Dashboard/StudentDashboard.js`)
 
 **Import එකතු කරන ලදී:**
+
 ```javascript
 import QRCode from "react-qr-code";
 ```
 
 **නව State Variables:**
+
 ```javascript
 const [qrCodeData, setQrCodeData] = useState(null);
 const [qrLoading, setQrLoading] = useState(false);
@@ -99,6 +109,7 @@ const [studentInfo, setStudentInfo] = useState(null);
 ```
 
 **QR Code Fetch useEffect:**
+
 ```javascript
 useEffect(() => {
   const fetchQRCode = async () => {
@@ -131,6 +142,7 @@ useEffect(() => {
 ```
 
 **Download Function:**
+
 ```javascript
 const downloadQRCode = () => {
   // QR code SVG එක PNG image එකක් බවට convert කර download කරයි
@@ -140,6 +152,7 @@ const downloadQRCode = () => {
 ```
 
 **UI Section එකතු කරන ලදී:**
+
 ```jsx
 <div className="my-qr-code-section">
   <h2>📱 My Attendance QR Code</h2>
@@ -150,6 +163,7 @@ const downloadQRCode = () => {
 #### 2. **Student Dashboard Styles** (`Frontend/frontend-app/src/components/Dashboard/StudentDashboard.css`)
 
 **නව CSS Classes එකතු කරන ලදී:**
+
 - `.my-qr-code-section` - Main container
 - `.qr-code-display` - Grid layout for QR and info
 - `.qr-info-box` - Student information display
@@ -164,17 +178,21 @@ const downloadQRCode = () => {
 ### Student පැත්තෙන් (For Students):
 
 1. **Login වීම:**
+
    - System එකට student role එකෙන් login වන්න
 
 2. **Dashboard Access:**
+
    - Login වූ වහාම student dashboard එක load වේ
    - "My Attendance QR Code" section එක පහළට scroll කරන්න
 
 3. **QR Code පෙනීම:**
+
    - ඔබගේ personal QR code එක automatically පෙන්වයි
    - ඔබගේ name, register number, සහ email display වේ
 
 4. **QR Code Download කිරීම:**
+
    - "📥 Download QR Code" button එක click කරන්න
    - QR code එක PNG image එකක් ලෙස download වේ
    - Mobile phone එකේ save කර ගන්න
@@ -186,6 +204,7 @@ const downloadQRCode = () => {
 ### Teacher/Admin පැත්තෙන් (For Teachers/Admins):
 
 1. **Student එකතු කිරීම:**
+
    - Student Management section එකට යන්න
    - නව student කෙනෙකු add කරන්න
    - System automatically QR code එකක් generate කරයි
@@ -231,10 +250,12 @@ Frontend: Display QR Code
 ### Security Features:
 
 1. **Email-based Authentication:**
+
    - Microsoft Azure AD authentication භාවිතයෙන් student verify කරයි
    - Session-based access control
 
 2. **Role-based Access:**
+
    - Student role තිබෙන users හට පමණක් QR code access කළ හැකි
    - Backend validation සහිත
 
@@ -248,16 +269,19 @@ Frontend: Display QR Code
 ### Design Elements:
 
 1. **Modern Gradient Design:**
+
    - Professional color schemes
    - Eye-catching buttons
    - Clear visual hierarchy
 
 2. **Responsive Layout:**
+
    - Desktop සහ mobile යන දෙකෙහිම perfect වැඩ කරයි
    - Touch-friendly buttons
    - Optimized for all screen sizes
 
 3. **Clear Instructions:**
+
    - Sinhala Unicode instructions
    - Emoji icons for better understanding
    - Helpful tips and guidance
@@ -295,10 +319,12 @@ Frontend: Display QR Code
 ### Existing Features:
 
 1. **Student Management:**
+
    - QR code auto-generation on student creation
    - No additional steps needed
 
 2. **Attendance Marking:**
+
    - QR scanner integration
    - Automatic student verification
    - Real-time attendance updates
@@ -313,11 +339,13 @@ Frontend: Display QR Code
 ### Backend Testing:
 
 1. **API Endpoint Test:**
+
 ```bash
 GET http://localhost:8000/student/email/student@example.com/qrcode
 ```
 
 2. **Expected Response:**
+
 ```json
 {
   "qrCode": "data:image/png;base64,...",
@@ -359,16 +387,20 @@ GET http://localhost:8000/student/email/student@example.com/qrcode
 ### Possible Improvements:
 
 1. **QR Code Regeneration:**
+
    - Student හට නිතර නිතර QR code එක regenerate කිරීමට ඉඩ දීම
 
 2. **QR Code Expiry:**
+
    - Security වැඩි කිරීම සඳහා time-based expiry
 
 3. **Multiple QR Formats:**
+
    - Different sizes සහ formats
    - PDF export option
 
 4. **QR Code History:**
+
    - Previous QR codes track කිරීම
    - Usage statistics
 
@@ -380,17 +412,21 @@ GET http://localhost:8000/student/email/student@example.com/qrcode
 ### Common Issues:
 
 **Issue 1: QR Code නොපෙන්වයි**
+
 - Solution: Browser refresh කරන්න, backend running දැයි check කරන්න
 
 **Issue 2: Download වැඩ නොකරයි**
+
 - Solution: Browser permissions check කරන්න, popup blocker disable කරන්න
 
 **Issue 3: "Student not found" error**
+
 - Solution: Correct email භාවිතා කරන්නේදැයි verify කරන්න, student database එකේ ඇත්දැයි check කරන්න
 
 ## 📞 සහාය (Support)
 
 Issues හෝ questions තිබේනම්:
+
 - Backend logs check කරන්න
 - Browser console errors බලන්න
 - Database connections verify කරන්න

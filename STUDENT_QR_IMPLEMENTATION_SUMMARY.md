@@ -11,6 +11,7 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 ### Backend (3 files)
 
 1. **`Backend/src/student/student.controller.ts`**
+
    - ✅ නව API endpoint එකක් එකතු කරන ලදී: `GET /student/email/:email/qrcode`
    - Email භාවිතයෙන් student QR code retrieve කරයි
 
@@ -21,6 +22,7 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 ### Frontend (2 files)
 
 3. **`Frontend/frontend-app/src/components/Dashboard/StudentDashboard.js`**
+
    - ✅ QR code fetch කිරීමේ logic එකතු කරන ලදී
    - ✅ QR code display section එකතු කරන ලදී
    - ✅ Download functionality implement කරන ලදී
@@ -74,27 +76,33 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 ## 💡 ප්‍රධාන විශේෂාංග (Key Features)
 
 ### ✅ Email නොයවන (No Email Sending)
+
 - System තුළම QR code access කළ හැකි
 - Dashboard වෙත instant access
 
 ### ✅ Automatic Generation
+
 - Student add කරන විට auto-generate වේ
 - Additional steps අවශ්‍ය නැත
 
 ### ✅ Easy Access
+
 - Login වූ වහාම පෙනේ
 - Dashboard එකේම built-in
 
 ### ✅ Download Support
+
 - PNG image එකක් ලෙස download කළ හැකි
 - Mobile phone එකේ save කර ගත හැකි
 
 ### ✅ User-Friendly
+
 - Clear instructions
 - Professional design
 - Sinhala Unicode support
 
 ### ✅ Responsive Design
+
 - Desktop සහ mobile යන දෙකෙහිම වැඩ කරයි
 - Touch-friendly interface
 
@@ -133,11 +141,13 @@ Student Management යටතේ student කෙනෙකු add කළවිට a
 **GET** `/student/email/:email/qrcode`
 
 **Request:**
+
 ```
 GET http://localhost:8000/student/email/student@example.com/qrcode
 ```
 
 **Response:**
+
 ```json
 {
   "qrCode": "data:image/png;base64,iVBORw0KG...",
@@ -201,11 +211,13 @@ GET http://localhost:8000/student/email/student@example.com/qrcode
 ## 📱 Responsive Design
 
 ### Desktop View:
+
 - Two-column layout
 - Side-by-side info and QR code
 - Large, clear buttons
 
 ### Mobile View:
+
 - Single column layout
 - Stacked elements
 - Touch-friendly buttons
@@ -215,12 +227,12 @@ GET http://localhost:8000/student/email/student@example.com/qrcode
 
 ## 🎯 වාසි (Benefits)
 
-| Aspect | Benefit |
-|--------|---------|
+| Aspect       | Benefit                                         |
+| ------------ | ----------------------------------------------- |
 | **Students** | Instant access, no email waiting, easy download |
-| **Teachers** | Fast QR scanning, accurate attendance |
-| **Admin** | Auto-generation, no manual distribution |
-| **System** | Integrated, efficient, error-free |
+| **Teachers** | Fast QR scanning, accurate attendance           |
+| **Admin**    | Auto-generation, no manual distribution         |
+| **System**   | Integrated, efficient, error-free               |
 
 ---
 
@@ -238,12 +250,12 @@ GET http://localhost:8000/student/email/student@example.com/qrcode
 
 ## 🐛 Common Issues & Solutions
 
-| Issue | Solution |
-|-------|----------|
-| QR code නොපෙන්වයි | Browser refresh කරන්න |
-| Download වැඩ නොකරයි | Browser permissions check කරන්න |
-| "Student not found" | Email correct දැයි verify කරන්න |
-| Loading forever | Backend running දැයි check කරන්න |
+| Issue               | Solution                         |
+| ------------------- | -------------------------------- |
+| QR code නොපෙන්වයි   | Browser refresh කරන්න            |
+| Download වැඩ නොකරයි | Browser permissions check කරන්න  |
+| "Student not found" | Email correct දැයි verify කරන්න  |
+| Loading forever     | Backend running දැයි check කරන්න |
 
 ---
 
