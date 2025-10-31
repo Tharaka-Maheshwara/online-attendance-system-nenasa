@@ -2,7 +2,7 @@
 export const tenantInfo = {
   tenantId: "a7a43c95-55b0-4d14-98c5-a7478dfb87d3",
   clientId: "9a2a5624-5ed7-4449-b2b0-e1862e68fdcc",
-  organizationName: "Nenasala Higher Education",
+  organizationName: "Nenasa Higher Education",
   
   // Common domains for this tenant
   expectedDomains: [
