@@ -1,26 +1,31 @@
 # Student Attendance Report Download Feature
 
 ## Overview
+
 මෙම feature එක මගින් Student Attendance History පිටුවෙන් විවිධ filters භාවිතයෙන් attendance reports PDF format එකෙහි download කර ගත හැක.
 
 ## Features Implemented
 
 ### 1. Single Date Report (එක් දිනයක් සඳහා Report)
+
 - නිශ්චිත දිනයක් තෝරා, ඒ දවසේ සියලුම students ලාගේ attendance list එක බලා ගැනීම
 - Grade සහ Subject අනුව filter කර ගැනීම
 - PDF report එක download කර ගැනීම
 
 **භාවිතය:**
+
 1. Grade සහ Subject තෝරන්න
 2. "Single Date Report" section එකට යන්න
 3. දිනයක් තෝරන්න
 4. "Download Report" button එක click කරන්න
 
 ### 2. Class-Specific Date Report (Class එකකට විශේෂිත Report)
+
 - නිශ්චිත දිනයක්, නිශ්චිත class එකක attendance බලා ගැනීම
 - ඒ class එකට අදාළ students කෙනෙක්ම පමණක් report එකෙහි ඇතුළත් වේ
 
 **භාවිතය:**
+
 1. Grade සහ Subject තෝරන්න
 2. "Class-Specific Date Report" section එකට යන්න
 3. දිනයක් තෝරන්න
@@ -28,11 +33,13 @@
 5. "Download Report" button එක click කරන්න
 
 ### 3. Date Range Class Report (කාල සීමාවක් සඳහා Report)
+
 - දින දෙකක් අතර කාල සීමාවක් තෝරා
 - නිශ්චිත class එකකට අදාළ සියලුම attendance records බලා ගැනීම
 - Summary statistics සමග
 
 **භාවිතය:**
+
 1. Grade සහ Subject තෝරන්න
 2. "Date Range Class Report" section එකට යන්න
 3. "From Date" සහ "To Date" තෝරන්න
@@ -42,6 +49,7 @@
 ## Report Features
 
 ### Report එකෙහි ඇතුළත් තොරතුරු:
+
 - Header සමග Organization name
 - Report title
 - Applied filters (Date, Grade, Subject, Class)
@@ -54,6 +62,7 @@
   - Attendance percentage
 
 ### Table Columns:
+
 1. No. (අනුක්‍රමිකය)
 2. Student Name
 3. Register Number
@@ -63,6 +72,7 @@
 7. Time (Marked time)
 
 ### Additional Features:
+
 - Multi-page support
 - Page numbers
 - Professional formatting
@@ -73,8 +83,11 @@
 ## Technical Implementation
 
 ### Frontend (React)
+
 **Files Modified:**
+
 1. `Frontend/frontend-app/src/components/StudentAttendanceHistory/StudentAttendanceHistory.js`
+
    - Added report filter states
    - Added report generation functions
    - Added UI for report controls
@@ -83,15 +96,18 @@
    - Added styles for report section
    - Responsive design support
 
-**Files Created:**
-3. `Frontend/frontend-app/src/utils/attendanceReportGenerator.js`
-   - PDF generation utility functions
-   - jsPDF and jspdf-autotable integration
-   - Report formatting logic
+**Files Created:** 3. `Frontend/frontend-app/src/utils/attendanceReportGenerator.js`
+
+- PDF generation utility functions
+- jsPDF and jspdf-autotable integration
+- Report formatting logic
 
 ### Backend (NestJS)
+
 **Files Modified:**
+
 1. `Backend/src/attendance/attendance.controller.ts`
+
    - Updated `findAll()` endpoint to accept query parameters
    - Added support for filtering by:
      - date (single date)
@@ -109,7 +125,9 @@
 ## API Endpoints
 
 ### GET /attendance
+
 Query Parameters:
+
 - `date` (optional): Filter by specific date (YYYY-MM-DD)
 - `dateFrom` (optional): Start date for range filter
 - `dateTo` (optional): End date for range filter
@@ -118,6 +136,7 @@ Query Parameters:
 - `classId` (optional): Filter by class ID
 
 **Example Requests:**
+
 ```
 GET /attendance?date=2025-10-31&grade=9&subject=English
 GET /attendance?dateFrom=2025-10-01&dateTo=2025-10-31&classId=3
@@ -125,6 +144,7 @@ GET /attendance?date=2025-10-31
 ```
 
 ## Dependencies Added
+
 ```json
 {
   "jspdf": "^2.x.x",
@@ -135,6 +155,7 @@ GET /attendance?date=2025-10-31
 ## Installation & Setup
 
 1. Install frontend dependencies:
+
 ```bash
 cd Frontend/frontend-app
 npm install
@@ -143,6 +164,7 @@ npm install
 2. Backend server should automatically support the new endpoints (no additional installation needed)
 
 3. Start the application:
+
 ```bash
 # Backend
 cd Backend
@@ -158,14 +180,17 @@ npm start
 ### Step-by-Step:
 
 1. **Open Student Attendance History Page**
+
    - Navigate to the admin dashboard
    - Click on "Student Attendance History"
 
 2. **Select Grade and Subject**
+
    - Choose a grade from the dropdown
    - Select a subject for that grade
 
 3. **Generate Reports**
+
    - Scroll to the "Generate Attendance Reports" section
    - Choose your report type:
      - Single date for all students
@@ -179,6 +204,7 @@ npm start
 ## File Naming Convention
 
 Reports are automatically named based on filters:
+
 - Single date: `attendance_2025-10-31.pdf`
 - Class date: `attendance_english_grade_9_2025-10-31.pdf`
 - Date range: `attendance_english_grade_9_2025-10-01_to_2025-10-31.pdf`
@@ -209,17 +235,20 @@ Reports are automatically named based on filters:
 ## Troubleshooting
 
 ### Report not generating?
+
 - Check if grade and subject are selected
 - Verify date selections are valid
 - Ensure there is attendance data for selected filters
 - Check browser console for errors
 
 ### Empty report?
+
 - Verify attendance records exist for selected date/range
 - Check if class has any students enrolled
 - Ensure date format is correct
 
 ### PDF not downloading?
+
 - Check browser download settings
 - Allow pop-ups for the application
 - Check browser console for errors

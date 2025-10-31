@@ -233,11 +233,7 @@ const addStatisticsSummary = (doc, statistics, yPosition) => {
 
   doc.text(`Total Records: ${statistics.total || 0}`, startX, textY);
   doc.setTextColor(39, 174, 96); // Green
-  doc.text(
-    `Present: ${statistics.present || 0}`,
-    startX + 45,
-    textY
-  );
+  doc.text(`Present: ${statistics.present || 0}`, startX + 45, textY);
   doc.setTextColor(231, 76, 60); // Red
   doc.text(`Absent: ${statistics.absent || 0}`, startX + 90, textY);
   doc.setTextColor(243, 156, 18); // Orange
@@ -272,9 +268,7 @@ const addFooterSummary = (doc, statistics, yPosition) => {
   doc.setTextColor(39, 174, 96);
   doc.text(
     `Present: ${statistics.present || 0} (${
-      Math.round(
-        (statistics.present / (statistics.total || 1)) * 100
-      ) || 0
+      Math.round((statistics.present / (statistics.total || 1)) * 100) || 0
     }%)`,
     20,
     yPosition
@@ -284,9 +278,7 @@ const addFooterSummary = (doc, statistics, yPosition) => {
   doc.setTextColor(231, 76, 60);
   doc.text(
     `Absent: ${statistics.absent || 0} (${
-      Math.round(
-        (statistics.absent / (statistics.total || 1)) * 100
-      ) || 0
+      Math.round((statistics.absent / (statistics.total || 1)) * 100) || 0
     }%)`,
     20,
     yPosition
@@ -296,8 +288,7 @@ const addFooterSummary = (doc, statistics, yPosition) => {
   doc.setTextColor(243, 156, 18);
   doc.text(
     `Late: ${statistics.late || 0} (${
-      Math.round((statistics.late / (statistics.total || 1)) * 100) ||
-      0
+      Math.round((statistics.late / (statistics.total || 1)) * 100) || 0
     }%)`,
     20,
     yPosition
@@ -345,9 +336,9 @@ export const generateDateReport = async (
     : "Daily Attendance Report";
 
   const fileName = selectedStudent
-    ? `attendance_${selectedStudent.name
-        .replace(/\s+/g, "_")
-        .toLowerCase()}_${filters.date}.pdf`
+    ? `attendance_${selectedStudent.name.replace(/\s+/g, "_").toLowerCase()}_${
+        filters.date
+      }.pdf`
     : `attendance_${filters.date}.pdf`;
 
   generateAttendanceReport({
@@ -401,9 +392,9 @@ export const generateDateRangeReport = async (
     : "Attendance Report (Date Range)";
 
   const fileName = className
-    ? `attendance_${className
-        .replace(/\s+/g, "_")
-        .toLowerCase()}_${filters.dateFrom}_to_${filters.dateTo}.pdf`
+    ? `attendance_${className.replace(/\s+/g, "_").toLowerCase()}_${
+        filters.dateFrom
+      }_to_${filters.dateTo}.pdf`
     : `attendance_${filters.dateFrom}_to_${filters.dateTo}.pdf`;
 
   generateAttendanceReport({
@@ -423,9 +414,7 @@ export const generateDateRangeReport = async (
  */
 const calculateStatistics = (attendanceData) => {
   const total = attendanceData.length;
-  const present = attendanceData.filter(
-    (r) => r.status === "present"
-  ).length;
+  const present = attendanceData.filter((r) => r.status === "present").length;
   const absent = attendanceData.filter((r) => r.status === "absent").length;
   const late = attendanceData.filter((r) => r.status === "late").length;
   const percentage = total > 0 ? Math.round((present / total) * 100) : 0;

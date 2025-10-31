@@ -786,11 +786,27 @@ const StudentAttendanceHistory = () => {
       if (response.ok) {
         const classData = await response.json();
         console.log("All classes from API:", classData);
-        console.log("Selected Grade:", selectedGrade, "Type:", typeof selectedGrade);
-        console.log("Selected Subject:", selectedSubject, "Type:", typeof selectedSubject);
-        
+        console.log(
+          "Selected Grade:",
+          selectedGrade,
+          "Type:",
+          typeof selectedGrade
+        );
+        console.log(
+          "Selected Subject:",
+          selectedSubject,
+          "Type:",
+          typeof selectedSubject
+        );
+
         const filteredClasses = classData.filter((c) => {
-          console.log(`Comparing class: grade=${c.grade} (${typeof c.grade}) with ${selectedGrade} (${typeof selectedGrade}), subject=${c.subject} with ${selectedSubject}`);
+          console.log(
+            `Comparing class: grade=${
+              c.grade
+            } (${typeof c.grade}) with ${selectedGrade} (${typeof selectedGrade}), subject=${
+              c.subject
+            } with ${selectedSubject}`
+          );
           return c.grade == selectedGrade && c.subject === selectedSubject;
         });
         console.log("Filtered classes:", filteredClasses);
@@ -944,7 +960,7 @@ const StudentAttendanceHistory = () => {
           grade: selectedGrade,
           subject: selectedSubject,
         },
-        selectedClassData 
+        selectedClassData
           ? `${selectedClassData.subject} - Grade ${selectedClassData.grade}`
           : "Selected Class"
       );
@@ -1005,7 +1021,7 @@ const StudentAttendanceHistory = () => {
           grade: selectedGrade,
           subject: selectedSubject,
         },
-        selectedClassData 
+        selectedClassData
           ? `${selectedClassData.subject} - Grade ${selectedClassData.grade}`
           : "Selected Class"
       );
@@ -1492,7 +1508,8 @@ const StudentAttendanceHistory = () => {
                     <option value="">Choose Class...</option>
                     {availableClasses.map((cls) => (
                       <option key={cls.id} value={cls.id}>
-                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}{cls.startTime ? ` ${cls.startTime}` : ''})
+                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}
+                        {cls.startTime ? ` ${cls.startTime}` : ""})
                       </option>
                     ))}
                   </select>
@@ -1543,7 +1560,8 @@ const StudentAttendanceHistory = () => {
                     <option value="">Choose Class...</option>
                     {availableClasses.map((cls) => (
                       <option key={cls.id} value={cls.id}>
-                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}{cls.startTime ? ` ${cls.startTime}` : ''})
+                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}
+                        {cls.startTime ? ` ${cls.startTime}` : ""})
                       </option>
                     ))}
                   </select>

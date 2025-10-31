@@ -230,10 +230,7 @@ export class AttendanceService {
             registerNumber = student.registerNumber || 'N/A';
           }
         } catch (error) {
-          console.error(
-            `Error fetching student ${record.studentId}:`,
-            error,
-          );
+          console.error(`Error fetching student ${record.studentId}:`, error);
         }
 
         // Fetch class details
