@@ -17,11 +17,14 @@ function LoginButton() {
       setIsLoggingIn(true);
       await instance.loginPopup({
         scopes: ["User.Read"],
-        prompt: "select_account"
+        prompt: "select_account",
       });
     } catch (error) {
       console.error("Login failed:", error);
-      if (error.name === "BrowserAuthError" && error.errorCode === "user_cancelled") {
+      if (
+        error.name === "BrowserAuthError" &&
+        error.errorCode === "user_cancelled"
+      ) {
         console.log("User cancelled the login");
       }
     } finally {
@@ -35,7 +38,7 @@ function LoginButton() {
       // Clear session storage
       sessionStorage.clear();
       // Redirect to home page
-      window.location.href = 'http://localhost:3000/';
+      window.location.href = "http://localhost:3000/";
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -52,10 +55,10 @@ function LoginButton() {
   // Microsoft icon SVG
   const MicrosoftIcon = () => (
     <svg className="microsoft-icon" viewBox="0 0 21 21" fill="currentColor">
-      <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-      <rect x="12" y="1" width="9" height="9" fill="#00a4ef"/>
-      <rect x="1" y="12" width="9" height="9" fill="#ffb900"/>
-      <rect x="12" y="12" width="9" height="9" fill="#7fba00"/>
+      <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+      <rect x="12" y="1" width="9" height="9" fill="#00a4ef" />
+      <rect x="1" y="12" width="9" height="9" fill="#ffb900" />
+      <rect x="12" y="12" width="9" height="9" fill="#7fba00" />
     </svg>
   );
 
@@ -64,7 +67,9 @@ function LoginButton() {
       {!isAuthenticated ? (
         <>
           <h2 className="login-title">Sign In</h2>
-          <p className="login-subtitle">Access your {tenantInfo.organizationName || 'NENASA'} account</p>
+          <p className="login-subtitle">
+            Access your {tenantInfo.organizationName || "NENASA"} account
+          </p>
           <button
             onClick={handleLogin}
             disabled={isDisabled}
@@ -77,12 +82,11 @@ function LoginButton() {
       ) : (
         <div className="user-info">
           <h3>Welcome!</h3>
-          <p><strong>{accounts[0].name}</strong></p>
+          <p>
+            <strong>{accounts[0].name}</strong>
+          </p>
           <p>{accounts[0].username}</p>
-          <button
-            onClick={handleLogout}
-            className="logout-btn"
-          >
+          <button onClick={handleLogout} className="logout-btn">
             Logout
           </button>
         </div>
