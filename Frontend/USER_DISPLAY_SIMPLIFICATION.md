@@ -53,7 +53,7 @@ Modified the user interface to display only the user name and role, removing the
 
 ## User Interface Changes
 
-### 🔄 **Before and After:**
+### **Before and After:**
 
 **Previous Display:**
 ```
@@ -68,58 +68,58 @@ Nenasala User 1
 STUDENT
 ```
 
-### ✅ **Benefits:**
+###  **Benefits:**
 
 1. **Cleaner Interface** - Less cluttered user display
 2. **Privacy Focus** - No unnecessary ID numbers shown
 3. **Simplified Design** - Only essential information displayed
 4. **Better UX** - Reduced visual noise in navigation
 
-### 📱 **Display Elements:**
+###  **Display Elements:**
 
 **Now Shows:**
-- ✅ User full name (from Azure AD)
-- ✅ User role (STUDENT/TEACHER/ADMIN)
+-  User full name (from Azure AD)
+-  User role (STUDENT/TEACHER/ADMIN)
 
 **No Longer Shows:**
-- ❌ Register number with # prefix
-- ❌ Unnecessary ID numbers
+-  Register number with # prefix
+-  Unnecessary ID numbers
 
 ## Technical Details
 
-### 🔧 **Implementation:**
+### **Implementation:**
 - Conditional rendering removed for register number
 - CSS styles cleaned up to remove unused classes
 - User info structure simplified
 - No backend changes required
 
-### 🛡️ **Data Integrity:**
+###  **Data Integrity:**
 - Register numbers still stored in database
 - Information available for admin functions
 - Only display layer modified
 - Full functionality preserved for admin users
 
-### 📋 **Components Affected:**
+###  **Components Affected:**
 1. `Navbar.js` - Main user display
 2. `Navbar.css` - Styling cleanup  
 3. `StudentDashboard.js` - Removed QR scan button
 
-### 🧪 **Testing Verified:**
-- ✅ User name displays correctly
-- ✅ Role displays correctly (STUDENT/TEACHER/ADMIN)
-- ✅ No register number visible
-- ✅ Layout remains properly aligned
-- ✅ Responsive design maintained
+###  **Testing Verified:**
+-  User name displays correctly
+-  Role displays correctly (STUDENT/TEACHER/ADMIN)
+-  No register number visible
+-  Layout remains properly aligned
+-  Responsive design maintained
 
 ## Future Considerations
 
-### 🔮 **Possible Enhancements:**
+###  **Possible Enhancements:**
 1. **Profile Page** - Show detailed info including register number when needed
 2. **Admin View** - Show register numbers in administrative interfaces
 3. **User Preferences** - Allow users to choose what information to display
 4. **Hover Details** - Show additional info on hover if needed
 
-### 🔒 **Privacy Benefits:**
+###  **Privacy Benefits:**
 - Register numbers not publicly visible
 - Reduced information exposure
 - Cleaner, professional appearance
@@ -127,24 +127,24 @@ STUDENT
 
 ## Deployment Notes
 
-### ✅ **No Breaking Changes:**
+###  **No Breaking Changes:**
 - All existing functionality preserved
 - Backend APIs unchanged
 - User authentication unaffected
 - Admin features still work
 
-### 📦 **Files Modified:**
+###  **Files Modified:**
 ```
 Frontend/frontend-app/src/
 ├── components/
 │   ├── Navbar/
-│   │   ├── Navbar.js          ✅ Removed register number display
-│   │   └── Navbar.css         ✅ Cleaned up unused CSS
+│   │   ├── Navbar.js           Removed register number display
+│   │   └── Navbar.css          Cleaned up unused CSS
 │   └── Dashboard/
-│       └── StudentDashboard.js ✅ Removed QR scan button
+│       └── StudentDashboard.js  Removed QR scan button
 ```
 
-### 🚀 **Ready for Production:**
+###  **Ready for Production:**
 - Changes are minimal and safe
 - No database migrations required
 - Backward compatible

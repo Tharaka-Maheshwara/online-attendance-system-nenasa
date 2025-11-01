@@ -116,7 +116,7 @@
     <div class="container">
       <h1>🔌 Socket.IO Connection Test</h1>
 
-      <div id="status" class="status disconnected">❌ Disconnected</div>
+      <div id="status" class="status disconnected"> Disconnected</div>
 
       <div class="controls">
         <h3>Test Actions:</h3>
@@ -167,50 +167,50 @@
         });
 
         socket.on("connect", () => {
-          addLog("✅ Connected! Socket ID: " + socket.id, "success");
-          statusDiv.textContent = "✅ Connected - Socket ID: " + socket.id;
+          addLog(" Connected! Socket ID: " + socket.id, "success");
+          statusDiv.textContent = " Connected - Socket ID: " + socket.id;
           statusDiv.className = "status connected";
         });
 
         socket.on("disconnect", () => {
-          addLog("❌ Disconnected", "error");
-          statusDiv.textContent = "❌ Disconnected";
+          addLog(" Disconnected", "error");
+          statusDiv.textContent = " Disconnected";
           statusDiv.className = "status disconnected";
         });
 
         socket.on("connect_error", (error) => {
-          addLog("❌ Connection error: " + error.message, "error");
+          addLog(" Connection error: " + error.message, "error");
         });
 
         socket.on("registered", (data) => {
-          addLog("✅ User registered: " + JSON.stringify(data), "success");
+          addLog(" User registered: " + JSON.stringify(data), "success");
         });
 
         socket.on("classesRegistered", (data) => {
-          addLog("✅ Classes registered: " + JSON.stringify(data), "success");
+          addLog(" Classes registered: " + JSON.stringify(data), "success");
         });
 
         socket.on("newLectureNote", (data) => {
           addLog(
-            "📚 New Lecture Note received: " + JSON.stringify(data),
+            " New Lecture Note received: " + JSON.stringify(data),
             "success"
           );
-          showNotification("📚 New Lecture Note", data.message);
+          showNotification(" New Lecture Note", data.message);
         });
 
         socket.on("newAnnouncement", (data) => {
           addLog(
-            "📢 New Announcement received: " + JSON.stringify(data),
+            " New Announcement received: " + JSON.stringify(data),
             "success"
           );
-          showNotification("📢 New Announcement", data.message);
+          showNotification(" New Announcement", data.message);
         });
       }
 
       function registerUser() {
         const email = document.getElementById("emailInput").value;
         if (!socket || !socket.connected) {
-          addLog("❌ Socket not connected! Connect first.", "error");
+          addLog(" Socket not connected! Connect first.", "error");
           return;
         }
         addLog(`Registering user: ${email}`, "info");
@@ -226,7 +226,7 @@
           .filter((id) => !isNaN(id));
 
         if (!socket || !socket.connected) {
-          addLog("❌ Socket not connected! Connect first.", "error");
+          addLog(" Socket not connected! Connect first.", "error");
           return;
         }
 
@@ -248,7 +248,7 @@
           .filter((id) => !isNaN(id));
 
         if (classIds.length === 0) {
-          addLog("❌ Please enter at least one class ID", "error");
+          addLog(" Please enter at least one class ID", "error");
           return;
         }
 
@@ -271,13 +271,13 @@
 
           const result = await response.json();
           if (result.success) {
-            addLog(`✅ ${result.message}`, "success");
+            addLog(` ${result.message}`, "success");
           } else {
-            addLog(`❌ ${result.message}`, "error");
+            addLog(` ${result.message}`, "error");
           }
         } catch (error) {
           addLog(
-            `❌ Error sending test notification: ${error.message}`,
+            ` Error sending test notification: ${error.message}`,
             "error"
           );
         }
@@ -327,7 +327,7 @@
       // Auto-connect on page load
       window.onload = () => {
         connect();
-        addLog("🚀 Test page loaded. Connecting to server...", "info");
+        addLog(" Test page loaded. Connecting to server...", "info");
       };
     </script>
   </body>

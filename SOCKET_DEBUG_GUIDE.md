@@ -1,6 +1,6 @@
 # Socket.IO Real-Time Updates - Debugging Guide
 
-## 🔍 Verification Checklist
+##  Verification Checklist
 
 ### 1. Backend Server Status
 
@@ -20,20 +20,20 @@ Open browser Developer Tools (F12) and check Console:
 **Expected Console Logs:**
 
 ```
-✅ Socket connected: <socket-id>
-✅ User registered: { success: true, message: 'Successfully connected...' }
-📚 Registering student classes: [1, 2, 3, ...]
-✅ Classes registered: { success: true, classIds: [...] }
-🔔 RealtimeNotification: Setting up event listeners
-✅ RealtimeNotification: Event listeners registered
+ Socket connected: <socket-id>
+ User registered: { success: true, message: 'Successfully connected...' }
+ Registering student classes: [1, 2, 3, ...]
+ Classes registered: { success: true, classIds: [...] }
+ RealtimeNotification: Setting up event listeners
+ RealtimeNotification: Event listeners registered
 ```
 
 **Problem Indicators:**
 
 ```
-❌ Socket connection error: ...
-❌ Socket disconnected
-⚠️ RealtimeNotification: Socket not available
+ Socket connection error: ...
+ Socket disconnected
+ RealtimeNotification: Socket not available
 ```
 
 ### 3. Backend Logs
@@ -52,7 +52,7 @@ Emitting new announcement to class <id>
 
 ---
 
-## 🐛 Common Issues & Solutions
+##  Common Issues & Solutions
 
 ### Issue 1: Socket Not Connecting
 
@@ -196,7 +196,7 @@ Emitting new announcement to class <id>
 
 ---
 
-## 🧪 Testing Steps
+##  Testing Steps
 
 ### Manual Test 1: Connection Test
 
@@ -212,7 +212,7 @@ Emitting new announcement to class <id>
 2. Login as teacher in another (or incognito)
 3. Teacher uploads a lecture note for a class the student is in
 4. Student should see:
-   - Console log: "📚 New lecture note notification"
+   - Console log: " New lecture note notification"
    - Side popup notification with title and message
    - Beep sound plays
 
@@ -221,7 +221,7 @@ Emitting new announcement to class <id>
 1. Same setup as Test 2
 2. Teacher creates an announcement
 3. Student should see:
-   - Console log: "📢 New announcement notification"
+   - Console log: " New announcement notification"
    - Side popup notification
    - Beep sound plays
 
@@ -235,7 +235,7 @@ Emitting new announcement to class <id>
 
 ---
 
-## 🔧 Quick Fix Commands
+##  Quick Fix Commands
 
 ### Restart Everything
 
@@ -280,7 +280,7 @@ npm list socket.io-client
 
 ---
 
-## 📊 Monitoring Tools
+##  Monitoring Tools
 
 ### Browser DevTools Network Tab
 
@@ -310,14 +310,14 @@ socket.on("test-response", (data) => console.log("Received:", data));
 
 ---
 
-## ✅ Success Indicators
+##  Success Indicators
 
 When everything works correctly, you should see:
 
 ### Backend Terminal:
 
 ```
-🚀 Backend is running on: http://localhost:8000
+ Backend is running on: http://localhost:8000
 Client connected: abc123
 User registered: student@example.com (student)
 Student classes registered: student@example.com -> 1, 2, 3
@@ -327,26 +327,26 @@ Emitting new lecture note to class 1
 ### Frontend Console:
 
 ```
-✅ Socket connected: abc123
-✅ User registered: { success: true, ... }
-📚 Registering student classes: [1, 2, 3]
-✅ Classes registered: { success: true, classIds: [1, 2, 3] }
-🔔 RealtimeNotification: Setting up event listeners
-✅ RealtimeNotification: Event listeners registered
-📚 New lecture note notification: { type: 'lecture-note', ... }
+ Socket connected: abc123
+ User registered: { success: true, ... }
+ Registering student classes: [1, 2, 3]
+ Classes registered: { success: true, classIds: [1, 2, 3] }
+ RealtimeNotification: Setting up event listeners
+ RealtimeNotification: Event listeners registered
+ New lecture note notification: { type: 'lecture-note', ... }
 ```
 
 ### Student Browser:
 
-- ✅ Side popup appears in top-right
-- ✅ Beep sound plays
-- ✅ Notification shows title, message, subject
-- ✅ Notification auto-dismisses after 8 seconds
-- ✅ Can manually close with ✕ button
+-  Side popup appears in top-right
+-  Beep sound plays
+-  Notification shows title, message, subject
+-  Notification auto-dismisses after 8 seconds
+-  Can manually close with ✕ button
 
 ---
 
-## 🆘 Still Not Working?
+##  Still Not Working?
 
 If you've tried everything above and it's still not working:
 
@@ -405,7 +405,7 @@ If you've tried everything above and it's still not working:
 
 ---
 
-## 📝 Next Steps
+##  Next Steps
 
 Once you confirm the issue, update the relevant file:
 

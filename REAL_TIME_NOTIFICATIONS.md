@@ -1,17 +1,17 @@
 # Real-Time Notifications System - Socket.IO Implementation
 
-## 📡 Overview
+##  Overview
 
 This system implements real-time notifications using **Socket.IO** for instant updates when teachers add:
 
-- 📚 **Lecture Notes**
-- 📢 **Announcements**
+-  **Lecture Notes**
+-  **Announcements**
 
 Students who are **actively online** will receive **live notifications** immediately.
 
 ---
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Backend (NestJS + Socket.IO)
 
@@ -89,7 +89,7 @@ Students who are **actively online** will receive **live notifications** immedia
 
 ---
 
-## 🚀 How It Works
+##  How It Works
 
 ### Teacher Adds Lecture Note/Announcement:
 
@@ -112,7 +112,7 @@ Students who are **actively online** will receive **live notifications** immedia
 
 ---
 
-## 💻 Installation & Setup
+##  Installation & Setup
 
 ### Backend
 
@@ -130,19 +130,19 @@ npm install socket.io-client
 
 ---
 
-## 🎯 Key Features
+##  Key Features
 
-✅ **Real-time Updates** - Instant notifications
-✅ **Room-based Broadcasting** - Targeted by class
-✅ **Auto-reconnection** - Handles connection drops
-✅ **Toast Notifications** - Beautiful UI alerts
-✅ **Auto-refresh Lists** - Data stays current
-✅ **CORS Enabled** - Frontend-backend communication
-✅ **Connection Logging** - Debug and monitoring
+ **Real-time Updates** - Instant notifications
+ **Room-based Broadcasting** - Targeted by class
+ **Auto-reconnection** - Handles connection drops
+ **Toast Notifications** - Beautiful UI alerts
+ **Auto-refresh Lists** - Data stays current
+ **CORS Enabled** - Frontend-backend communication
+ **Connection Logging** - Debug and monitoring
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 ### Backend Socket Server
 
@@ -158,7 +158,7 @@ npm install socket.io-client
 
 ---
 
-## 📱 UI Components
+##  UI Components
 
 ### Toast Notification
 
@@ -173,7 +173,7 @@ npm install socket.io-client
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ### Test Real-time Notifications:
 
@@ -196,15 +196,15 @@ npm install socket.io-client
 
 Check browser console for:
 
-- `✅ Socket connected`
-- `✅ User registered`
-- `✅ Classes registered`
-- `📚 New lecture note received`
-- `📢 New announcement received`
+- ` Socket connected`
+- ` User registered`
+- ` Classes registered`
+- ` New lecture note received`
+- ` New announcement received`
 
 ---
 
-## 🛠️ Troubleshooting
+##  Troubleshooting
 
 ### No Notifications Received?
 
@@ -223,7 +223,7 @@ Check browser console for:
 
 ---
 
-## 📈 Future Enhancements
+##  Future Enhancements
 
 - [ ] Push notifications (browser notifications API)
 - [ ] Sound alerts for new notifications
@@ -235,14 +235,14 @@ Check browser console for:
 
 ---
 
-## 🎉 Summary
+##  Summary
 
 The system provides **instant, real-time communication** between teachers and students. When a teacher adds content, students receive immediate notifications, creating an **interactive and engaging learning experience**!
 
 **Key Benefits:**
 
-- ⚡ Instant updates
-- 🎯 Class-specific targeting
-- 📱 Modern UI/UX
-- 🔄 Auto-refresh data
-- 🔌 Reliable connection handling
+-  Instant updates
+-  Class-specific targeting
+-  Modern UI/UX
+-  Auto-refresh data
+-  Reliable connection handling

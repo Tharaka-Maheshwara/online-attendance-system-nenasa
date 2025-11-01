@@ -6,7 +6,7 @@ async function testAllClassesAPI() {
     console.log("Testing all classes API endpoints...");
 
     // First, get a list of students to test with
-    console.log("\n📋 Getting students list...");
+    console.log("\n Getting students list...");
 
     const studentsResponse = await fetch(`${API_BASE_URL}/student`);
 
@@ -17,7 +17,7 @@ async function testAllClassesAPI() {
       if (students.length > 0) {
         const testStudent = students[0];
         console.log(
-          `\n🧪 Testing with student: ${testStudent.name} (${testStudent.email})`
+          `\n Testing with student: ${testStudent.name} (${testStudent.email})`
         );
         console.log(
           `Student subjects: ${
@@ -35,7 +35,7 @@ async function testAllClassesAPI() {
         );
 
         // Test the new all classes endpoint
-        console.log("\n📚 Testing all classes endpoint by email...");
+        console.log("\n Testing all classes endpoint by email...");
         const allClassesResponse = await fetch(
           `${API_BASE_URL}/student/email/${encodeURIComponent(
             testStudent.email
@@ -45,11 +45,11 @@ async function testAllClassesAPI() {
         if (allClassesResponse.ok) {
           const allClasses = await allClassesResponse.json();
           console.log(
-            `✅ Found ${allClasses.length} total classes for student`
+            `Found ${allClasses.length} total classes for student`
           );
 
           if (allClasses.length > 0) {
-            console.log("\n📅 Classes by day:");
+            console.log("\n Classes by day:");
             const classesByDay = {};
 
             allClasses.forEach((cls) => {
@@ -79,7 +79,7 @@ async function testAllClassesAPI() {
             });
 
             // Compare with today's classes
-            console.log("\n🔄 Comparing with today's classes...");
+            console.log("\n Comparing with today's classes...");
             const todayResponse = await fetch(
               `${API_BASE_URL}/student/email/${encodeURIComponent(
                 testStudent.email
@@ -112,23 +112,23 @@ async function testAllClassesAPI() {
                 todayClasses.length ===
                 (classesByDay[todayDayOfWeek] || []).length
               ) {
-                console.log("✅ Today's classes count matches expected count");
+                console.log(" Today's classes count matches expected count");
               } else {
-                console.log("⚠️ Today's classes count doesn't match");
+                console.log(" Today's classes count doesn't match");
               }
             }
           } else {
-            console.log("📝 No classes found for this student");
+            console.log(" No classes found for this student");
           }
         } else {
           console.error(
-            `❌ Failed to get all classes: ${allClassesResponse.status}`
+            ` Failed to get all classes: ${allClassesResponse.status}`
           );
         }
 
         // Test by ID endpoint as well
         console.log(
-          `\n🆔 Testing all classes endpoint by student ID: ${testStudent.id}...`
+          `\n Testing all classes endpoint by student ID: ${testStudent.id}...`
         );
         const allClassesByIdResponse = await fetch(
           `${API_BASE_URL}/student/${testStudent.id}/classes/all`
@@ -136,23 +136,23 @@ async function testAllClassesAPI() {
 
         if (allClassesByIdResponse.ok) {
           const allClassesById = await allClassesByIdResponse.json();
-          console.log(`✅ Found ${allClassesById.length} classes by ID`);
+          console.log(` Found ${allClassesById.length} classes by ID`);
         } else {
           console.error(
-            `❌ Failed to get all classes by ID: ${allClassesByIdResponse.status}`
+            ` Failed to get all classes by ID: ${allClassesByIdResponse.status}`
           );
         }
       } else {
-        console.log("❌ No students found to test with");
+        console.log(" No students found to test with");
       }
     } else {
-      console.error(`❌ Failed to get students: ${studentsResponse.status}`);
+      console.error(` Failed to get students: ${studentsResponse.status}`);
     }
   } catch (error) {
-    console.error("❌ Test failed:", error.message);
+    console.error(" Test failed:", error.message);
   }
 }
 
 // Run the test
-console.log("🚀 Starting all classes API test...");
+console.log(" Starting all classes API test...");
 testAllClassesAPI();
