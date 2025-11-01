@@ -16,6 +16,12 @@
   margin: 0;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .add-btn {
   background-color: #007bff;
   color: white;
@@ -24,6 +30,33 @@
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #0056b3;
+}
+
+.download-pdf-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-pdf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.download-pdf-btn:active {
+  transform: translateY(0);
 }
 
 /* Search Bar Styles */

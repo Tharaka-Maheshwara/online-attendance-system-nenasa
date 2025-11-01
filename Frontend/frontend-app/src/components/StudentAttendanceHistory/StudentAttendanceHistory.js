@@ -14,6 +14,11 @@ import {
   ArcElement,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
+import {
+  generateDateReport,
+  generateClassDateReport,
+  generateDateRangeReport,
+} from "../../utils/attendanceReportGenerator";
 
 ChartJS.register(
   CategoryScale,
@@ -56,6 +61,14 @@ const StudentAttendanceHistory = () => {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [paymentData, setPaymentData] = useState({});
+
+  // Report generation states
+  const [reportDate, setReportDate] = useState("");
+  const [reportDateFrom, setReportDateFrom] = useState("");
+  const [reportDateTo, setReportDateTo] = useState("");
+  const [reportClass, setReportClass] = useState("");
+  const [availableClasses, setAvailableClasses] = useState([]);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const fetchGrades = useCallback(async () => {
     try {
@@ -754,6 +767,274 @@ const StudentAttendanceHistory = () => {
     return { total, present, absent, late, percentage };
   };
 
+  // Fetch available classes for selected grade and subject
+  const fetchAvailableClasses = useCallback(async () => {
+    if (!selectedGrade || !selectedSubject) {
+      setAvailableClasses([]);
+      return;
+    }
+
+    try {
+      const token = await getAccessToken();
+      const response = await fetch("http://localhost:8000/class", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const classData = await response.json();
+        console.log("All classes from API:", classData);
+        console.log(
+          "Selected Grade:",
+          selectedGrade,
+          "Type:",
+          typeof selectedGrade
+        );
+        console.log(
+          "Selected Subject:",
+          selectedSubject,
+          "Type:",
+          typeof selectedSubject
+        );
+
+        const filteredClasses = classData.filter((c) => {
+          console.log(
+            `Comparing class: grade=${
+              c.grade
+            } (${typeof c.grade}) with ${selectedGrade} (${typeof selectedGrade}), subject=${
+              c.subject
+            } with ${selectedSubject}`
+          );
+          return c.grade == selectedGrade && c.subject === selectedSubject;
+        });
+        console.log("Filtered classes:", filteredClasses);
+        setAvailableClasses(filteredClasses);
+      }
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+      setAvailableClasses([]);
+    }
+  }, [selectedGrade, selectedSubject]);
+
+  // Fetch available classes when grade and subject change
+  useEffect(() => {
+    fetchAvailableClasses();
+  }, [fetchAvailableClasses]);
+
+  // Fetch attendance data for report based on filters
+  const fetchAttendanceForReport = async (filters) => {
+    try {
+      setReportLoading(true);
+      const token = await getAccessToken();
+
+      let url = "http://localhost:8000/attendance";
+      const params = new URLSearchParams();
+
+      if (filters.date) {
+        params.append("date", filters.date);
+      }
+
+      if (filters.dateFrom && filters.dateTo) {
+        params.append("dateFrom", filters.dateFrom);
+        params.append("dateTo", filters.dateTo);
+      }
+
+      if (filters.grade) {
+        params.append("grade", filters.grade);
+      }
+
+      if (filters.subject) {
+        params.append("subject", filters.subject);
+      }
+
+      if (filters.classId) {
+        params.append("classId", filters.classId);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const attendanceData = await response.json();
+        return attendanceData;
+      } else {
+        throw new Error("Failed to fetch attendance data");
+      }
+    } catch (error) {
+      console.error("Error fetching attendance for report:", error);
+      setError("Failed to fetch attendance data for report");
+      return [];
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  // Generate report for a specific date
+  const handleGenerateDateReport = async () => {
+    if (!reportDate) {
+      alert("Please select a date for the report");
+      return;
+    }
+
+    if (!selectedGrade || !selectedSubject) {
+      alert("Please select grade and subject");
+      return;
+    }
+
+    try {
+      setReportLoading(true);
+
+      // Fetch all attendance for the selected date
+      const attendanceData = await fetchAttendanceForReport({
+        date: reportDate,
+        grade: selectedGrade,
+        subject: selectedSubject,
+      });
+
+      if (attendanceData.length === 0) {
+        alert("No attendance records found for the selected date");
+        return;
+      }
+
+      // Generate PDF report
+      await generateDateReport(attendanceData, {
+        date: reportDate,
+        grade: selectedGrade,
+        subject: selectedSubject,
+      });
+
+      alert("Report generated successfully!");
+    } catch (error) {
+      console.error("Error generating date report:", error);
+      alert("Failed to generate report. Please try again.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  // Generate report for a specific class on a date
+  const handleGenerateClassDateReport = async () => {
+    if (!reportDate) {
+      alert("Please select a date for the report");
+      return;
+    }
+
+    if (!reportClass) {
+      alert("Please select a class for the report");
+      return;
+    }
+
+    try {
+      setReportLoading(true);
+
+      const selectedClassData = availableClasses.find(
+        (c) => c.id === parseInt(reportClass)
+      );
+
+      // Fetch attendance for the specific class and date
+      const attendanceData = await fetchAttendanceForReport({
+        date: reportDate,
+        classId: reportClass,
+      });
+
+      if (attendanceData.length === 0) {
+        alert("No attendance records found for the selected class and date");
+        return;
+      }
+
+      // Generate PDF report
+      await generateClassDateReport(
+        attendanceData,
+        {
+          date: reportDate,
+          grade: selectedGrade,
+          subject: selectedSubject,
+        },
+        selectedClassData
+          ? `${selectedClassData.subject} - Grade ${selectedClassData.grade}`
+          : "Selected Class"
+      );
+
+      alert("Report generated successfully!");
+    } catch (error) {
+      console.error("Error generating class date report:", error);
+      alert("Failed to generate report. Please try again.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  // Generate report for a date range and specific class
+  const handleGenerateDateRangeReport = async () => {
+    if (!reportDateFrom || !reportDateTo) {
+      alert("Please select both start and end dates for the report");
+      return;
+    }
+
+    if (!reportClass) {
+      alert("Please select a class for the report");
+      return;
+    }
+
+    if (new Date(reportDateFrom) > new Date(reportDateTo)) {
+      alert("Start date must be before end date");
+      return;
+    }
+
+    try {
+      setReportLoading(true);
+
+      const selectedClassData = availableClasses.find(
+        (c) => c.id === parseInt(reportClass)
+      );
+
+      // Fetch attendance for the date range and class
+      const attendanceData = await fetchAttendanceForReport({
+        dateFrom: reportDateFrom,
+        dateTo: reportDateTo,
+        classId: reportClass,
+      });
+
+      if (attendanceData.length === 0) {
+        alert(
+          "No attendance records found for the selected class and date range"
+        );
+        return;
+      }
+
+      // Generate PDF report
+      await generateDateRangeReport(
+        attendanceData,
+        {
+          dateFrom: reportDateFrom,
+          dateTo: reportDateTo,
+          grade: selectedGrade,
+          subject: selectedSubject,
+        },
+        selectedClassData
+          ? `${selectedClassData.subject} - Grade ${selectedClassData.grade}`
+          : "Selected Class"
+      );
+
+      alert("Report generated successfully!");
+    } catch (error) {
+      console.error("Error generating date range report:", error);
+      alert("Failed to generate report. Please try again.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
   return (
     <div className="student-attendance-history">
       <div className="header">
@@ -1160,6 +1441,146 @@ const StudentAttendanceHistory = () => {
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Report Generation Section */}
+      {selectedGrade && selectedSubject && (
+        <div className="report-generation-section">
+          <div className="report-header">
+            <h3>📄 Generate Attendance Reports</h3>
+            <p>
+              Select filters and generate PDF reports for attendance records
+            </p>
+          </div>
+
+          <div className="report-controls">
+            {/* Single Date Report */}
+            <div className="report-control-group">
+              <h4>📅 Single Date Report</h4>
+              <p className="control-description">
+                View and download attendance for all students on a specific date
+              </p>
+              <div className="report-inputs">
+                <div className="input-group">
+                  <label>Select Date:</label>
+                  <input
+                    type="date"
+                    value={reportDate}
+                    onChange={(e) => setReportDate(e.target.value)}
+                    className="report-input"
+                  />
+                </div>
+                <button
+                  onClick={handleGenerateDateReport}
+                  disabled={!reportDate || reportLoading}
+                  className="report-btn primary"
+                >
+                  {reportLoading ? "Generating..." : "📥 Download Report"}
+                </button>
+              </div>
+            </div>
+
+            {/* Class Specific Date Report */}
+            <div className="report-control-group">
+              <h4>🏫 Class-Specific Date Report</h4>
+              <p className="control-description">
+                View and download attendance for a specific class on a selected
+                date
+              </p>
+              <div className="report-inputs">
+                <div className="input-group">
+                  <label>Select Date:</label>
+                  <input
+                    type="date"
+                    value={reportDate}
+                    onChange={(e) => setReportDate(e.target.value)}
+                    className="report-input"
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Select Class:</label>
+                  <select
+                    value={reportClass}
+                    onChange={(e) => setReportClass(e.target.value)}
+                    className="report-input"
+                  >
+                    <option value="">Choose Class...</option>
+                    {availableClasses.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}
+                        {cls.startTime ? ` ${cls.startTime}` : ""})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={handleGenerateClassDateReport}
+                  disabled={!reportDate || !reportClass || reportLoading}
+                  className="report-btn primary"
+                >
+                  {reportLoading ? "Generating..." : "📥 Download Report"}
+                </button>
+              </div>
+            </div>
+
+            {/* Date Range Class Report */}
+            <div className="report-control-group">
+              <h4>📊 Date Range Class Report</h4>
+              <p className="control-description">
+                View and download attendance for a specific class within a date
+                range
+              </p>
+              <div className="report-inputs">
+                <div className="input-group">
+                  <label>From Date:</label>
+                  <input
+                    type="date"
+                    value={reportDateFrom}
+                    onChange={(e) => setReportDateFrom(e.target.value)}
+                    className="report-input"
+                  />
+                </div>
+                <div className="input-group">
+                  <label>To Date:</label>
+                  <input
+                    type="date"
+                    value={reportDateTo}
+                    onChange={(e) => setReportDateTo(e.target.value)}
+                    className="report-input"
+                  />
+                </div>
+                <div className="input-group">
+                  <label>Select Class:</label>
+                  <select
+                    value={reportClass}
+                    onChange={(e) => setReportClass(e.target.value)}
+                    className="report-input"
+                  >
+                    <option value="">Choose Class...</option>
+                    {availableClasses.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.subject} - Grade {cls.grade} ({cls.dayOfWeek}
+                        {cls.startTime ? ` ${cls.startTime}` : ""})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={handleGenerateDateRangeReport}
+                  disabled={
+                    !reportDateFrom ||
+                    !reportDateTo ||
+                    !reportClass ||
+                    reportLoading
+                  }
+                  className="report-btn primary"
+                >
+                  {reportLoading ? "Generating..." : "📥 Download Report"}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

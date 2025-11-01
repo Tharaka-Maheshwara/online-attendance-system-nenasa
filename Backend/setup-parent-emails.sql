@@ -5,21 +5,21 @@
 -- Based on the database screenshot showing students with IDs 17, 18, 19
 
 -- Update Nenasala User 1 (ID: 17)
-UPDATE nenasala_users 
+UPDATE nenasa_users 
 SET 
     parentEmail = 'parent1@nenasala.lk',
     parentName = 'Parent of Nenasala User 1'
 WHERE id = 17;
 
 -- Update Nenasala User 2 (ID: 18) 
-UPDATE nenasala_users 
+UPDATE nenasa_users 
 SET 
     parentEmail = 'parent2@nenasala.lk',
     parentName = 'Parent of Nenasala User 2'
 WHERE id = 18;
 
 -- Update Nenasala User 2 (ID: 19)
-UPDATE nenasala_users 
+UPDATE nenasa_users 
 SET 
     parentEmail = 'parent3@nenasala.lk', 
     parentName = 'Parent of Nenasala User 2'
@@ -35,7 +35,7 @@ WHERE id = 19;
 
 -- Verify the updates
 SELECT id, display_name, email, parentEmail, parentName 
-FROM nenasala_users 
+FROM nenasa_users 
 WHERE role = 'student' AND parentEmail IS NOT NULL;
 
 -- Test query to check if parent emails exist
@@ -49,26 +49,26 @@ SELECT
         WHEN u.parentEmail IS NOT NULL THEN 'Has Parent Email in User table'
         ELSE 'No Parent Email in User table'
     END as email_status
-FROM nenasala_users u 
+FROM nenasa_users u 
 WHERE u.role = 'student' 
 ORDER BY u.id;
 
 -- If you want to use a test email address (like your own) for testing:
 -- Replace 'parent1@nenasala.lk' with 'tharakamahesh806@gmail.com' to receive test emails
 
-UPDATE nenasala_users 
+UPDATE nenasa_users 
 SET 
     parentEmail = 'tharakamahesh806@gmail.com',
     parentName = 'Test Parent for Nenasala User 1'
 WHERE id = 17;
 
-UPDATE nenasala_users 
+UPDATE nenasa_users 
 SET 
     parentEmail = 'tharakamahesh806@gmail.com',
     parentName = 'Test Parent for Nenasala User 2'  
 WHERE id = 18;
 
-UPDATE nenasala_users 
+UPDATE nenasa_users
 SET 
     parentEmail = 'tharakamahesh806@gmail.com',
     parentName = 'Test Parent for Nenasala User 2'

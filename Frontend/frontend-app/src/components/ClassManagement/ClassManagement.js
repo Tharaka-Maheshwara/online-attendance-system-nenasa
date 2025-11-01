@@ -206,19 +206,23 @@ const ClassManagement = () => {
   };
 
   // Function to fetch students enrolled in the subject
-  const fetchStudentsForSubject = async (subjectName) => {
+  const fetchStudentsForSubject = async (subjectName, grade) => {
     try {
       const response = await fetch("http://localhost:8000/student");
       const students = await response.json();
 
-      // Filter students who are enrolled in this subject
-      const enrolledStudents = students.filter(
-        (s) =>
+      // Filter students who are enrolled in this subject AND grade
+      const enrolledStudents = students.filter((s) => {
+        const hasSubject =
           s.sub_1 === subjectName ||
           s.sub_2 === subjectName ||
           s.sub_3 === subjectName ||
-          s.sub_4 === subjectName
-      );
+          s.sub_4 === subjectName;
+
+        const hasGrade = s.grade === grade;
+
+        return hasSubject && hasGrade;
+      });
 
       return enrolledStudents;
     } catch (error) {
@@ -228,16 +232,16 @@ const ClassManagement = () => {
   };
 
   // Handle subject click
-  const handleSubjectClick = async (subjectName) => {
+  const handleSubjectClick = async (classObj) => {
     setLoadingDetails(true);
-    setSelectedSubject(subjectName);
+    setSelectedSubject(`${classObj.subject} (Grade ${classObj.grade})`);
     setShowSubjectDetails(true);
 
     try {
       // Fetch teacher and students concurrently
       const [teacher, students] = await Promise.all([
-        fetchTeacherForSubject(subjectName),
-        fetchStudentsForSubject(subjectName),
+        fetchTeacherForSubject(classObj.subject),
+        fetchStudentsForSubject(classObj.subject, classObj.grade),
       ]);
 
       setSubjectTeacher(teacher);
@@ -246,6 +250,32 @@ const ClassManagement = () => {
       console.error("Error fetching subject details:", error);
     } finally {
       setLoadingDetails(false);
+    }
+  };
+
+  // Download PDF
+  const handleDownloadPdf = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/class/export/pdf");
+
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `classes-report-${
+        new Date().toISOString().split("T")[0]
+      }.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Failed to download PDF. Please try again.");
     }
   };
 
@@ -261,15 +291,20 @@ const ClassManagement = () => {
     <div className="class-management">
       <div className="header">
         <h2>Class Management</h2>
-        <button
-          className="add-btn"
-          onClick={() => {
-            setShowForm(true);
-            setIsEditing(false);
-          }}
-        >
-          Add New Class
-        </button>
+        <div className="header-buttons">
+          <button className="download-pdf-btn" onClick={handleDownloadPdf}>
+            📄 Download PDF Report
+          </button>
+          <button
+            className="add-btn"
+            onClick={() => {
+              setShowForm(true);
+              setIsEditing(false);
+            }}
+          >
+            Add New Class
+          </button>
+        </div>
       </div>
 
       {/* Search Bar */}
@@ -520,7 +555,7 @@ const ClassManagement = () => {
                     <td>
                       <span
                         className="clickable-subject"
-                        onClick={() => handleSubjectClick(cls.subject)}
+                        onClick={() => handleSubjectClick(cls)}
                         style={{ cursor: "pointer" }}
                       >
                         {cls.subject}

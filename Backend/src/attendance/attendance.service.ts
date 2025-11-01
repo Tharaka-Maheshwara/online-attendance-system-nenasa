@@ -166,6 +166,99 @@ export class AttendanceService {
     return this.attendanceRepository.find();
   }
 
+  async findWithFilters(filters: any): Promise<Attendance[]> {
+    const queryBuilder = this.attendanceRepository
+      .createQueryBuilder('attendance')
+      .orderBy('attendance.date', 'DESC')
+      .addOrderBy('attendance.timestamp', 'DESC');
+
+    // Apply date filter
+    if (filters.date) {
+      queryBuilder.andWhere('DATE(attendance.date) = :date', {
+        date: filters.date,
+      });
+    }
+
+    // Apply date range filter
+    if (filters.dateFrom && filters.dateTo) {
+      queryBuilder.andWhere(
+        'DATE(attendance.date) BETWEEN :dateFrom AND :dateTo',
+        {
+          dateFrom: filters.dateFrom,
+          dateTo: filters.dateTo,
+        },
+      );
+    }
+
+    // Apply grade filter
+    if (filters.grade) {
+      queryBuilder.andWhere('attendance.grade = :grade', {
+        grade: filters.grade,
+      });
+    }
+
+    // Apply subject filter
+    if (filters.subject) {
+      queryBuilder.andWhere('attendance.subject = :subject', {
+        subject: filters.subject,
+      });
+    }
+
+    // Apply class filter
+    if (filters.classId) {
+      queryBuilder.andWhere('attendance.classId = :classId', {
+        classId: filters.classId,
+      });
+    }
+
+    const attendanceRecords = await queryBuilder.getMany();
+
+    // Fetch related student and class data
+    const enrichedRecords = await Promise.all(
+      attendanceRecords.map(async (record) => {
+        let studentName = 'Unknown';
+        let registerNumber = 'N/A';
+        let className = 'Unknown';
+
+        // Fetch student details
+        try {
+          const student = await this.studentRepository.findOne({
+            where: { id: record.studentId },
+          });
+          if (student) {
+            studentName = student.name;
+            registerNumber = student.registerNumber || 'N/A';
+          }
+        } catch (error) {
+          console.error(`Error fetching student ${record.studentId}:`, error);
+        }
+
+        // Fetch class details
+        try {
+          const classData = await this.classRepository.findOne({
+            where: { id: record.classId },
+          });
+          if (classData) {
+            className = `${classData.subject} - Grade ${classData.grade}`;
+          } else if (record.grade && record.subject) {
+            className = `${record.subject} - Grade ${record.grade}`;
+          }
+        } catch (error) {
+          console.error(`Error fetching class ${record.classId}:`, error);
+        }
+
+        return {
+          ...record,
+          studentName,
+          registerNumber,
+          className,
+        };
+      }),
+    );
+
+    return enrichedRecords;
+  }
+
   async findOne(id: number): Promise<Attendance | null> {
     return this.attendanceRepository.findOne({ where: { id } });
   }
@@ -213,7 +306,7 @@ export class AttendanceService {
         .createQueryBuilder('a')
         .leftJoin('student', 's', 'a.studentId = s.id')
         .leftJoin('class', 'c', 'a.classId = c.id')
-        .leftJoin('nenasala_users', 'u', 'a.markedBy = u.id')
+        .leftJoin('nenasa_users', 'u', 'a.markedBy = u.id')
         .select([
           'a.id as id',
           'a.studentId as studentId',
@@ -332,6 +425,17 @@ export class AttendanceService {
     try {
       let studentName: string = 'Student';
       let parentEmail: string = '';
+      let parentName: string = '';
+      let className: string = '';
+
+      // Fetch class information to get class name
+      const classInfo = await this.classRepository.findOne({
+        where: { id: attendance.classId },
+      });
+
+      if (classInfo) {
+        className = `Grade ${classInfo.grade} ${classInfo.subject}`;
+      }
 
       // First try to get student information from User entity
       const user = await this.userRepository.findOne({
@@ -341,6 +445,7 @@ export class AttendanceService {
       if (user && user.parentEmail) {
         studentName = user.display_name || 'Student';
         parentEmail = user.parentEmail;
+        parentName = user.parentName || '';
       } else {
         // If not found in User entity, try Student entity
         const student = await this.studentRepository.findOne({
@@ -350,6 +455,7 @@ export class AttendanceService {
         if (student && student.parentEmail) {
           studentName = student.name || 'Student';
           parentEmail = student.parentEmail;
+          parentName = student.parentName || '';
         }
       }
 
@@ -364,7 +470,7 @@ export class AttendanceService {
         `📨 Sending attendance notification to ${parentEmail} for student ${studentName}`,
       );
       console.log(
-        `📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${attendance.classId}`,
+        `📊 Attendance details - Status: ${attendance.status}, Date: ${attendance.date}, Class: ${className || attendance.classId}`,
       );
 
       // Send notification
@@ -375,6 +481,8 @@ export class AttendanceService {
         attendance.studentId,
         attendance.status === 'present',
         attendance.date,
+        className,
+        parentName,
       );
 
       console.log('✅ Email notification sent successfully!');

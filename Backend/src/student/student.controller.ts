@@ -9,7 +9,9 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -141,6 +143,17 @@ export class StudentController {
     return await this.studentService.findAll();
   }
 
+  @Get('export/pdf')
+  async exportStudentsPdf(@Res() res: Response) {
+    const pdfBuffer = await this.studentService.generateStudentsPdf();
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=students-list.pdf',
+      'Content-Length': pdfBuffer.length,
+    });
+    res.end(pdfBuffer);
+  }
+
   @Get(':studentId/qrcode')
   async getStudentQRCode(@Param('studentId') studentId: string) {
     const student = await this.studentService.findOne(+studentId);
@@ -149,6 +162,11 @@ export class StudentController {
     }
     const qrCode = await this.studentService.generateQRCodeDataURL(student);
     return { qrCode };
+  }
+
+  @Get('email/:email/qrcode')
+  async getStudentQRCodeByEmail(@Param('email') email: string) {
+    return await this.studentService.getStudentQRCodeByEmail(email);
   }
 
   @Post('qr-lookup')

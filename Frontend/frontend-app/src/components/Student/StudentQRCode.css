@@ -1,0 +1,287 @@
+/* Student QR Code Page Styles */
+.student-qr-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+}
+
+.qr-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.qr-page-header {
+  text-align: center;
+  margin-bottom: 40px;
+  color: white;
+}
+
+.qr-page-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 15px 0;
+  font-weight: 700;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.qr-page-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.95;
+  margin: 0;
+}
+
+.qr-page-content {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading Section */
+.loading-section {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-section p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* QR Display Grid */
+.qr-display-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* Info Card */
+.qr-info-card {
+  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+  border-radius: 15px;
+  padding: 30px;
+  border: 2px solid #667eea30;
+}
+
+.info-header {
+  margin-bottom: 25px;
+}
+
+.info-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.info-content {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.info-value {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Instructions */
+.info-instructions {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.info-instructions h3 {
+  margin: 0 0 15px 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.info-instructions ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.info-instructions li {
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+/* QR Code Card */
+.qr-code-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%);
+  border-radius: 15px;
+  padding: 40px;
+  border: 2px solid #f093fb30;
+}
+
+.qr-code-wrapper-main {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  border: 4px solid #667eea;
+  margin-bottom: 25px;
+}
+
+.download-qr-btn-main {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  margin-bottom: 15px;
+}
+
+.download-qr-btn-main:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+}
+
+.download-qr-btn-main:active {
+  transform: translateY(-1px);
+}
+
+.qr-tip {
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 300px;
+  margin: 0;
+}
+
+/* Error Section */
+.error-section {
+  text-align: center;
+  padding: 60px 20px;
+  color: #e74c3c;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.error-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+}
+
+.error-section p {
+  color: #7f8c8d;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .qr-display-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .qr-page-header h1 {
+    font-size: 2rem;
+  }
+
+  .qr-page-content {
+    padding: 30px 20px;
+  }
+
+  .qr-info-card,
+  .qr-code-card {
+    padding: 25px;
+  }
+
+  .qr-code-wrapper-main {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .student-qr-page {
+    padding: 20px 10px;
+  }
+
+  .qr-page-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .qr-page-subtitle {
+    font-size: 1rem;
+  }
+
+  .qr-page-content {
+    padding: 20px 15px;
+  }
+
+  .qr-info-card,
+  .qr-code-card {
+    padding: 20px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .download-qr-btn-main {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+}

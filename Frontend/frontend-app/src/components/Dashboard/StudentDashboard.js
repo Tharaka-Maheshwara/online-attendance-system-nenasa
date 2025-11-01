@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useMsal } from "@azure/msal-react";
+import QRCode from "react-qr-code";
 import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
@@ -8,6 +9,9 @@ const StudentDashboard = () => {
   const [allClasses, setAllClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allClassesLoading, setAllClassesLoading] = useState(true);
+  const [qrCodeData, setQrCodeData] = useState(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [studentInfo, setStudentInfo] = useState(null);
   const [overallStats, setOverallStats] = useState({
     totalClasses: 0,
     presentClasses: 0,
@@ -67,6 +71,38 @@ const StudentDashboard = () => {
     };
 
     fetchClasses();
+  }, [accounts]);
+
+  // Fetch student QR code
+  useEffect(() => {
+    const fetchQRCode = async () => {
+      if (!accounts || accounts.length === 0) return;
+
+      try {
+        setQrLoading(true);
+        const userEmail = accounts[0].username;
+
+        const response = await fetch(
+          `http://localhost:8000/student/email/${encodeURIComponent(
+            userEmail
+          )}/qrcode`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setQrCodeData(data.qrCode);
+          setStudentInfo(data.student);
+        } else {
+          console.error("Failed to fetch QR code");
+        }
+      } catch (error) {
+        console.error("Error fetching QR code:", error);
+      } finally {
+        setQrLoading(false);
+      }
+    };
+
+    fetchQRCode();
   }, [accounts]);
 
   const fetchAttendanceSummary = useCallback(async () => {
@@ -221,6 +257,34 @@ const StudentDashboard = () => {
     ];
   };
 
+  const downloadQRCode = () => {
+    if (!studentInfo) return;
+
+    const svg = document.getElementById("student-qr-code");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    canvas.width = 300;
+    canvas.height = 300;
+
+    img.onload = () => {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL("image/png");
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `${studentInfo.name}-QRCode.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+  };
+
   return (
     <div className="student-dashboard">
       <div className="dashboard-grid">
@@ -367,7 +431,11 @@ const StudentDashboard = () => {
                       </div>
 
                       <div className="card-content">
-                        <h3 className="subject-title">{cls.subject}</h3>
+                        <div className="subject-header">
+                          <h3 className="subject-name">
+                            {cls.subject || "N/A"}
+                          </h3>
+                        </div>
 
                         <div className="class-details">
                           <div className="detail-row">

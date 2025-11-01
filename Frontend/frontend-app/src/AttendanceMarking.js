@@ -184,6 +184,11 @@ const AttendanceMarking = () => {
         const allStudents = await studentsResponse.json();
 
         const enrolledStudents = allStudents.filter((student) => {
+          // Check if student's grade matches the class grade
+          if (student.grade !== selectedClassInfo.grade) {
+            return false;
+          }
+
           const studentSubjects = [
             student.sub_1,
             student.sub_2,
@@ -198,7 +203,7 @@ const AttendanceMarking = () => {
         });
 
         console.log(
-          `Found ${enrolledStudents.length} students enrolled in ${selectedClassInfo.subject}`
+          `Found ${enrolledStudents.length} students enrolled in Grade ${selectedClassInfo.grade} ${selectedClassInfo.subject}`
         );
         setStudents(enrolledStudents);
 

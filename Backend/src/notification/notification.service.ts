@@ -65,21 +65,26 @@ export class NotificationService {
     studentId: number,
     isPresent: boolean,
     date: string,
+    className?: string,
+    parentName?: string,
   ): Promise<void> {
     const subject = isPresent
       ? `✅ Attendance Confirmation - ${studentName}`
       : `⚠️ Attendance Alert - ${studentName} Absent`;
 
+    const greeting = parentName ? `Dear ${parentName}` : 'Dear Parent';
+
     const htmlMessage = this.createAttendanceEmailTemplate(
       studentName,
       isPresent,
       date,
-      classId,
+      className || `Class ${classId}`,
+      greeting,
     );
 
     const textMessage = isPresent
-      ? `Dear Parent,\n\nYour child ${studentName} was marked PRESENT in class today (${date}).\n\nClass ID: ${classId}\nTime: ${new Date().toLocaleString()}\n\nBest regards,\nNenasala Attendance System`
-      : `Dear Parent,\n\nYour child ${studentName} was marked ABSENT from class today (${date}).\n\nClass ID: ${classId}\nTime: ${new Date().toLocaleString()}\n\nPlease contact the school if this is unexpected.\n\nBest regards,\nNenasala Attendance System`;
+      ? `${greeting},\n\nYour child ${studentName} was marked PRESENT in class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nBest regards,\nNenasa Attendance System`
+      : `${greeting},\n\nYour child ${studentName} was marked ABSENT from class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nPlease contact the school if this is unexpected.\n\nBest regards,\nNenasa Attendance System`;
 
     try {
       await this.sendEmail(parentEmail, subject, textMessage, htmlMessage);
@@ -122,7 +127,8 @@ export class NotificationService {
     studentName: string,
     isPresent: boolean,
     date: string,
-    classId: number,
+    className: string,
+    greeting: string,
   ): string {
     const statusColor = isPresent ? '#28a745' : '#dc3545';
     const statusIcon = isPresent ? '✅' : '⚠️';
@@ -147,16 +153,16 @@ export class NotificationService {
     <body>
         <div class="container">
             <div class="header">
-                <div class="logo">🏫 Nenasala Attendance System</div>
+                <div class="logo">🏫 Nenasa Attendance System</div>
                 <h2>Attendance Notification</h2>
             </div>
             
-            <p>Dear Parent,</p>
+            <p>${greeting},</p>
             
             <div class="details">
                 <p><strong>Student:</strong> ${studentName}</p>
                 <p><strong>Date:</strong> ${date}</p>
-                <p><strong>Class ID:</strong> ${classId}</p>
+                <p><strong>Class:</strong> ${className}</p>
                 <p><strong>Time:</strong> ${currentTime}</p>
                 <div class="status">${statusIcon} Status: ${statusText}</div>
             </div>
@@ -168,7 +174,7 @@ export class NotificationService {
             }
             
             <div class="footer">
-                <p>Best regards,<br>Nenasala School Administration</p>
+                <p>Best regards,<br>Nenasa School Administration</p>
                 <p><em>This is an automated message. Please do not reply to this email.</em></p>
             </div>
         </div>
@@ -187,7 +193,7 @@ export class NotificationService {
     }
 
     const mailOptions = {
-      from: `${this.configService.get('EMAIL_FROM_NAME') || 'Nenasala Attendance System'} <${this.configService.get('EMAIL_USER') || 'noreply@nenasala.lk'}>`,
+      from: `${this.configService.get('EMAIL_FROM_NAME') || 'Nenasa Attendance System'} <${this.configService.get('EMAIL_USER') || 'noreply@nenasa.lk'}>`,
       to,
       subject,
       text,
@@ -229,12 +235,12 @@ export class NotificationService {
 
   async sendTestEmail(toEmail: string): Promise<boolean> {
     try {
-      const subject = 'Test Email - Nenasala Attendance System';
+      const subject = 'Test Email - Nenasa Attendance System';
       const textMessage =
-        'This is a test email from the Nenasala Attendance System. If you received this, email configuration is working correctly.';
+        'This is a test email from the Nenasa Attendance System. If you received this, email configuration is working correctly.';
       const htmlMessage = `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
-          <h2 style="color: #007bff;">🏫 Nenasala Attendance System</h2>
+          <h2 style="color: #007bff;">🏫 Nenasa Attendance System</h2>
           <p>This is a test email to verify email configuration.</p>
           <p><strong>Status:</strong> ✅ Email system is working correctly!</p>
           <p>Sent at: ${new Date().toLocaleString()}</p>

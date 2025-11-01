@@ -8,7 +8,7 @@ import {
 
 export type UserRole = 'admin' | 'student' | 'teacher' | 'user';
 
-@Entity('nenasala_users')
+@Entity('nenasa_users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
