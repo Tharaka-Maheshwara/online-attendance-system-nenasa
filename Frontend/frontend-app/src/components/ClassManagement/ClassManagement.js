@@ -206,19 +206,23 @@ const ClassManagement = () => {
   };
 
   // Function to fetch students enrolled in the subject
-  const fetchStudentsForSubject = async (subjectName) => {
+  const fetchStudentsForSubject = async (subjectName, grade) => {
     try {
       const response = await fetch("http://localhost:8000/student");
       const students = await response.json();
 
-      // Filter students who are enrolled in this subject
-      const enrolledStudents = students.filter(
-        (s) =>
+      // Filter students who are enrolled in this subject AND grade
+      const enrolledStudents = students.filter((s) => {
+        const hasSubject =
           s.sub_1 === subjectName ||
           s.sub_2 === subjectName ||
           s.sub_3 === subjectName ||
-          s.sub_4 === subjectName
-      );
+          s.sub_4 === subjectName;
+
+        const hasGrade = s.grade === grade;
+
+        return hasSubject && hasGrade;
+      });
 
       return enrolledStudents;
     } catch (error) {
@@ -228,16 +232,16 @@ const ClassManagement = () => {
   };
 
   // Handle subject click
-  const handleSubjectClick = async (subjectName) => {
+  const handleSubjectClick = async (classObj) => {
     setLoadingDetails(true);
-    setSelectedSubject(subjectName);
+    setSelectedSubject(`${classObj.subject} (Grade ${classObj.grade})`);
     setShowSubjectDetails(true);
 
     try {
       // Fetch teacher and students concurrently
       const [teacher, students] = await Promise.all([
-        fetchTeacherForSubject(subjectName),
-        fetchStudentsForSubject(subjectName),
+        fetchTeacherForSubject(classObj.subject),
+        fetchStudentsForSubject(classObj.subject, classObj.grade),
       ]);
 
       setSubjectTeacher(teacher);
@@ -551,7 +555,7 @@ const ClassManagement = () => {
                     <td>
                       <span
                         className="clickable-subject"
-                        onClick={() => handleSubjectClick(cls.subject)}
+                        onClick={() => handleSubjectClick(cls)}
                         style={{ cursor: "pointer" }}
                       >
                         {cls.subject}

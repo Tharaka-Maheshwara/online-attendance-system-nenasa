@@ -28,6 +28,7 @@ import StudentPaymentStatus from "./components/Student/StudentPaymentStatus";
 import StudentLectureNotes from "./components/Student/StudentLectureNotes";
 import StudentAnnouncements from "./components/Student/StudentAnnouncements";
 import StudentAttendanceByClass from "./components/Student/StudentAttendanceByClass";
+import StudentQRCode from "./components/Student/StudentQRCode";
 import RealtimeNotification from "./components/Notification/RealtimeNotification";
 import { SocketProvider } from "./contexts/SocketContext";
 import useAutoUserProvision from "./hooks/useAutoUserProvision";
@@ -233,6 +234,17 @@ function AppContent() {
                   <PrivateRoute
                     allowedRoles={["student"]}
                     element={<StudentAttendanceByClass />}
+                  />
+                }
+              />
+
+              {/* Student QR Code: students only */}
+              <Route
+                path="/my-qr-code"
+                element={
+                  <PrivateRoute
+                    allowedRoles={["student"]}
+                    element={<StudentQRCode />}
                   />
                 }
               />

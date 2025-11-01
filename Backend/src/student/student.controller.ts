@@ -164,6 +164,11 @@ export class StudentController {
     return { qrCode };
   }
 
+  @Get('email/:email/qrcode')
+  async getStudentQRCodeByEmail(@Param('email') email: string) {
+    return await this.studentService.getStudentQRCodeByEmail(email);
+  }
+
   @Post('qr-lookup')
   async getStudentByQRData(@Body() qrData: any) {
     return await this.studentService.findByQRData(qrData);

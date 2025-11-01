@@ -66,21 +66,25 @@ export class NotificationService {
     isPresent: boolean,
     date: string,
     className?: string,
+    parentName?: string,
   ): Promise<void> {
     const subject = isPresent
       ? `✅ Attendance Confirmation - ${studentName}`
       : `⚠️ Attendance Alert - ${studentName} Absent`;
+
+    const greeting = parentName ? `Dear ${parentName}` : 'Dear Parent';
 
     const htmlMessage = this.createAttendanceEmailTemplate(
       studentName,
       isPresent,
       date,
       className || `Class ${classId}`,
+      greeting,
     );
 
     const textMessage = isPresent
-      ? `Dear Parent,\n\nYour child ${studentName} was marked PRESENT in class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nBest regards,\nNenasa Attendance System`
-      : `Dear Parent,\n\nYour child ${studentName} was marked ABSENT from class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nPlease contact the school if this is unexpected.\n\nBest regards,\nNenasa Attendance System`;
+      ? `${greeting},\n\nYour child ${studentName} was marked PRESENT in class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nBest regards,\nNenasa Attendance System`
+      : `${greeting},\n\nYour child ${studentName} was marked ABSENT from class today (${date}).\n\nClass: ${className || classId}\nTime: ${new Date().toLocaleString()}\n\nPlease contact the school if this is unexpected.\n\nBest regards,\nNenasa Attendance System`;
 
     try {
       await this.sendEmail(parentEmail, subject, textMessage, htmlMessage);
@@ -124,6 +128,7 @@ export class NotificationService {
     isPresent: boolean,
     date: string,
     className: string,
+    greeting: string,
   ): string {
     const statusColor = isPresent ? '#28a745' : '#dc3545';
     const statusIcon = isPresent ? '✅' : '⚠️';
@@ -152,7 +157,7 @@ export class NotificationService {
                 <h2>Attendance Notification</h2>
             </div>
             
-            <p>Dear Parent,</p>
+            <p>${greeting},</p>
             
             <div class="details">
                 <p><strong>Student:</strong> ${studentName}</p>

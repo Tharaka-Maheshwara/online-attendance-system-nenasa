@@ -109,8 +109,44 @@ export class AttendanceController {
 
   @Get()
   @Roles('teacher', 'admin')
-  async findAll(): Promise<Attendance[]> {
-    return this.attendanceService.findAll();
+  async findAll(
+    @Query('date') date?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('grade') grade?: string,
+    @Query('subject') subject?: string,
+    @Query('classId') classId?: string,
+  ): Promise<Attendance[]> {
+    // If no filters provided, return all
+    if (!date && !dateFrom && !dateTo && !grade && !subject && !classId) {
+      return this.attendanceService.findAll();
+    }
+
+    // Build filter object
+    const filters: any = {};
+
+    if (date) {
+      filters.date = date;
+    }
+
+    if (dateFrom && dateTo) {
+      filters.dateFrom = dateFrom;
+      filters.dateTo = dateTo;
+    }
+
+    if (grade) {
+      filters.grade = Number(grade);
+    }
+
+    if (subject) {
+      filters.subject = subject;
+    }
+
+    if (classId) {
+      filters.classId = Number(classId);
+    }
+
+    return this.attendanceService.findWithFilters(filters);
   }
 
   @Get(':id')
