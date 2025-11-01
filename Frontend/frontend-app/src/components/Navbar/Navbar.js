@@ -54,6 +54,10 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await instance.logoutPopup();
+      // Clear session storage
+      sessionStorage.clear();
+      // Redirect to home page
+      window.location.href = 'http://localhost:3000/';
     } catch (error) {
       console.error("Logout failed:", error);
     }
