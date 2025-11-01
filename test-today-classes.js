@@ -18,11 +18,11 @@ async function testTodayClasses() {
 
     if (response.ok) {
       const classes = await response.json();
-      console.log("✅ API Response received:");
+      console.log(" API Response received:");
       console.log("Today's classes:", classes);
 
       if (classes.length > 0) {
-        console.log("📚 Classes found for today:");
+        console.log(" Classes found for today:");
         classes.forEach((cls, index) => {
           console.log(
             `  ${index + 1}. ${cls.subject} - Grade ${cls.grade || "N/A"}`
@@ -34,21 +34,21 @@ async function testTodayClasses() {
           console.log(`     Day: ${cls.dayOfWeek || "TBA"}`);
         });
       } else {
-        console.log("📅 No classes scheduled for today");
+        console.log(" No classes scheduled for today");
       }
     } else {
-      console.error("❌ API Error:", response.status, response.statusText);
+      console.error(" API Error:", response.status, response.statusText);
       const errorText = await response.text();
       console.error("Error details:", errorText);
     }
   } catch (error) {
-    console.error("❌ Network/Script Error:", error.message);
+    console.error(" Network/Script Error:", error.message);
   }
 }
 
 async function testStudentsList() {
   try {
-    console.log("\n📋 Getting students list to find emails...");
+    console.log("\n Getting students list to find emails...");
 
     const response = await fetch(`${API_BASE_URL}/student`);
 
@@ -75,7 +75,7 @@ async function testStudentsList() {
       });
 
       if (students.length > 0) {
-        console.log(`\n🔧 Testing with first student: ${students[0].email}`);
+        console.log(`\n Testing with first student: ${students[0].email}`);
         const testResponse = await fetch(
           `${API_BASE_URL}/student/email/${encodeURIComponent(
             students[0].email
@@ -84,25 +84,25 @@ async function testStudentsList() {
 
         if (testResponse.ok) {
           const todayClasses = await testResponse.json();
-          console.log("✅ Today's classes for first student:", todayClasses);
+          console.log(" Today's classes for first student:", todayClasses);
         } else {
           console.error(
-            "❌ Error getting today's classes:",
+            " Error getting today's classes:",
             testResponse.status
           );
         }
       }
     } else {
-      console.error("❌ Error getting students list:", response.status);
+      console.error(" Error getting students list:", response.status);
     }
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    console.error(" Error:", error.message);
   }
 }
 
 async function testClassesList() {
   try {
-    console.log("\n📚 Getting classes list to check schedule data...");
+    console.log("\n Getting classes list to check schedule data...");
 
     const response = await fetch(`${API_BASE_URL}/class`);
 
@@ -135,13 +135,13 @@ async function testClassesList() {
       ];
       const todayDayOfWeek = daysOfWeek[today.getDay()];
 
-      console.log(`\n📅 Today is: ${todayDayOfWeek}`);
+      console.log(`\n Today is: ${todayDayOfWeek}`);
 
       const todayClasses = classes.filter(
         (cls) => cls.dayOfWeek === todayDayOfWeek
       );
       console.log(
-        `📚 Classes scheduled for today (${todayDayOfWeek}):`,
+        ` Classes scheduled for today (${todayDayOfWeek}):`,
         todayClasses.length
       );
 
@@ -153,10 +153,10 @@ async function testClassesList() {
         );
       });
     } else {
-      console.error("❌ Error getting classes list:", response.status);
+      console.error(" Error getting classes list:", response.status);
     }
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    console.error(" Error:", error.message);
   }
 }
 
