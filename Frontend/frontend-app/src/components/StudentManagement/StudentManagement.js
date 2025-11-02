@@ -1119,10 +1119,27 @@ const StudentManagement = () => {
                               src={`http://localhost:8000${student.profileImage}`}
                               alt={student.name}
                               className="student-image"
-                              style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '50%' }}
+                              style={{
+                                width: 56,
+                                height: 56,
+                                objectFit: "cover",
+                                borderRadius: "50%",
+                              }}
                             />
                           ) : (
-                            <div className="student-image-placeholder" style={{ width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👤</div>
+                            <div
+                              className="student-image-placeholder"
+                              style={{
+                                width: 56,
+                                height: 56,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: 32,
+                              }}
+                            >
+                              👤
+                            </div>
                           )}
                         </td>
                         <td>{student.name}</td>
