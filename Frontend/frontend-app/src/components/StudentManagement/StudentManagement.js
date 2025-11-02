@@ -307,6 +307,21 @@ const StudentManagement = () => {
     setError("");
 
     try {
+      // Validate that at least one subject is selected
+      const hasAtLeastOneSubject =
+        newStudent.sub_1 ||
+        newStudent.sub_2 ||
+        newStudent.sub_3 ||
+        newStudent.sub_4 ||
+        newStudent.sub_5 ||
+        newStudent.sub_6;
+
+      if (!hasAtLeastOneSubject) {
+        setError("Please select at least one subject");
+        setLoading(false);
+        return;
+      }
+
       // Validate subjects before submission
       validateSubjects(newStudent);
 
@@ -631,6 +646,7 @@ const StudentManagement = () => {
                   name="contactNumber"
                   value={newStudent.contactNumber}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
             </div>
@@ -642,6 +658,7 @@ const StudentManagement = () => {
                   name="gender"
                   value={newStudent.gender}
                   onChange={handleInputChange}
+                  required
                 >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
@@ -678,6 +695,7 @@ const StudentManagement = () => {
                   value={newStudent.parentName}
                   onChange={handleInputChange}
                   placeholder="Parent/Guardian name"
+                  required
                 />
               </div>
               <div className="form-group">
