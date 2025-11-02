@@ -33,6 +33,10 @@ const ClassManagement = () => {
   const [subjectStudents, setSubjectStudents] = useState([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const classesPerPage = 10;
+
   useEffect(() => {
     loadClasses();
     loadTeachers();
@@ -285,6 +289,17 @@ const ClassManagement = () => {
     setSelectedSubject(null);
     setSubjectTeacher(null);
     setSubjectStudents([]);
+  };
+
+  // Pagination logic
+  const paginatedClasses = classes.slice(
+    (currentPage - 1) * classesPerPage,
+    currentPage * classesPerPage
+  );
+  const totalPages = Math.ceil(classes.length / classesPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -549,8 +564,8 @@ const ClassManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredClasses.length > 0 ? (
-                filteredClasses.map((cls) => (
+              {paginatedClasses.length > 0 ? (
+                paginatedClasses.map((cls) => (
                   <tr key={cls.id}>
                     <td>
                       <span
@@ -602,6 +617,37 @@ const ClassManagement = () => {
               )}
             </tbody>
           </table>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 16,
+              }}
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    style={{
+                      margin: "0 4px",
+                      padding: "4px 12px",
+                      background: page === currentPage ? "#1976d2" : "#fff",
+                      color: page === currentPage ? "#fff" : "#1976d2",
+                      border: "1px solid #1976d2",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                    }}
+                    disabled={page === currentPage}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

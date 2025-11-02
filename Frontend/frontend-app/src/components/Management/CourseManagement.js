@@ -29,6 +29,8 @@ const CourseManagement = () => {
     teacherId: "",
     description: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 10;
 
   useEffect(() => {
     fetchCourses();
@@ -260,6 +262,16 @@ const CourseManagement = () => {
     );
   });
 
+  const paginatedCourses = courses.slice(
+    (currentPage - 1) * coursesPerPage,
+    currentPage * coursesPerPage
+  );
+  const totalPages = Math.ceil(courses.length / coursesPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="course-management">
       <div className="course-header">
@@ -313,7 +325,7 @@ const CourseManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCourses.length === 0 ? (
+            {paginatedCourses.length === 0 ? (
               <tr>
                 <td
                   colSpan="9"
@@ -325,7 +337,7 @@ const CourseManagement = () => {
                 </td>
               </tr>
             ) : (
-              filteredCourses.map((course) => (
+              paginatedCourses.map((course) => (
                 <tr key={course.id}>
                   <td>
                     <div className="course-name">
@@ -477,6 +489,31 @@ const CourseManagement = () => {
             )}
           </tbody>
         </table>
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div
+            style={{ display: "flex", justifyContent: "center", marginTop: 16 }}
+          >
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                style={{
+                  margin: "0 4px",
+                  padding: "4px 12px",
+                  background: page === currentPage ? "#1976d2" : "#fff",
+                  color: page === currentPage ? "#fff" : "#1976d2",
+                  border: "1px solid #1976d2",
+                  borderRadius: 4,
+                  cursor: "pointer",
+                }}
+                disabled={page === currentPage}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {showModal && (
