@@ -13,6 +13,8 @@ import {
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const teachersPerPage = 10;
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
   const [formData, setFormData] = useState({
@@ -308,6 +310,22 @@ const TeacherManagement = () => {
     );
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTeachers.length / teachersPerPage);
+  const paginatedTeachers = filteredTeachers.slice(
+    (currentPage - 1) * teachersPerPage,
+    currentPage * teachersPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   return (
     <div className="teacher-management">
       <div className="header">
@@ -558,7 +576,7 @@ const TeacherManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map((teacher) => (
+                {paginatedTeachers.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>
                       {teacher.profileImage ? (
@@ -595,6 +613,29 @@ const TeacherManagement = () => {
                 ))}
               </tbody>
             </table>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    style={{
+                      margin: "0 4px",
+                      padding: "4px 12px",
+                      background: page === currentPage ? "#1976d2" : "#fff",
+                      color: page === currentPage ? "#fff" : "#1976d2",
+                      border: "1px solid #1976d2",
+                      borderRadius: 4,
+                      cursor: "pointer",
+                    }}
+                    disabled={page === currentPage}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
