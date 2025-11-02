@@ -43,6 +43,8 @@ const StudentManagement = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedStudentQR, setSelectedStudentQR] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 10;
 
   useEffect(() => {
     fetchStudents();
@@ -483,6 +485,16 @@ const StudentManagement = () => {
       subjects.includes(term)
     );
   });
+
+  const paginatedStudents = filteredStudents.slice(
+    (currentPage - 1) * studentsPerPage,
+    currentPage * studentsPerPage
+  );
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="student-management">
@@ -1087,7 +1099,7 @@ const StudentManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.length === 0 ? (
+                {paginatedStudents.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
@@ -1099,7 +1111,7 @@ const StudentManagement = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredStudents.map((student) => {
+                  paginatedStudents.map((student) => {
                     const subjects = [
                       student.sub_1,
                       student.sub_2,
@@ -1177,6 +1189,29 @@ const StudentManagement = () => {
                 )}
               </tbody>
             </table>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    style={{
+                      margin: '0 4px',
+                      padding: '4px 12px',
+                      background: page === currentPage ? '#1976d2' : '#fff',
+                      color: page === currentPage ? '#fff' : '#1976d2',
+                      border: '1px solid #1976d2',
+                      borderRadius: 4,
+                      cursor: 'pointer',
+                    }}
+                    disabled={page === currentPage}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
