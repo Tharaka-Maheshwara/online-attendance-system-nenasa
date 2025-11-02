@@ -68,7 +68,10 @@ const StudentManagement = () => {
       } else {
         setLookupMessage("");
         // Clear name and email when register number is cleared
-        if (!newStudent.registerNumber || newStudent.registerNumber.trim() === "") {
+        if (
+          !newStudent.registerNumber ||
+          newStudent.registerNumber.trim() === ""
+        ) {
           setNewStudent((prev) => ({
             ...prev,
             name: "",

@@ -138,7 +138,7 @@ const TeacherManagement = () => {
     if (name === "registrationNumber") {
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
-      
+
       if (value && value.trim() !== "") {
         window.registerNumberTimeout = setTimeout(() => {
           lookupUserByRegisterNumber(value);
