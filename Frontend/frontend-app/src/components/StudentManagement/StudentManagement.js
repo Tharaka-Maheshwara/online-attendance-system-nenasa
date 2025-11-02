@@ -97,21 +97,24 @@ const StudentManagement = () => {
             name: userData.display_name || "",
             email: userData.email || "",
           }));
-          setLookupMessage(
-            `✅ Found: ${userData.display_name} (${userData.email})`
-          );
+          setLookupMessage("✅ User Found");
         } else {
-          setLookupMessage("⚠️ Unexpected response format");
+          setLookupMessage("❌ Invalid Register Number");
         }
       } else if (response.status === 404) {
-        setLookupMessage("ℹ️ Register number not found - creating new student");
-        // Don't clear existing data, user might be creating a new record
+        setLookupMessage("❌ Invalid Register Number");
+        // Clear name and email for invalid register number
+        setNewStudent((prev) => ({
+          ...prev,
+          name: "",
+          email: "",
+        }));
       } else {
-        setLookupMessage("⚠️ Error looking up register number");
+        setLookupMessage("❌ Invalid Register Number");
       }
     } catch (error) {
       console.error("Error looking up student:", error);
-      setLookupMessage("⚠️ Error connecting to server");
+      setLookupMessage("❌ Invalid Register Number");
     } finally {
       setLookupLoading(false);
     }

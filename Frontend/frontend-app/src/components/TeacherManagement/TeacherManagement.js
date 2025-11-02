@@ -17,6 +17,7 @@ const TeacherManagement = () => {
   const teachersPerPage = 10;
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -58,10 +59,13 @@ const TeacherManagement = () => {
   // Function to lookup user by register number and auto-fill fields
   const lookupUserByRegisterNumber = async (registerNumber) => {
     if (!registerNumber || registerNumber.trim() === "") {
+      setLookupMessage("");
       return;
     }
 
     setIsLookingUpUser(true);
+    setLookupMessage("");
+    
     try {
       const user = await getUserByRegisterNumber(registerNumber);
 
@@ -76,19 +80,25 @@ const TeacherManagement = () => {
           email: user.email || "",
         }));
 
-        console.log("User found and auto-filled:", user);
+        setLookupMessage("✅ User Found");
       } else {
-        console.log("No user found with register number:", registerNumber);
-        // Don't show error for not found - this is normal when user doesn't exist
+        setLookupMessage("❌ Invalid Register Number");
+        // Clear name and email for invalid register number
+        setFormData((prev) => ({
+          ...prev,
+          name: "",
+          email: "",
+        }));
       }
     } catch (error) {
       console.error("Error looking up user:", error);
-      // Show a subtle error message but don't block the user from continuing
-      if (error.message && !error.message.includes("not found")) {
-        console.warn(
-          "Could not connect to server for user lookup. You can still create the teacher manually."
-        );
-      }
+      setLookupMessage("❌ Invalid Register Number");
+      // Clear name and email for invalid register number
+      setFormData((prev) => ({
+        ...prev,
+        name: "",
+        email: "",
+      }));
     } finally {
       setIsLookingUpUser(false);
     }
@@ -213,6 +223,7 @@ const TeacherManagement = () => {
     setImagePreview(null);
     setShowAddForm(false);
     setIsLookingUpUser(false);
+    setLookupMessage("");
     setIsEditing(false);
     setEditingId(null);
   };
@@ -420,6 +431,15 @@ const TeacherManagement = () => {
                   placeholder="e.g. 131594"
                   required
                 />
+                {lookupMessage && (
+                  <div
+                    className={`lookup-message ${
+                      lookupMessage.includes("✅") ? "success" : "error"
+                    }`}
+                  >
+                    {lookupMessage}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="contact">Contact Number *</label>
