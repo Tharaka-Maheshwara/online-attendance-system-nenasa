@@ -385,7 +385,7 @@ const TeacherManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="registrationNumber">
-                   Register Number *
+                  Register Number *
                   {isLookingUpUser && (
                     <span className="lookup-indicator">
                       {" "}
