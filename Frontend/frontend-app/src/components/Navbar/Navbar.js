@@ -8,6 +8,7 @@ const Navbar = () => {
   const { accounts, instance } = useMsal();
   const [userRole, setUserRole] = useState("student");
   const [currentUser, setCurrentUser] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -63,25 +64,47 @@ const Navbar = () => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <Link to="/" className="brand-link">
+          <Link to="/" className="brand-link" onClick={closeMobileMenu}>
             <img src={logo} alt="NENASA Logo" className="navbar-logo" />
             <span className="brand-text">NENASA Attendance</span>
           </Link>
         </div>
 
-        <div className="navbar-menu">
+        {/* Mobile Menu Toggle Button */}
+        <button 
+          className="mobile-menu-toggle" 
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+
+        <div className={`navbar-menu ${isMobileMenuOpen ? 'active' : ''}`}>
           <div className="navbar-nav">
             <Link
               to="/dashboard"
               className={`nav-link ${
                 isActive("/") || isActive("/dashboard") ? "active" : ""
               }`}
+              onClick={closeMobileMenu}
             >
               Dashboard
             </Link>
@@ -94,6 +117,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/course-catalog") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Course Catalog
                 </Link>
@@ -102,6 +126,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/my-attendance") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   My Attendance
                 </Link>
@@ -110,6 +135,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/my-qr-code") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   My QR Code
                 </Link>
@@ -118,6 +144,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/payment-status") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Payment Status
                 </Link>
@@ -126,6 +153,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/lecture-notes") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Lecture Notes
                 </Link>
@@ -134,6 +162,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/announcements") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Announcements
                 </Link>
@@ -147,6 +176,7 @@ const Navbar = () => {
                 className={`nav-link ${
                   isActive("/teacher/announcements") ? "active" : ""
                 }`}
+                onClick={closeMobileMenu}
               >
                 📢 Announcements
               </Link>
@@ -159,6 +189,7 @@ const Navbar = () => {
                 className={`nav-link ${
                   isActive("/teacher/lecture-notes") ? "active" : ""
                 }`}
+                onClick={closeMobileMenu}
               >
                 📚 Lecture Notes
               </Link>
@@ -171,6 +202,7 @@ const Navbar = () => {
                 className={`nav-link ${
                   isActive("/attendance") ? "active" : ""
                 }`}
+                onClick={closeMobileMenu}
               >
                 Mark Attendance
               </Link>
@@ -183,12 +215,14 @@ const Navbar = () => {
                 <Link
                   to="/classes"
                   className={`nav-link ${isActive("/classes") ? "active" : ""}`}
+                  onClick={closeMobileMenu}
                 >
                   Classes
                 </Link>
                 <Link
                   to="/courses"
                   className={`nav-link ${isActive("/courses") ? "active" : ""}`}
+                  onClick={closeMobileMenu}
                 >
                   Courses
                 </Link>
@@ -197,6 +231,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/students") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Students
                 </Link>
@@ -205,6 +240,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/teachers") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Teachers
                 </Link>
@@ -214,6 +250,7 @@ const Navbar = () => {
                   className={`nav-link ${
                     isActive("/attendance-history") ? "active" : ""
                   }`}
+                  onClick={closeMobileMenu}
                 >
                   Attendance History
                 </Link>

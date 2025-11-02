@@ -391,7 +391,7 @@ const StudentDashboard = () => {
               })
             ) : (
               <div className="no-classes-message">
-                <div className="no-classes-icon">🎉</div>
+                <div className="no-classes-icon"></div>
                 <p className="no-classes-title">
                   No classes scheduled for today!
                 </p>
@@ -452,14 +452,7 @@ const StudentDashboard = () => {
                             </span>
                           </div>
 
-                          <div className="detail-row">
-                            <span className="detail-label">Monthly Fee:</span>
-                            <span className="fee-value">
-                              {cls.monthlyFees
-                                ? `Rs. ${cls.monthlyFees}`
-                                : "N/A"}
-                            </span>
-                          </div>
+                         
                         </div>
                       </div>
                     </div>
