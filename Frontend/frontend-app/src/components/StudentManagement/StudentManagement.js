@@ -546,25 +546,25 @@ const StudentManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label>Name:</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={newStudent.name}
-                    onChange={handleInputChange}
-                    required
-                    readOnly
-                  />
+                <input
+                  type="text"
+                  name="name"
+                  value={newStudent.name}
+                  onChange={handleInputChange}
+                  required
+                  readOnly
+                />
               </div>
               <div className="form-group">
                 <label>Email:</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={newStudent.email}
-                    onChange={handleInputChange}
-                    required
-                    readOnly
-                  />
+                <input
+                  type="email"
+                  name="email"
+                  value={newStudent.email}
+                  onChange={handleInputChange}
+                  required
+                  readOnly
+                />
               </div>
             </div>
 
