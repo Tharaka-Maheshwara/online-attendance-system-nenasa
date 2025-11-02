@@ -70,17 +70,28 @@ const TeacherManagement = () => {
       const user = await getUserByRegisterNumber(registerNumber);
 
       if (user) {
-        // Use the display_name directly as the single name field
-        const displayName = user.display_name || "";
+        // Check if user already has a role (admin, student, or teacher)
+        if (user.role && (user.role === 'admin' || user.role === 'student' || user.role === 'teacher')) {
+          setLookupMessage("⚠️ This Register Number Already Registered");
+          // Clear name and email
+          setFormData((prev) => ({
+            ...prev,
+            name: "",
+            email: "",
+          }));
+        } else {
+          // Use the display_name directly as the single name field
+          const displayName = user.display_name || "";
 
-        // Auto-fill the form fields
-        setFormData((prev) => ({
-          ...prev,
-          name: displayName,
-          email: user.email || "",
-        }));
+          // Auto-fill the form fields
+          setFormData((prev) => ({
+            ...prev,
+            name: displayName,
+            email: user.email || "",
+          }));
 
-        setLookupMessage("✅ User Found");
+          setLookupMessage("✅ User Found");
+        }
       } else {
         setLookupMessage("❌ Invalid Register Number");
         // Clear name and email for invalid register number
@@ -445,7 +456,11 @@ const TeacherManagement = () => {
                 {lookupMessage && (
                   <div
                     className={`lookup-message ${
-                      lookupMessage.includes("✅") ? "success" : "error"
+                      lookupMessage.includes("✅")
+                        ? "success"
+                        : lookupMessage.includes("⚠️")
+                        ? "warning"
+                        : "error"
                     }`}
                   >
                     {lookupMessage}
