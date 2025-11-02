@@ -65,7 +65,7 @@ const TeacherManagement = () => {
 
     setIsLookingUpUser(true);
     setLookupMessage("");
-    
+
     try {
       const user = await getUserByRegisterNumber(registerNumber);
 
