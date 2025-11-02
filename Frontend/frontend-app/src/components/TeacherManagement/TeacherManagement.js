@@ -385,7 +385,7 @@ const TeacherManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="registrationNumber">
-                  Teacher ID *
+                   Register Number *
                   {isLookingUpUser && (
                     <span className="lookup-indicator">
                       {" "}
@@ -399,7 +399,7 @@ const TeacherManagement = () => {
                   name="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={handleInputChange}
-                  placeholder="e.g., T001"
+                  placeholder="e.g., 131594"
                   required
                 />
               </div>
