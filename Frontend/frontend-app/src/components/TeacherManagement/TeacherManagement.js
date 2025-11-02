@@ -138,9 +138,20 @@ const TeacherManagement = () => {
     if (name === "registrationNumber") {
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
-      window.registerNumberTimeout = setTimeout(() => {
-        lookupUserByRegisterNumber(value);
-      }, 500); // Wait 500ms after user stops typing
+      
+      if (value && value.trim() !== "") {
+        window.registerNumberTimeout = setTimeout(() => {
+          lookupUserByRegisterNumber(value);
+        }, 500); // Wait 500ms after user stops typing
+      } else {
+        // Clear name and email when register number is cleared
+        setLookupMessage("");
+        setFormData((prev) => ({
+          ...prev,
+          name: "",
+          email: "",
+        }));
+      }
     }
   };
 

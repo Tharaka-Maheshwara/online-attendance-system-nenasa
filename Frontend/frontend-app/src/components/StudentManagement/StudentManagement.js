@@ -67,6 +67,14 @@ const StudentManagement = () => {
         lookupStudentByRegisterNumber(newStudent.registerNumber);
       } else {
         setLookupMessage("");
+        // Clear name and email when register number is cleared
+        if (!newStudent.registerNumber || newStudent.registerNumber.trim() === "") {
+          setNewStudent((prev) => ({
+            ...prev,
+            name: "",
+            email: "",
+          }));
+        }
       }
     }, 500); // 500ms debounce
 
