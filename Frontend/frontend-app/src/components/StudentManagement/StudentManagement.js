@@ -1083,9 +1083,6 @@ const StudentManagement = () => {
                   <th>Register Number</th>
                   <th>Contact</th>
                   <th>Grade</th>
-                  <th>Parent Name</th>
-                  <th>Parent Email</th>
-                  <th>Subjects</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -1122,9 +1119,10 @@ const StudentManagement = () => {
                               src={`http://localhost:8000${student.profileImage}`}
                               alt={student.name}
                               className="student-image"
+                              style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '50%' }}
                             />
                           ) : (
-                            <div className="student-image-placeholder">👤</div>
+                            <div className="student-image-placeholder" style={{ width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32 }}>👤</div>
                           )}
                         </td>
                         <td>{student.name}</td>
@@ -1134,9 +1132,6 @@ const StudentManagement = () => {
                         <td>
                           {student.grade ? `Grade ${student.grade}` : "N/A"}
                         </td>
-                        <td>{student.parentName || "N/A"}</td>
-                        <td>{student.parentEmail || "N/A"}</td>
-                        <td>{subjects || "No subjects assigned"}</td>
                         <td>
                           <div className="action-buttons">
                             <button

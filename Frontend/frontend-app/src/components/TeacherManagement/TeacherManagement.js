@@ -399,7 +399,7 @@ const TeacherManagement = () => {
                   name="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={handleInputChange}
-                  placeholder="e.g., 131594"
+                  placeholder="e.g. 131594"
                   required
                 />
               </div>
