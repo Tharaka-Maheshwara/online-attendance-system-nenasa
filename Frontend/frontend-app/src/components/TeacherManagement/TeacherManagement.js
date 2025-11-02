@@ -71,7 +71,12 @@ const TeacherManagement = () => {
 
       if (user) {
         // Check if user already has a role (admin, student, or teacher)
-        if (user.role && (user.role === 'admin' || user.role === 'student' || user.role === 'teacher')) {
+        if (
+          user.role &&
+          (user.role === "admin" ||
+            user.role === "student" ||
+            user.role === "teacher")
+        ) {
           setLookupMessage("⚠️ This Register Number Already Registered");
           // Clear name and email
           setFormData((prev) => ({

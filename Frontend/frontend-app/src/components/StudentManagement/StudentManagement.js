@@ -103,7 +103,12 @@ const StudentManagement = () => {
           const userData = responseData.user;
 
           // Check if user already has a role (admin, student, or teacher)
-          if (userData.role && (userData.role === 'admin' || userData.role === 'student' || userData.role === 'teacher')) {
+          if (
+            userData.role &&
+            (userData.role === "admin" ||
+              userData.role === "student" ||
+              userData.role === "teacher")
+          ) {
             setLookupMessage("⚠️ This Register Number Already Registered");
             // Clear name and email
             setNewStudent((prev) => ({
