@@ -85,19 +85,19 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Toggle Button */}
-        <button 
-          className="mobile-menu-toggle" 
+        <button
+          className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
         >
-          <span className={`hamburger ${isMobileMenuOpen ? 'active' : ''}`}>
+          <span className={`hamburger ${isMobileMenuOpen ? "active" : ""}`}>
             <span></span>
             <span></span>
             <span></span>
           </span>
         </button>
 
-        <div className={`navbar-menu ${isMobileMenuOpen ? 'active' : ''}`}>
+        <div className={`navbar-menu ${isMobileMenuOpen ? "active" : ""}`}>
           <div className="navbar-nav">
             <Link
               to="/dashboard"
