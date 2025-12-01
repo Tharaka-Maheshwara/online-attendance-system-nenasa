@@ -39,6 +39,9 @@ export class Payment {
   paidDate: Date;
 
   @Column({ nullable: true })
+  dueDate: Date; // Payment due date (1st of the month)
+
+  @Column({ nullable: true })
   paidBy: number; // admin/teacher who marked as paid
 
   @Column({ nullable: true })

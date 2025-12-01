@@ -91,6 +91,9 @@ export class PaymentService {
       },
     });
 
+    // Calculate due date as 1st of current month
+    const dueDate = new Date(currentYear, currentMonth - 1, 1);
+
     // Create payment status for each student
     const paymentStatuses = enrolledStudents.map((student) => {
       const payment = payments.find((p) => p.studentId === student.id);
@@ -104,6 +107,7 @@ export class PaymentService {
         monthlyFee: classInfo.monthlyFees || 0,
         month: currentMonth,
         year: currentYear,
+        dueDate: payment?.dueDate || dueDate,
         paymentStatus: payment?.status || 'pending',
         paymentId: payment?.id || null,
         paidDate: payment?.paidDate || null,
@@ -164,12 +168,16 @@ export class PaymentService {
 
       // Create new pending payment if doesn't exist
       if (!existingPayment) {
+        // Set due date as 1st of current month
+        const dueDate = new Date(currentYear, currentMonth - 1, 1);
+
         const newPayment = this.paymentRepository.create({
           studentId: student.id,
           classId: classId,
           amount: classInfo.monthlyFees || 0,
           month: currentMonth,
           year: currentYear,
+          dueDate: dueDate,
           status: 'pending',
         });
 
@@ -217,12 +225,16 @@ export class PaymentService {
       payment.paidBy = paidBy;
     } else {
       // Create new payment record
+      // Set due date as 1st of current month
+      const dueDate = new Date(currentYear, currentMonth - 1, 1);
+
       payment = this.paymentRepository.create({
         studentId,
         classId,
         amount: classInfo.monthlyFees || 0,
         month: currentMonth,
         year: currentYear,
+        dueDate: dueDate,
         status: 'paid',
         paidDate: currentDate,
         paidBy,
