@@ -26,6 +26,8 @@ const ClassManagement = () => {
     monthlyFees: "",
   });
 
+  const [duplicateWarning, setDuplicateWarning] = useState("");
+
   // Subject details modal state
   const [showSubjectDetails, setShowSubjectDetails] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -60,9 +62,36 @@ const ClassManagement = () => {
     }
   };
 
+  const checkDuplicate = (updated) => {
+    const { subject, teacherId, grade, dayOfWeek } = updated;
+    if (!subject || !teacherId || !grade || !dayOfWeek) {
+      setDuplicateWarning("");
+      return;
+    }
+    const teacherName = teachers.find((t) => t.id === parseInt(teacherId))?.name || "";
+    const duplicate = classes.find((cls) => {
+      if (isEditing && currentClass && cls.id === currentClass.id) return false;
+      return (
+        cls.subject?.toLowerCase() === subject.toLowerCase() &&
+        cls.teacherName?.toLowerCase() === teacherName.toLowerCase() &&
+        String(cls.grade) === String(grade) &&
+        cls.dayOfWeek?.toLowerCase() === dayOfWeek.toLowerCase()
+      );
+    });
+    if (duplicate) {
+      setDuplicateWarning(
+        `"${subject}" is already conducted by ${teacherName} for Grade ${grade} on ${dayOfWeek}. Duplicate classes are not allowed.`
+      );
+    } else {
+      setDuplicateWarning("");
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    checkDuplicate(updated);
 
     // Filter teachers when subject changes
     if (name === "subject" && value.trim() !== "") {
@@ -172,6 +201,7 @@ const ClassManagement = () => {
       monthlyFees: "",
     });
     setFilteredTeachers([]);
+    setDuplicateWarning("");
   };
 
   // Filter classes based on search term
@@ -452,11 +482,23 @@ const ClassManagement = () => {
               </div>
             </div>
 
+            {duplicateWarning && (
+              <div className="duplicate-warning">
+                <span className="duplicate-warning-icon">⚠️</span>
+                {duplicateWarning}
+              </div>
+            )}
+
             <div className="form-actions">
               <button type="button" className="cancel-btn" onClick={resetForm}>
                 Cancel
               </button>
-              <button type="submit" className="submit-btn">
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={!!duplicateWarning}
+                title={duplicateWarning || undefined}
+              >
                 {isEditing ? "Update" : "Create"}
               </button>
             </div>
