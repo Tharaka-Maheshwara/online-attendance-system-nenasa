@@ -25,30 +25,32 @@ A full-stack online attendance management system designed for educational instit
 ## Technology Stack
 
 ### Backend
-| Technology | Purpose |
-|---|---|
-| NestJS (TypeScript) | REST API framework |
-| TypeORM | Database ORM |
-| MySQL | Relational database |
-| Socket.io | Real-time WebSocket communication |
-| Azure AD / MSAL | Authentication & authorization |
-| Microsoft Graph API | User directory integration |
-| JWT + Passport | Token-based auth guards |
-| Multer | File uploads (images, documents) |
-| QRCode | QR code generation |
-| PDFKit | PDF report generation |
-| Nodemailer | Email notifications |
+
+| Technology          | Purpose                           |
+| ------------------- | --------------------------------- |
+| NestJS (TypeScript) | REST API framework                |
+| TypeORM             | Database ORM                      |
+| MySQL               | Relational database               |
+| Socket.io           | Real-time WebSocket communication |
+| Azure AD / MSAL     | Authentication & authorization    |
+| Microsoft Graph API | User directory integration        |
+| JWT + Passport      | Token-based auth guards           |
+| Multer              | File uploads (images, documents)  |
+| QRCode              | QR code generation                |
+| PDFKit              | PDF report generation             |
+| Nodemailer          | Email notifications               |
 
 ### Frontend
-| Technology | Purpose |
-|---|---|
-| React 18 | UI framework |
-| React Router v7 | Client-side routing |
-| MSAL React | Azure AD authentication |
-| Socket.io Client | Real-time event handling |
-| Chart.js | Attendance analytics charts |
-| jsPDF | Client-side PDF generation |
-| QR Scanner | Camera-based QR code reading |
+
+| Technology       | Purpose                      |
+| ---------------- | ---------------------------- |
+| React 18         | UI framework                 |
+| React Router v7  | Client-side routing          |
+| MSAL React       | Azure AD authentication      |
+| Socket.io Client | Real-time event handling     |
+| Chart.js         | Attendance analytics charts  |
+| jsPDF            | Client-side PDF generation   |
+| QR Scanner       | Camera-based QR code reading |
 
 ---
 
@@ -111,12 +113,14 @@ online-attendance-system-nenasa/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd online-attendance-system-nenasa
    ```
 
 2. **Install all dependencies**
+
    ```bash
    npm run install:all
    ```
@@ -124,6 +128,7 @@ online-attendance-system-nenasa/
 3. **Configure the Backend**
 
    Create `Backend/.env` from the example below:
+
    ```env
    DB_HOST=localhost
    DB_PORT=3306
@@ -150,11 +155,13 @@ online-attendance-system-nenasa/
 ### Running the Application
 
 **Start both servers simultaneously:**
+
 ```bash
 npm start
 ```
 
 **Or start individually:**
+
 ```bash
 # Backend (http://localhost:8000)
 npm run start:backend
@@ -169,20 +176,20 @@ npm run start:frontend
 
 The backend exposes a RESTful API at `http://localhost:8000`. All endpoints (except auth) require a valid JWT Bearer token.
 
-| Module | Base Path |
-|---|---|
-| Authentication | `/auth` |
-| Users | `/users` |
-| Students | `/students` |
-| Teachers | `/teachers` |
-| Classes | `/classes` |
-| Courses | `/courses` |
-| Attendance | `/attendance` |
-| Announcements | `/announcements` |
-| Lecture Notes | `/lecture-notes` |
-| Notifications | `/notifications` |
-| Payments | `/payments` |
-| Roles | `/roles` |
+| Module         | Base Path        |
+| -------------- | ---------------- |
+| Authentication | `/auth`          |
+| Users          | `/users`         |
+| Students       | `/students`      |
+| Teachers       | `/teachers`      |
+| Classes        | `/classes`       |
+| Courses        | `/courses`       |
+| Attendance     | `/attendance`    |
+| Announcements  | `/announcements` |
+| Lecture Notes  | `/lecture-notes` |
+| Notifications  | `/notifications` |
+| Payments       | `/payments`      |
+| Roles          | `/roles`         |
 
 ---
 
