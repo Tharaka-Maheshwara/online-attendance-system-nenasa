@@ -752,6 +752,7 @@ const StudentManagement = () => {
                     <button
                       type="button"
                       className="remove-image-btn"
+                      title="Remove image"
                       onClick={() => {
                         setImagePreview(null);
                         setNewStudent((prev) => ({
@@ -760,7 +761,7 @@ const StudentManagement = () => {
                         }));
                       }}
                     >
-                      ✕ Remove
+                      ✕
                     </button>
                   </div>
                 )}

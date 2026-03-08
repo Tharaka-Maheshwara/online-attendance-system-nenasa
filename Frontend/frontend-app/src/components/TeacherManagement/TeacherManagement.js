@@ -511,6 +511,7 @@ const TeacherManagement = () => {
                     <button
                       type="button"
                       className="remove-image-btn"
+                      title="Remove image"
                       onClick={() => {
                         setImagePreview(null);
                         setFormData((prev) => ({
@@ -519,7 +520,7 @@ const TeacherManagement = () => {
                         }));
                       }}
                     >
-                      ✕ Remove
+                      ✕
                     </button>
                   </div>
                 )}
