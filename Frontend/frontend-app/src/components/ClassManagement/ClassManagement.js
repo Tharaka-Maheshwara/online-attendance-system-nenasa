@@ -68,7 +68,8 @@ const ClassManagement = () => {
       setDuplicateWarning("");
       return;
     }
-    const teacherName = teachers.find((t) => t.id === parseInt(teacherId))?.name || "";
+    const teacherName =
+      teachers.find((t) => t.id === parseInt(teacherId))?.name || "";
     const duplicate = classes.find((cls) => {
       if (isEditing && currentClass && cls.id === currentClass.id) return false;
       return (
@@ -80,7 +81,7 @@ const ClassManagement = () => {
     });
     if (duplicate) {
       setDuplicateWarning(
-        `"${subject}" is already conducted by ${teacherName} for Grade ${grade} on ${dayOfWeek}. Duplicate classes are not allowed.`
+        `"${subject}" is already conducted by ${teacherName} for Grade ${grade} on ${dayOfWeek}. Duplicate classes are not allowed.`,
       );
     } else {
       setDuplicateWarning("");
@@ -99,8 +100,8 @@ const ClassManagement = () => {
         [teacher.sub_01, teacher.sub_02, teacher.sub_03, teacher.sub_04]
           .filter(Boolean)
           .some((subject) =>
-            subject.toLowerCase().includes(value.toLowerCase())
-          )
+            subject.toLowerCase().includes(value.toLowerCase()),
+          ),
       );
       setFilteredTeachers(matchingTeachers);
     } else if (name === "subject") {
@@ -144,7 +145,7 @@ const ClassManagement = () => {
     let teacherId = cls.teacherId || "";
     if (!teacherId && cls.teacherName) {
       const matchingTeacher = teachers.find(
-        (teacher) => teacher.name === cls.teacherName
+        (teacher) => teacher.name === cls.teacherName,
       );
       teacherId = matchingTeacher ? matchingTeacher.id.toString() : "";
     }
@@ -165,8 +166,8 @@ const ClassManagement = () => {
         [teacher.sub_01, teacher.sub_02, teacher.sub_03, teacher.sub_04]
           .filter(Boolean)
           .some((subject) =>
-            subject.toLowerCase().includes(cls.subject.toLowerCase())
-          )
+            subject.toLowerCase().includes(cls.subject.toLowerCase()),
+          ),
       );
       setFilteredTeachers(matchingTeachers);
     }
@@ -229,7 +230,7 @@ const ClassManagement = () => {
           t.sub_01 === subjectName ||
           t.sub_02 === subjectName ||
           t.sub_03 === subjectName ||
-          t.sub_04 === subjectName
+          t.sub_04 === subjectName,
       );
 
       return teacher || null;
@@ -324,7 +325,7 @@ const ClassManagement = () => {
   // Pagination logic
   const paginatedClasses = classes.slice(
     (currentPage - 1) * classesPerPage,
-    currentPage * classesPerPage
+    currentPage * classesPerPage,
   );
   const totalPages = Math.ceil(classes.length / classesPerPage);
 
@@ -686,7 +687,7 @@ const ClassManagement = () => {
                   >
                     {page}
                   </button>
-                )
+                ),
               )}
             </div>
           )}
