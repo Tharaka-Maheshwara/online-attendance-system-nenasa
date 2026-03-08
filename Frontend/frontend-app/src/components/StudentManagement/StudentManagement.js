@@ -266,7 +266,11 @@ const StudentManagement = () => {
     const { name, value } = e.target;
 
     // Validate NS prefix for register number
-    if (name === "registerNumber" && value !== "" && !value.toUpperCase().startsWith("NS")) {
+    if (
+      name === "registerNumber" &&
+      value !== "" &&
+      !value.toUpperCase().startsWith("NS")
+    ) {
       setNewStudent((prev) => ({ ...prev, [name]: value }));
       setLookupMessage("❌ Register Number must start with 'NS'");
       return;

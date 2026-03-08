@@ -161,7 +161,11 @@ const TeacherManagement = () => {
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
 
-      if (value && value.trim() !== "" && value.toUpperCase().startsWith("NT")) {
+      if (
+        value &&
+        value.trim() !== "" &&
+        value.toUpperCase().startsWith("NT")
+      ) {
         window.registerNumberTimeout = setTimeout(() => {
           lookupUserByRegisterNumber(value);
         }, 500); // Wait 500ms after user stops typing
