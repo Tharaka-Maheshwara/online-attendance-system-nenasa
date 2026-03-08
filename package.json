@@ -1,7 +1,7 @@
 {
-  "name": "online-attendance-system",
+  "name": "nenasa-online-attendance-system",
   "version": "1.0.0",
-  "description": "Online Attendance System with Nest.js Backend and React Frontend",
+  "description": "A full-stack online attendance management system built with NestJS, React, and Azure AD authentication",
   "scripts": {
     "start": "npm run start:all",
     "start:all": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
@@ -16,11 +16,12 @@
   },
   "keywords": [
     "attendance",
-    "nest.js",
+    "nestjs",
     "react",
-    "azure",
-    "postgresql"
+    "azure-ad",
+    "typescript",
+    "mysql",
+    "education"
   ],
-  "author": "Your Name",
   "license": "MIT"
 }
