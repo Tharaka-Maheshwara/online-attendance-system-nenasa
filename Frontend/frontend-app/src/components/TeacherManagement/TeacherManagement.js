@@ -259,7 +259,7 @@ const TeacherManagement = () => {
     try {
       // Find the teacher in our current list
       const teacherToEdit = teachers.find(
-        (teacher) => teacher.id === teacherId
+        (teacher) => teacher.id === teacherId,
       );
       if (teacherToEdit) {
         // Map the teacher data to form data format
@@ -352,7 +352,7 @@ const TeacherManagement = () => {
   const totalPages = Math.ceil(filteredTeachers.length / teachersPerPage);
   const paginatedTeachers = filteredTeachers.slice(
     (currentPage - 1) * teachersPerPage,
-    currentPage * teachersPerPage
+    currentPage * teachersPerPage,
   );
 
   const handlePageChange = (page) => {
@@ -464,8 +464,8 @@ const TeacherManagement = () => {
                       lookupMessage.includes("✅")
                         ? "success"
                         : lookupMessage.includes("⚠️")
-                        ? "warning"
-                        : "error"
+                          ? "warning"
+                          : "error"
                     }`}
                   >
                     {lookupMessage}
@@ -596,8 +596,8 @@ const TeacherManagement = () => {
                     ? "Updating..."
                     : "Creating..."
                   : isEditing
-                  ? "Update Teacher"
-                  : "Create Teacher"}
+                    ? "Update Teacher"
+                    : "Create Teacher"}
               </button>
             </div>
           </form>
@@ -692,7 +692,7 @@ const TeacherManagement = () => {
                     >
                       {page}
                     </button>
-                  )
+                  ),
                 )}
               </div>
             )}

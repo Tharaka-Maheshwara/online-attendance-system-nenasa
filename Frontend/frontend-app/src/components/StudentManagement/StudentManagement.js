@@ -92,7 +92,7 @@ const StudentManagement = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/users/by-register/${registerNumber}`
+        `http://localhost:8000/users/by-register/${registerNumber}`,
       );
 
       if (response.ok) {
@@ -211,7 +211,7 @@ const StudentManagement = () => {
       (cls) =>
         cls.grade === gradeNumber ||
         cls.grade === null ||
-        cls.grade === undefined
+        cls.grade === undefined,
     );
     setFilteredClasses(matchingClasses);
   };
@@ -227,7 +227,7 @@ const StudentManagement = () => {
       (cls) =>
         cls.grade === gradeNumber ||
         cls.grade === null ||
-        cls.grade === undefined
+        cls.grade === undefined,
     );
     setEditFilteredClasses(matchingClasses);
   };
@@ -254,7 +254,7 @@ const StudentManagement = () => {
 
     // Filter out already selected subjects
     return sourceClasses.filter(
-      (cls) => !selectedSubjects.includes(cls.subject)
+      (cls) => !selectedSubjects.includes(cls.subject),
     );
   };
 
@@ -533,7 +533,7 @@ const StudentManagement = () => {
 
   const paginatedStudents = filteredStudents.slice(
     (currentPage - 1) * studentsPerPage,
-    currentPage * studentsPerPage
+    currentPage * studentsPerPage,
   );
   const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
 
@@ -647,8 +647,8 @@ const StudentManagement = () => {
                       lookupMessage.includes("✅")
                         ? "success"
                         : lookupMessage.includes("ℹ️")
-                        ? "info"
-                        : "warning"
+                          ? "info"
+                          : "warning"
                     }`}
                   >
                     {lookupMessage}
@@ -1265,7 +1265,7 @@ const StudentManagement = () => {
                     >
                       {page}
                     </button>
-                  )
+                  ),
                 )}
               </div>
             )}
