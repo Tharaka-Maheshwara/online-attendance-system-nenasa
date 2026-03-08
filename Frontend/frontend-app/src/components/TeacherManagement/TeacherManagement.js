@@ -152,10 +152,16 @@ const TeacherManagement = () => {
 
     // If register number is being changed, lookup user for auto-fill
     if (name === "registrationNumber") {
+      // Validate NT prefix
+      if (value !== "" && !value.toUpperCase().startsWith("NT")) {
+        setLookupMessage("❌ Register Number must start with 'NT'");
+        return;
+      }
+
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
 
-      if (value && value.trim() !== "") {
+      if (value && value.trim() !== "" && value.toUpperCase().startsWith("NT")) {
         window.registerNumberTimeout = setTimeout(() => {
           lookupUserByRegisterNumber(value);
         }, 500); // Wait 500ms after user stops typing
@@ -455,7 +461,7 @@ const TeacherManagement = () => {
                   name="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={handleInputChange}
-                  placeholder="e.g. 131594"
+                  placeholder="e.g. NT131594"
                   required
                 />
                 {lookupMessage && (

@@ -63,7 +63,11 @@ const StudentManagement = () => {
   // Auto-fill functionality for register number lookup
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (newStudent.registerNumber && newStudent.registerNumber.length > 2) {
+      if (
+        newStudent.registerNumber &&
+        newStudent.registerNumber.length > 2 &&
+        newStudent.registerNumber.toUpperCase().startsWith("NS")
+      ) {
         lookupStudentByRegisterNumber(newStudent.registerNumber);
       } else {
         setLookupMessage("");
@@ -260,6 +264,14 @@ const StudentManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Validate NS prefix for register number
+    if (name === "registerNumber" && value !== "" && !value.toUpperCase().startsWith("NS")) {
+      setNewStudent((prev) => ({ ...prev, [name]: value }));
+      setLookupMessage("❌ Register Number must start with 'NS'");
+      return;
+    }
+
     setNewStudent((prev) => ({
       ...prev,
       [name]: value,
@@ -634,7 +646,7 @@ const StudentManagement = () => {
                     name="registerNumber"
                     value={newStudent.registerNumber}
                     onChange={handleInputChange}
-                    placeholder="e.g., 131584"
+                    placeholder="e.g., NS131584"
                     required
                   />
                   {lookupLoading && (
