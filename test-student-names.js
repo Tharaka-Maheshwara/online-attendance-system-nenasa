@@ -37,7 +37,7 @@ async function testStudentWithSubjectNames() {
     }
 
     const createdStudent = await createResponse.json();
-    console.log("✅ Student created successfully:", createdStudent);
+    console.log(" Student created successfully:", createdStudent);
 
     // Get student to verify subject names are stored
     const getResponse = await fetch(
@@ -49,11 +49,11 @@ async function testStudentWithSubjectNames() {
 
     // Verify subject names are stored correctly
     if (student.sub_1 === "Mathematics" && student.sub_2 === "Science") {
-      console.log("✅ Subject names successfully stored and retrieved");
+      console.log(" Subject names successfully stored and retrieved");
       console.log(`Sub 1: ${student.sub_1}`);
       console.log(`Sub 2: ${student.sub_2}`);
     } else {
-      console.log("❌ Subject names not stored correctly");
+      console.log(" Subject names not stored correctly");
       console.log(`Expected: Mathematics, Science`);
       console.log(`Got: ${student.sub_1}, ${student.sub_2}`);
     }
@@ -64,12 +64,12 @@ async function testStudentWithSubjectNames() {
 
     const ourStudent = allStudents.find((s) => s.id === createdStudent.id);
     if (ourStudent && ourStudent.sub_1 === "Mathematics") {
-      console.log("✅ Subject names appear correctly in student list");
+      console.log(" Subject names appear correctly in student list");
     } else {
-      console.log("❌ Subject names not showing in student list");
+      console.log(" Subject names not showing in student list");
     }
   } catch (error) {
-    console.error("❌ Test failed:", error.message);
+    console.error(" Test failed:", error.message);
   }
 }
 

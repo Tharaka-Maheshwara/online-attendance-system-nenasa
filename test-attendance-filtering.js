@@ -55,12 +55,12 @@ async function testAttendanceFiltering() {
         if (response.ok) {
           const created = await response.json();
           createdStudentIds.push(created.id);
-          console.log(`✅ Created student: ${student.name}`);
+          console.log(` Created student: ${student.name}`);
         } else {
-          console.log(`❌ Failed to create student: ${student.name}`);
+          console.log(` Failed to create student: ${student.name}`);
         }
       } catch (error) {
-        console.log(`❌ Error creating ${student.name}:`, error.message);
+        console.log(` Error creating ${student.name}:`, error.message);
       }
     }
 
@@ -178,15 +178,15 @@ async function testAttendanceFiltering() {
       );
     }
 
-    console.log("\n✅ Attendance filtering test completed!");
-    console.log("\n📝 Summary:");
+    console.log("\n Attendance filtering test completed!");
+    console.log("\n Summary:");
     console.log("- Students are now filtered based on their enrolled subjects");
     console.log(
       "- Only students with matching subjects appear in attendance lists"
     );
     console.log("- Empty classes show appropriate 'no students' message");
   } catch (error) {
-    console.error("❌ Test failed:", error.message);
+    console.error(" Test failed:", error.message);
   }
 }
 

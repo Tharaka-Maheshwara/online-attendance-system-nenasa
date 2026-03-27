@@ -45,9 +45,9 @@ async function testStudentWithSubjects() {
 
     // Verify subjects are loaded
     if (studentWithSubjects.sub_1 || studentWithSubjects.sub_2) {
-      console.log("✅ Subjects successfully loaded with student");
+      console.log(" Subjects successfully loaded with student");
     } else {
-      console.log("❌ Subjects not loaded with student");
+      console.log(" Subjects not loaded with student");
     }
   } catch (error) {
     console.error("Test failed:", error.message);

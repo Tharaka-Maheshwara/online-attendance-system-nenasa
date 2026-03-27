@@ -1038,7 +1038,7 @@ const StudentAttendanceHistory = () => {
   return (
     <div className="student-attendance-history">
       <div className="header">
-        <h2>📊 Student Attendance History</h2>
+        <h2> Student Attendance History</h2>
         <p>
           Select a student to view their detailed attendance history with class
           information
@@ -1056,7 +1056,7 @@ const StudentAttendanceHistory = () => {
       <div className="analysis-controls">
         <div className="selection-row">
           <div className="select-group">
-            <label htmlFor="grade-select">📚 Select Grade:</label>
+            <label htmlFor="grade-select"> Select Grade:</label>
             <select
               id="grade-select"
               value={selectedGrade}
@@ -1073,7 +1073,7 @@ const StudentAttendanceHistory = () => {
           </div>
 
           <div className="select-group">
-            <label htmlFor="subject-select">📖 Select Subject:</label>
+            <label htmlFor="subject-select"> Select Subject:</label>
             <select
               id="subject-select"
               value={selectedSubject}
@@ -1091,7 +1091,7 @@ const StudentAttendanceHistory = () => {
           </div>
 
           <div className="select-group">
-            <label htmlFor="analysis-type">📊 Analysis Type:</label>
+            <label htmlFor="analysis-type"> Analysis Type:</label>
             <select
               id="analysis-type"
               value={analysisType}
@@ -1111,7 +1111,7 @@ const StudentAttendanceHistory = () => {
         <div className="charts-section">
           <div className="chart-container">
             <h3>
-              📈 Attendance Analysis -{" "}
+               Attendance Analysis -{" "}
               {analysisType.charAt(0).toUpperCase() + analysisType.slice(1)}
             </h3>
             <div className="chart-wrapper">
@@ -1148,7 +1148,7 @@ const StudentAttendanceHistory = () => {
           </div>
 
           <div className="chart-container">
-            <h3>🥧 Subject Distribution</h3>
+            <h3> Subject Distribution</h3>
             <div className="chart-wrapper small-chart">
               <Doughnut
                 data={subjectChartData}
@@ -1171,21 +1171,21 @@ const StudentAttendanceHistory = () => {
           {/* Stats Cards */}
           <div className="stats-cards">
             <div className="stat-card">
-              <div className="stat-icon">📚</div>
+              <div className="stat-icon"></div>
               <div className="stat-info">
                 <h4>Total Classes</h4>
                 <p className="stat-value">{attendanceStats.totalClasses}</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">✅</div>
+              <div className="stat-icon"></div>
               <div className="stat-info">
                 <h4>Attended</h4>
                 <p className="stat-value">{attendanceStats.attendedClasses}</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">📊</div>
+              <div className="stat-icon"></div>
               <div className="stat-info">
                 <h4>Attendance Rate</h4>
                 <p className="stat-value">
@@ -1194,7 +1194,7 @@ const StudentAttendanceHistory = () => {
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon">⏰</div>
+              <div className="stat-icon"></div>
               <div className="stat-info">
                 <h4>Late Days</h4>
                 <p className="stat-value">{attendanceStats.lateDays}</p>
@@ -1211,7 +1211,7 @@ const StudentAttendanceHistory = () => {
             onClick={() => setShowAnalytics(!showAnalytics)}
             className={`analytics-btn ${showAnalytics ? "active" : ""}`}
           >
-            📊 {showAnalytics ? "Hide" : "Show"} Detailed Analytics
+             {showAnalytics ? "Hide" : "Show"} Detailed Analytics
           </button>
         </div>
       )}
@@ -1227,7 +1227,7 @@ const StudentAttendanceHistory = () => {
               {groupAnalytics && (
                 <div className="group-analytics">
                   <h3>
-                    📈 Group Analytics - Grade {selectedGrade} (
+                     Group Analytics - Grade {selectedGrade} (
                     {selectedSubject})
                   </h3>
                   <div className="group-stats">
@@ -1329,7 +1329,7 @@ const StudentAttendanceHistory = () => {
 
               {/* Individual Analytics */}
               <div className="individual-analytics">
-                <h3>👤 Individual Student Analytics</h3>
+                <h3> Individual Student Analytics</h3>
                 <div className="students-analytics-grid">
                   {Object.entries(individualAnalytics).map(
                     ([studentId, analytics]) => (
@@ -1427,10 +1427,10 @@ const StudentAttendanceHistory = () => {
                           <div className="trend-indicator">
                             <span className={`trend ${analytics.trend}`}>
                               {analytics.trend === "improving"
-                                ? "📈 Improving"
+                                ? " Improving"
                                 : analytics.trend === "declining"
-                                ? "📉 Declining"
-                                : "➡️ Stable"}
+                                ? " Declining"
+                                : " Stable"}
                             </span>
                           </div>
                         )}
@@ -1448,7 +1448,7 @@ const StudentAttendanceHistory = () => {
       {selectedGrade && selectedSubject && (
         <div className="report-generation-section">
           <div className="report-header">
-            <h3>📄 Generate Attendance Reports</h3>
+            <h3> Generate Attendance Reports</h3>
             <p>
               Select filters and generate PDF reports for attendance records
             </p>
@@ -1483,7 +1483,7 @@ const StudentAttendanceHistory = () => {
 
             {/* Class Specific Date Report */}
             <div className="report-control-group">
-              <h4>🏫 Class-Specific Date Report</h4>
+              <h4> Class-Specific Date Report</h4>
               <p className="control-description">
                 View and download attendance for a specific class on a selected
                 date
@@ -1526,7 +1526,7 @@ const StudentAttendanceHistory = () => {
 
             {/* Date Range Class Report */}
             <div className="report-control-group">
-              <h4>📊 Date Range Class Report</h4>
+              <h4> Date Range Class Report</h4>
               <p className="control-description">
                 View and download attendance for a specific class within a date
                 range
@@ -1668,7 +1668,7 @@ const StudentAttendanceHistory = () => {
             <>
               {/* Student Info Header */}
               <div className="selected-student-info">
-                <h3>📊 Attendance History: {selectedStudent.name}</h3>
+                <h3> Attendance History: {selectedStudent.name}</h3>
                 <p>
                   Student ID:{" "}
                   {selectedStudent.registerNumber || selectedStudent.id}

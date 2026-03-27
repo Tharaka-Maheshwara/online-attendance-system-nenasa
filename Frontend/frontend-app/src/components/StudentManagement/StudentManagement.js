@@ -43,6 +43,8 @@ const StudentManagement = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedStudentQR, setSelectedStudentQR] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 10;
 
   useEffect(() => {
     fetchStudents();
@@ -65,6 +67,17 @@ const StudentManagement = () => {
         lookupStudentByRegisterNumber(newStudent.registerNumber);
       } else {
         setLookupMessage("");
+        // Clear name and email when register number is cleared
+        if (
+          !newStudent.registerNumber ||
+          newStudent.registerNumber.trim() === ""
+        ) {
+          setNewStudent((prev) => ({
+            ...prev,
+            name: "",
+            email: "",
+          }));
+        }
       }
     }, 500); // 500ms debounce
 
@@ -89,27 +102,46 @@ const StudentManagement = () => {
         if (responseData.success && responseData.user) {
           const userData = responseData.user;
 
-          // Auto-fill name and email fields
-          setNewStudent((prev) => ({
-            ...prev,
-            name: userData.display_name || "",
-            email: userData.email || "",
-          }));
-          setLookupMessage(
-            `✅ Found: ${userData.display_name} (${userData.email})`
-          );
+          // Check if user already has a role (admin, student, or teacher)
+          if (
+            userData.role &&
+            (userData.role === "admin" ||
+              userData.role === "student" ||
+              userData.role === "teacher")
+          ) {
+            setLookupMessage("⚠️ This Register Number Already Registered");
+            // Clear name and email
+            setNewStudent((prev) => ({
+              ...prev,
+              name: "",
+              email: "",
+            }));
+          } else {
+            // Auto-fill name and email fields for users without roles
+            setNewStudent((prev) => ({
+              ...prev,
+              name: userData.display_name || "",
+              email: userData.email || "",
+            }));
+            setLookupMessage("✅ User Found");
+          }
         } else {
-          setLookupMessage("⚠️ Unexpected response format");
+          setLookupMessage("❌ Invalid Register Number");
         }
       } else if (response.status === 404) {
-        setLookupMessage("ℹ️ Register number not found - creating new student");
-        // Don't clear existing data, user might be creating a new record
+        setLookupMessage("❌ Invalid Register Number");
+        // Clear name and email for invalid register number
+        setNewStudent((prev) => ({
+          ...prev,
+          name: "",
+          email: "",
+        }));
       } else {
-        setLookupMessage("⚠️ Error looking up register number");
+        setLookupMessage("❌ Invalid Register Number");
       }
     } catch (error) {
       console.error("Error looking up student:", error);
-      setLookupMessage("⚠️ Error connecting to server");
+      setLookupMessage("❌ Invalid Register Number");
     } finally {
       setLookupLoading(false);
     }
@@ -291,6 +323,21 @@ const StudentManagement = () => {
     setError("");
 
     try {
+      // Validate that at least one subject is selected
+      const hasAtLeastOneSubject =
+        newStudent.sub_1 ||
+        newStudent.sub_2 ||
+        newStudent.sub_3 ||
+        newStudent.sub_4 ||
+        newStudent.sub_5 ||
+        newStudent.sub_6;
+
+      if (!hasAtLeastOneSubject) {
+        setError("Please select at least one subject");
+        setLoading(false);
+        return;
+      }
+
       // Validate subjects before submission
       validateSubjects(newStudent);
 
@@ -484,6 +531,16 @@ const StudentManagement = () => {
     );
   });
 
+  const paginatedStudents = filteredStudents.slice(
+    (currentPage - 1) * studentsPerPage,
+    currentPage * studentsPerPage
+  );
+  const totalPages = Math.ceil(filteredStudents.length / studentsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div className="student-management">
       <div className="header">
@@ -552,6 +609,7 @@ const StudentManagement = () => {
                   value={newStudent.name}
                   onChange={handleInputChange}
                   required
+                  readOnly
                 />
               </div>
               <div className="form-group">
@@ -562,6 +620,7 @@ const StudentManagement = () => {
                   value={newStudent.email}
                   onChange={handleInputChange}
                   required
+                  readOnly
                 />
               </div>
             </div>
@@ -603,6 +662,7 @@ const StudentManagement = () => {
                   name="contactNumber"
                   value={newStudent.contactNumber}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
             </div>
@@ -614,6 +674,7 @@ const StudentManagement = () => {
                   name="gender"
                   value={newStudent.gender}
                   onChange={handleInputChange}
+                  required
                 >
                   <option value="">Select Gender</option>
                   <option value="Male">Male</option>
@@ -650,6 +711,7 @@ const StudentManagement = () => {
                   value={newStudent.parentName}
                   onChange={handleInputChange}
                   placeholder="Parent/Guardian name"
+                  required
                 />
               </div>
               <div className="form-group">
@@ -1081,14 +1143,11 @@ const StudentManagement = () => {
                   <th>Register Number</th>
                   <th>Contact</th>
                   <th>Grade</th>
-                  <th>Parent Name</th>
-                  <th>Parent Email</th>
-                  <th>Subjects</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.length === 0 ? (
+                {paginatedStudents.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
@@ -1100,7 +1159,7 @@ const StudentManagement = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredStudents.map((student) => {
+                  paginatedStudents.map((student) => {
                     const subjects = [
                       student.sub_1,
                       student.sub_2,
@@ -1120,9 +1179,27 @@ const StudentManagement = () => {
                               src={`http://localhost:8000${student.profileImage}`}
                               alt={student.name}
                               className="student-image"
+                              style={{
+                                width: 56,
+                                height: 56,
+                                objectFit: "cover",
+                                borderRadius: "50%",
+                              }}
                             />
                           ) : (
-                            <div className="student-image-placeholder">👤</div>
+                            <div
+                              className="student-image-placeholder"
+                              style={{
+                                width: 56,
+                                height: 56,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: 32,
+                              }}
+                            >
+                              👤
+                            </div>
                           )}
                         </td>
                         <td>{student.name}</td>
@@ -1132,9 +1209,6 @@ const StudentManagement = () => {
                         <td>
                           {student.grade ? `Grade ${student.grade}` : "N/A"}
                         </td>
-                        <td>{student.parentName || "N/A"}</td>
-                        <td>{student.parentEmail || "N/A"}</td>
-                        <td>{subjects || "No subjects assigned"}</td>
                         <td>
                           <div className="action-buttons">
                             <button
@@ -1163,6 +1237,37 @@ const StudentManagement = () => {
                 )}
               </tbody>
             </table>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 16,
+                }}
+              >
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      style={{
+                        margin: "0 4px",
+                        padding: "4px 12px",
+                        background: page === currentPage ? "#1976d2" : "#fff",
+                        color: page === currentPage ? "#fff" : "#1976d2",
+                        border: "1px solid #1976d2",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                      disabled={page === currentPage}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

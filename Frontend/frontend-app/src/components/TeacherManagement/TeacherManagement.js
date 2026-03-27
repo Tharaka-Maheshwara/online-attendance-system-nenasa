@@ -13,8 +13,11 @@ import {
 const TeacherManagement = () => {
   const [teachers, setTeachers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const teachersPerPage = 10;
   const [showAddForm, setShowAddForm] = useState(false);
   const [isLookingUpUser, setIsLookingUpUser] = useState(false);
+  const [lookupMessage, setLookupMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -56,37 +59,62 @@ const TeacherManagement = () => {
   // Function to lookup user by register number and auto-fill fields
   const lookupUserByRegisterNumber = async (registerNumber) => {
     if (!registerNumber || registerNumber.trim() === "") {
+      setLookupMessage("");
       return;
     }
 
     setIsLookingUpUser(true);
+    setLookupMessage("");
+
     try {
       const user = await getUserByRegisterNumber(registerNumber);
 
       if (user) {
-        // Use the display_name directly as the single name field
-        const displayName = user.display_name || "";
+        // Check if user already has a role (admin, student, or teacher)
+        if (
+          user.role &&
+          (user.role === "admin" ||
+            user.role === "student" ||
+            user.role === "teacher")
+        ) {
+          setLookupMessage("⚠️ This Register Number Already Registered");
+          // Clear name and email
+          setFormData((prev) => ({
+            ...prev,
+            name: "",
+            email: "",
+          }));
+        } else {
+          // Use the display_name directly as the single name field
+          const displayName = user.display_name || "";
 
-        // Auto-fill the form fields
+          // Auto-fill the form fields
+          setFormData((prev) => ({
+            ...prev,
+            name: displayName,
+            email: user.email || "",
+          }));
+
+          setLookupMessage("✅ User Found");
+        }
+      } else {
+        setLookupMessage("❌ Invalid Register Number");
+        // Clear name and email for invalid register number
         setFormData((prev) => ({
           ...prev,
-          name: displayName,
-          email: user.email || "",
+          name: "",
+          email: "",
         }));
-
-        console.log("User found and auto-filled:", user);
-      } else {
-        console.log("No user found with register number:", registerNumber);
-        // Don't show error for not found - this is normal when user doesn't exist
       }
     } catch (error) {
       console.error("Error looking up user:", error);
-      // Show a subtle error message but don't block the user from continuing
-      if (error.message && !error.message.includes("not found")) {
-        console.warn(
-          "Could not connect to server for user lookup. You can still create the teacher manually."
-        );
-      }
+      setLookupMessage("❌ Invalid Register Number");
+      // Clear name and email for invalid register number
+      setFormData((prev) => ({
+        ...prev,
+        name: "",
+        email: "",
+      }));
     } finally {
       setIsLookingUpUser(false);
     }
@@ -126,9 +154,20 @@ const TeacherManagement = () => {
     if (name === "registrationNumber") {
       // Use setTimeout to debounce the API call
       clearTimeout(window.registerNumberTimeout);
-      window.registerNumberTimeout = setTimeout(() => {
-        lookupUserByRegisterNumber(value);
-      }, 500); // Wait 500ms after user stops typing
+
+      if (value && value.trim() !== "") {
+        window.registerNumberTimeout = setTimeout(() => {
+          lookupUserByRegisterNumber(value);
+        }, 500); // Wait 500ms after user stops typing
+      } else {
+        // Clear name and email when register number is cleared
+        setLookupMessage("");
+        setFormData((prev) => ({
+          ...prev,
+          name: "",
+          email: "",
+        }));
+      }
     }
   };
 
@@ -211,6 +250,7 @@ const TeacherManagement = () => {
     setImagePreview(null);
     setShowAddForm(false);
     setIsLookingUpUser(false);
+    setLookupMessage("");
     setIsEditing(false);
     setEditingId(null);
   };
@@ -308,6 +348,22 @@ const TeacherManagement = () => {
     );
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTeachers.length / teachersPerPage);
+  const paginatedTeachers = filteredTeachers.slice(
+    (currentPage - 1) * teachersPerPage,
+    currentPage * teachersPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   return (
     <div className="teacher-management">
       <div className="header">
@@ -365,6 +421,7 @@ const TeacherManagement = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
+                  readOnly
                 />
               </div>
               <div className="form-group">
@@ -376,6 +433,7 @@ const TeacherManagement = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
+                  readOnly
                 />
               </div>
             </div>
@@ -383,7 +441,7 @@ const TeacherManagement = () => {
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="registrationNumber">
-                  Teacher ID *
+                  Register Number *
                   {isLookingUpUser && (
                     <span className="lookup-indicator">
                       {" "}
@@ -397,9 +455,22 @@ const TeacherManagement = () => {
                   name="registrationNumber"
                   value={formData.registrationNumber}
                   onChange={handleInputChange}
-                  placeholder="e.g., T001"
+                  placeholder="e.g. 131594"
                   required
                 />
+                {lookupMessage && (
+                  <div
+                    className={`lookup-message ${
+                      lookupMessage.includes("✅")
+                        ? "success"
+                        : lookupMessage.includes("⚠️")
+                        ? "warning"
+                        : "error"
+                    }`}
+                  >
+                    {lookupMessage}
+                  </div>
+                )}
               </div>
               <div className="form-group">
                 <label htmlFor="contact">Contact Number *</label>
@@ -556,7 +627,7 @@ const TeacherManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map((teacher) => (
+                {paginatedTeachers.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>
                       {teacher.profileImage ? (
@@ -593,6 +664,37 @@ const TeacherManagement = () => {
                 ))}
               </tbody>
             </table>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: 16,
+                }}
+              >
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      style={{
+                        margin: "0 4px",
+                        padding: "4px 12px",
+                        background: page === currentPage ? "#1976d2" : "#fff",
+                        color: page === currentPage ? "#fff" : "#1976d2",
+                        border: "1px solid #1976d2",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                      disabled={page === currentPage}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
